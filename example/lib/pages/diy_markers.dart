@@ -10,14 +10,7 @@ class _DiyMarkersState extends State<DiyMarkers> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            child: AmapView(),
-          )
-        ],
-      ),
+      body: AmapView(),
     );
   }
 }

@@ -11,14 +11,16 @@ import io.flutter.plugin.common.PluginRegistry
 import java.util.concurrent.atomic.AtomicInteger
 
 /** AmapViewMukaPlugin */
-class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, Application.ActivityLifecycleCallbacks {
+class AmapViewMukaPlugin : FlutterPlugin, ActivityAware {
     private val state = AtomicInteger(0)
     private val registrarActivityHashCode: Int
 
     private var activity: Activity? = null
 
+    private  var flutterPluginBinding :  FlutterPlugin.FlutterPluginBinding? = null
+
     companion object {
-        private const val TAG_FLUTTER_FRAGMENT = "plugins.muka.com/amap_view_muka"
+        internal const val TAG_FLUTTER_FRAGMENT = "plugins.muka.com/amap_view_muka"
 
         internal const val CREATED = 1
 
@@ -30,21 +32,21 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, Application.ActivityLif
 
         @JvmStatic
         fun registerWith(registrar: PluginRegistry.Registrar) {
-            registrar.platformViewRegistry().registerViewFactory(TAG_FLUTTER_FRAGMENT, AmapViewFactory(registrar.activity()))
+//            registrar.platformViewRegistry().registerViewFactory(TAG_FLUTTER_FRAGMENT, AmapViewFactory())
         }
 
     }
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        flutterPluginBinding = binding
 
-        binding.platformViewRegistry.registerViewFactory(TAG_FLUTTER_FRAGMENT, AmapViewFactory(binding.applicationContext as Activity))
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activity = binding.activity
+        flutterPluginBinding?.platformViewRegistry?.registerViewFactory(TAG_FLUTTER_FRAGMENT, AmapViewFactory(binding,flutterPluginBinding))
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
@@ -56,48 +58,48 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, Application.ActivityLif
     override fun onDetachedFromActivity() {
     }
 
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        if (activity.hashCode() != registrarActivityHashCode) {
-            return
-        }
-        state.set(CREATED)
-    }
-
-    override fun onActivityStarted(activity: Activity) {
-        if (activity.hashCode() != registrarActivityHashCode) {
-            return
-        }
-    }
-
-    override fun onActivityResumed(activity: Activity) {
-        if (activity.hashCode() != registrarActivityHashCode) {
-            return
-        }
-        state.set(RESUMED)
-    }
-
-    override fun onActivityPaused(activity: Activity) {
-        if (activity.hashCode() != registrarActivityHashCode) {
-            return
-        }
-        state.set(PAUSED)
-    }
-
-    override fun onActivityStopped(activity: Activity) {
-        if (activity.hashCode() != registrarActivityHashCode) {
-            return
-        }
-        state.set(STOPPED)
-    }
-
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-
-    override fun onActivityDestroyed(activity: Activity) {
-        if (activity.hashCode() != registrarActivityHashCode) {
-            return
-        }
-        state.set(DESTROYED)
-    }
+//    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+//        if (activity.hashCode() != registrarActivityHashCode) {
+//            return
+//        }
+//        state.set(CREATED)
+//    }
+//
+//    override fun onActivityStarted(activity: Activity) {
+//        if (activity.hashCode() != registrarActivityHashCode) {
+//            return
+//        }
+//    }
+//
+//    override fun onActivityResumed(activity: Activity) {
+//        if (activity.hashCode() != registrarActivityHashCode) {
+//            return
+//        }
+//        state.set(RESUMED)
+//    }
+//
+//    override fun onActivityPaused(activity: Activity) {
+//        if (activity.hashCode() != registrarActivityHashCode) {
+//            return
+//        }
+//        state.set(PAUSED)
+//    }
+//
+//    override fun onActivityStopped(activity: Activity) {
+//        if (activity.hashCode() != registrarActivityHashCode) {
+//            return
+//        }
+//        state.set(STOPPED)
+//    }
+//
+//    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+//
+//    override fun onActivityDestroyed(activity: Activity) {
+//        if (activity.hashCode() != registrarActivityHashCode) {
+//            return
+//        }
+//        state.set(DESTROYED)
+//    }
 
     init {
         this.registrarActivityHashCode = activity.hashCode()

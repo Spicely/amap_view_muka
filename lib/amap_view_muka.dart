@@ -6,3 +6,4 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 part 'src/amap_view.dart';
+part 'src/amap_view_marker_controller.dart';
