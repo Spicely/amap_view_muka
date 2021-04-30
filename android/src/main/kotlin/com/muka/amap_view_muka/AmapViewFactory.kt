@@ -12,7 +12,7 @@ import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
-class AmapViewFactory(private val activity: Activity) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+class AmapViewFactory(private val binding: ActivityPluginBinding,private val flutterPluginBinding:  FlutterPlugin.FlutterPluginBinding) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         Log.d("11111111111","221111111111111111")
         // 申请权限
@@ -27,18 +27,34 @@ class AmapViewFactory(private val activity: Activity) : PlatformViewFactory(Stan
         Log.d("11111111111","221144444444444444411111111111111")
         val params = args as Map<String, Any>
 //        var opts = Convert.toUnifiedMapOptions(params["options"])
-        var initialMarkers = params["markersToAdd"]
-        return AMapView(context, viewId, initialMarkers)
+        var initialMarkers = params["markers"]
+        println(initialMarkers)
+        return AMapView(context, viewId,binding,flutterPluginBinding, initialMarkers)
     }
 }
 
-class AMapView(context: Context, id: Int,  private val initialMarkers: Any?) : PlatformView {
+class AMapView(context: Context, id: Int, private val binding: ActivityPluginBinding,private val flutterPluginBinding:  FlutterPlugin.FlutterPluginBinding, private val initialMarkers: Any?) : PlatformView {
     private val mapView: TextureMapView = TextureMapView(context)
 
     private var map: AMap = mapView.map
 
+    private val methodChannel: MethodChannel
+
     init {
         mapView.onCreate(null)
+//        map.setOnMapLoadedListener(this)
+//
+////        registrarActivityHashCode = registrar.activity().hashCode()
+//
+//        // 双端通信channel
+        methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "$TAG_FLUTTER_FRAGMENT$id")
+//        methodChannel.setMethodCallHandler(this)
+//
+//        // marker控制器
+//        markerController = MarkerController(methodChannel, mapView.map)
+//
+//        // polyline控制器
+//        polylineController = PolylineController(methodChannel, mapView.map)
     }
 
     override fun getView(): View {

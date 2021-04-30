@@ -15,14 +15,18 @@ class AmapView extends StatefulWidget {
 }
 
 class _AmapViewState extends State<AmapView> {
+  late AmapViewMarkerController _markerChannel;
+
   @override
   Widget build(BuildContext context) {
     if (Platform.isAndroid) {
       return AndroidView(
         viewType: _viewType,
         // gestureRecognizers: gestureRecognizers,
-        // onPlatformViewCreated: onPlatformViewCreated,
-        creationParams: {},
+        onPlatformViewCreated: onPlatformViewCreated,
+        creationParams: {
+          'markers': [],
+        },
         creationParamsCodec: const StandardMessageCodec(),
         // layoutDirection: widget.layoutDirection,
         layoutDirection: TextDirection.ltr,
@@ -39,5 +43,9 @@ class _AmapViewState extends State<AmapView> {
         // hitTestBehavior: widget.hitTestBehavior,
       );
     }
+  }
+
+  void onPlatformViewCreated(int id) {
+    _markerChannel = AmapViewMarkerController(_viewType, id);
   }
 }
