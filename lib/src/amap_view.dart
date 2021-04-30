@@ -6,7 +6,7 @@ class AmapView extends StatefulWidget {
   final dynamic creationParams;
 
   const AmapView({
-    Key key,
+    Key? key,
     this.creationParams,
   }) : super(key: key);
 

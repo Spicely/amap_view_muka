@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 /// A web implementation of the AmapViewMuka plugin.
-class AmapViewWeb {
+class AmapViewMukaWeb {
   static void registerWith(Registrar registrar) {
     final MethodChannel channel = MethodChannel(
       'amap_view_muka',
@@ -17,7 +17,7 @@ class AmapViewWeb {
       registrar,
     );
 
-    final pluginInstance = AmapViewWeb();
+    final pluginInstance = AmapViewMukaWeb();
     channel.setMethodCallHandler(pluginInstance.handleMethodCall);
   }
 
