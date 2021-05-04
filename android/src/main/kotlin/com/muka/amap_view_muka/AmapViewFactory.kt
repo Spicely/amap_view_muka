@@ -8,13 +8,17 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import com.amap.api.maps.AMap
 import com.amap.api.maps.TextureMapView
+import com.muka.amap_view_muka.AmapViewMukaPlugin.Companion.TAG_FLUTTER_FRAGMENT
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
-class AmapViewFactory(private val binding: ActivityPluginBinding,private val flutterPluginBinding:  FlutterPlugin.FlutterPluginBinding) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+class AmapViewFactory(private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
-        Log.d("11111111111","221111111111111111")
+        Log.d("11111111111", "221111111111111111")
         // 申请权限
 //        ActivityCompat.requestPermissions(activity,
 //                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -24,16 +28,16 @@ class AmapViewFactory(private val binding: ActivityPluginBinding,private val flu
 //                        Manifest.permission.READ_PHONE_STATE),
 //                321
 //        )
-        Log.d("11111111111","221144444444444444411111111111111")
+        Log.d("11111111111", "221144444444444444411111111111111")
         val params = args as Map<String, Any>
 //        var opts = Convert.toUnifiedMapOptions(params["options"])
         var initialMarkers = params["markers"]
         println(initialMarkers)
-        return AMapView(context, viewId,binding,flutterPluginBinding, initialMarkers)
+        return AMapView(context, viewId, flutterPluginBinding, initialMarkers)
     }
 }
 
-class AMapView(context: Context, id: Int, private val binding: ActivityPluginBinding,private val flutterPluginBinding:  FlutterPlugin.FlutterPluginBinding, private val initialMarkers: Any?) : PlatformView {
+class AMapView(context: Context, id: Int, private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding, private val initialMarkers: Any?) : PlatformView {
     private val mapView: TextureMapView = TextureMapView(context)
 
     private var map: AMap = mapView.map

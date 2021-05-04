@@ -25,13 +25,14 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(
-            title: const Text('Plugin example app'),
-          ),
-          body: Container(
-            height: double.infinity,
-            child: AmapView(),
-          )),
+        appBar: AppBar(
+          title: const Text('Plugin example app'),
+        ),
+        body: Container(
+          height: double.infinity,
+          child: AmapView(),
+        ),
+      ),
     );
   }
 }
