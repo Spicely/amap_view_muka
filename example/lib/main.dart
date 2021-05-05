@@ -30,7 +30,16 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Container(
           height: double.infinity,
-          child: AmapView(),
+          child: AmapView(
+            onCreated: (amapViewController) {
+              amapViewController.addMarker(
+                AmapViewMarker(
+                  id: '1',
+                  position: LatLng(39.90607, 116.407041),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

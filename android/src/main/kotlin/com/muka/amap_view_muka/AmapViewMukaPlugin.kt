@@ -15,6 +15,7 @@ class AmapViewMukaPlugin: FlutterPlugin, ActivityAware {
 
   companion object {
     const val TAG_FLUTTER_FRAGMENT = "plugins.muka.com/amap_view_muka"
+    const val AMAP_MUKA_MARKER = "plugins.muka.com/amap_view_muka_marker"
   }
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -27,7 +28,7 @@ class AmapViewMukaPlugin: FlutterPlugin, ActivityAware {
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     activity = binding.activity
-    flutterPluginBinding.platformViewRegistry.registerViewFactory(TAG_FLUTTER_FRAGMENT, AmapViewFactory(flutterPluginBinding))
+    flutterPluginBinding.platformViewRegistry.registerViewFactory(TAG_FLUTTER_FRAGMENT, AmapViewFactory(activity, flutterPluginBinding))
   }
 
   override fun onDetachedFromActivityForConfigChanges() {

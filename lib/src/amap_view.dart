@@ -2,12 +2,18 @@ part of amap_view_muka;
 
 const _viewType = 'plugins.muka.com/amap_view_muka';
 
+typedef void AmapViewOnCreated(AmapViewController controller);
+
 class AmapView extends StatefulWidget {
   final dynamic creationParams;
+
+  /// 地图初始化完成
+  final AmapViewOnCreated? onCreated;
 
   const AmapView({
     Key? key,
     this.creationParams,
+    this.onCreated,
   }) : super(key: key);
 
   @override
@@ -15,7 +21,7 @@ class AmapView extends StatefulWidget {
 }
 
 class _AmapViewState extends State<AmapView> {
-  late AmapViewMarkerController _markerChannel;
+  late AmapViewController _controller;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +52,7 @@ class _AmapViewState extends State<AmapView> {
   }
 
   void onPlatformViewCreated(int id) {
-    _markerChannel = AmapViewMarkerController(_viewType, id);
+    _controller = AmapViewController(id);
+    widget.onCreated?.call(_controller);
   }
 }
