@@ -19,7 +19,7 @@ import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
 
-class AmapViewFactory( private val activity: Activity, private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+class AmapViewFactory(private val activity: Activity, private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         Log.d("11111111111", "221111111111111111")
         // 申请权限
@@ -40,12 +40,14 @@ class AmapViewFactory( private val activity: Activity, private val flutterPlugin
     }
 }
 
-class AMapView(context: Context, id: Int, private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding, private val initialMarkers: Any?) : PlatformView,MethodChannel.MethodCallHandler {
+class AMapView(context: Context, id: Int, private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding, private val initialMarkers: Any?) : PlatformView, MethodChannel.MethodCallHandler {
     private val mapView: TextureMapView = TextureMapView(context)
 
     private var map: AMap = mapView.map
 
     private val methodChannel: MethodChannel
+
+    private val markers = HashMap<String, MarkerOptions>()
 
     init {
         mapView.onCreate(null)
@@ -53,12 +55,10 @@ class AMapView(context: Context, id: Int, private val flutterPluginBinding: Flut
 //
 ////        registrarActivityHashCode = registrar.activity().hashCode()
 //
-//        // 双端通信channel
+        // marker控制器
         methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
         methodChannel.setMethodCallHandler(this)
-//
-//        // marker控制器
-//        markerController = MarkerController(methodChannel, mapView.map)
+
 //
 //        // polyline控制器
 //        polylineController = PolylineController(methodChannel, mapView.map)
@@ -73,13 +73,32 @@ class AMapView(context: Context, id: Int, private val flutterPluginBinding: Flut
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        Log.d("111",call.method)
         when (call.method) {
             "marker#add" -> {
+                var type: String = call.argument("type")!!
+                var id: String = call.argument("id")!!
                 var position: Map<String, Any> = call.argument("position")!!
-                val latLng = LatLng(position["latitude"] as Double, position["longitude "] as Double)
-                map.addMarker(MarkerOptions().position(latLng).title("北京").snippet("DefaultMarker"))
-                result.success(true)
+                when (type) {
+                    "defaultMarker" -> {
+                        val latLng = LatLng(position["latitude"] as Double, position["longitude"] as Double)
+                        var title: String? = call.argument("title")
+                        var snippet: String? = call.argument("snippet")
+//                        var anchor: String? = call.argument("anchor")
+                        var visible: Boolean = call.argument("visible")!!
+                        var draggable: Boolean = call.argument("draggable")!!
+                        var alpha: Float = call.argument<Double>("alpha")!!.toFloat()
+                        markers[id] = MarkerOptions()
+                        markers[id]?.position(latLng)?.visible(visible)?.draggable(draggable)?.alpha(alpha)
+                        if (title != null) {
+                            markers[id]?.title(title)
+                        }
+                        if (snippet != null) {
+                            markers[id]?.snippet(snippet)
+                        }
+                        map.addMarker(markers[id])
+                        result.success(true)
+                    }
+                }
             }
         }
     }

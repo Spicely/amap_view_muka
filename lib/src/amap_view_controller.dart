@@ -9,7 +9,7 @@ class AmapViewController {
 
   AmapViewController(this._id) : _markerChannel = MethodChannel('${_marker}_$_id');
 
-  Future<void> addMarker(AmapViewMarker marker) async {
+  Future<void> addMarker(AmapMarker marker) async {
     print(marker.toJson());
     return _markerChannel.invokeMethod('marker#add', marker.toJson());
   }

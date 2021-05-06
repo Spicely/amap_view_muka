@@ -10,4 +10,7 @@ export 'package:amap_core/amap_core.dart';
 
 part 'src/amap_view.dart';
 part 'src/amap_view_controller.dart';
-part 'src/amap_view_marker/amap_view_marker.dart';
+
+/*** Marker */
+part 'src/amap_marker/amap_marker.dart';
+part 'src/amap_marker/amap_default_marker.dart';

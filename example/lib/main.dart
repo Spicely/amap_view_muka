@@ -33,9 +33,13 @@ class _MyAppState extends State<MyApp> {
           child: AmapView(
             onCreated: (amapViewController) {
               amapViewController.addMarker(
-                AmapViewMarker(
+                AmapDefaultMarker(
                   id: '1',
                   position: LatLng(39.90607, 116.407041),
+                  draggable: true,
+                  title: '测试',
+                  snippet: '测试2222',
+                  alpha: 0.5,
                 ),
               );
             },
