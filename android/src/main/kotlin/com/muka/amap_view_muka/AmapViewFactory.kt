@@ -7,8 +7,10 @@ import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import com.amap.api.maps.AMap
+import com.amap.api.maps.AMap.OnMarkerClickListener
 import com.amap.api.maps.TextureMapView
 import com.amap.api.maps.model.LatLng
+import com.amap.api.maps.model.Marker
 import com.amap.api.maps.model.MarkerOptions
 import com.muka.amap_view_muka.AmapViewMukaPlugin.Companion.AMAP_MUKA_MARKER
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -19,17 +21,23 @@ import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
 
-class AmapViewFactory(private val activity: Activity, private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+class AmapViewFactory(
+    private val activity: Activity,
+    private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
+) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         Log.d("11111111111", "221111111111111111")
         // 申请权限
-        ActivityCompat.requestPermissions(activity,
-                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_PHONE_STATE),
-                321
+        ActivityCompat.requestPermissions(
+            activity,
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.READ_PHONE_STATE
+            ),
+            321
         )
         Log.d("11111111111", "221144444444444444411111111111111")
         val params = args as Map<String, Any>
@@ -40,14 +48,19 @@ class AmapViewFactory(private val activity: Activity, private val flutterPluginB
     }
 }
 
-class AMapView(context: Context, id: Int, private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding, private val initialMarkers: Any?) : PlatformView, MethodChannel.MethodCallHandler {
+class AMapView(
+    context: Context,
+    id: Int,
+    private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding,
+    private val initialMarkers: Any?
+) : PlatformView, MethodChannel.MethodCallHandler, AMap.OnMarkerClickListener {
     private val mapView: TextureMapView = TextureMapView(context)
 
     private var map: AMap = mapView.map
 
     private val methodChannel: MethodChannel
 
-    private val markers = HashMap<String, MarkerOptions>()
+    private var markerController: MarkerController
 
     init {
         mapView.onCreate(null)
@@ -56,8 +69,13 @@ class AMapView(context: Context, id: Int, private val flutterPluginBinding: Flut
 ////        registrarActivityHashCode = registrar.activity().hashCode()
 //
         // marker控制器
-        methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
+        methodChannel =
+            MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
         methodChannel.setMethodCallHandler(this)
+
+        markerController = MarkerController(methodChannel, map)
+
+        map.setOnMarkerClickListener(this)
 
 //
 //        // polyline控制器
@@ -75,33 +93,18 @@ class AMapView(context: Context, id: Int, private val flutterPluginBinding: Flut
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "marker#add" -> {
-                var type: String = call.argument("type")!!
-                var id: String = call.argument("id")!!
-                var position: Map<String, Any> = call.argument("position")!!
-                when (type) {
-                    "defaultMarker" -> {
-                        val latLng = LatLng(position["latitude"] as Double, position["longitude"] as Double)
-                        var title: String? = call.argument("title")
-                        var snippet: String? = call.argument("snippet")
-//                        var anchor: String? = call.argument("anchor")
-                        var visible: Boolean = call.argument("visible")!!
-                        var draggable: Boolean = call.argument("draggable")!!
-                        var alpha: Float = call.argument<Double>("alpha")!!.toFloat()
-                        markers[id] = MarkerOptions()
-                        markers[id]?.position(latLng)?.visible(visible)?.draggable(draggable)?.alpha(alpha)
-                        if (title != null) {
-                            markers[id]?.title(title)
-                        }
-                        if (snippet != null) {
-                            markers[id]?.snippet(snippet)
-                        }
-                        map.addMarker(markers[id])
-                        result.success(true)
-                    }
-                }
+                markerController.addMarker(call.arguments as Map<String, Any>, result)
+
             }
         }
     }
 
+//    override fun onMapClick(point: LatLng) {
+//        var p = Convert.toJson(point)
+//    }
+
+    override fun onMarkerClick(marker: Marker): Boolean {
+        return markerController.onClick(marker)
+    }
 
 }

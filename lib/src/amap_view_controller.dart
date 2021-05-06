@@ -3,14 +3,34 @@ part of amap_view_muka;
 const _marker = 'plugins.muka.com/amap_view_muka_marker';
 
 class AmapViewController {
-  final int _id;
+  final List<String> _markerIds = [];
 
-  MethodChannel _markerChannel;
+  late MethodChannel _markerChannel;
 
-  AmapViewController(this._id) : _markerChannel = MethodChannel('${_marker}_$_id');
+  AmapViewController._(this._markerChannel) {
+    _markerChannel.setMethodCallHandler(_handleMethodCall);
+  }
+
+  static Future<AmapViewController> init(int id) async {
+    MethodChannel markerChannel = MethodChannel('${_marker}_$id');
+    return AmapViewController._(markerChannel);
+  }
 
   Future<void> addMarker(AmapMarker marker) async {
-    print(marker.toJson());
-    return _markerChannel.invokeMethod('marker#add', marker.toJson());
+    if (_markerIds.indexOf(marker.id) == -1) {
+      _markerIds.add(marker.id);
+      return _markerChannel.invokeMethod('marker#add', marker.toJson());
+    }
+    return Future.value(false);
+  }
+
+  Future<void> _handleMethodCall(MethodCall call) async {
+    switch (call.method) {
+      case 'marker#onTap':
+        print('marker#onTap');
+        break;
+      default:
+        throw MissingPluginException();
+    }
   }
 }

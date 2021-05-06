@@ -51,8 +51,8 @@ class _AmapViewState extends State<AmapView> {
     }
   }
 
-  void onPlatformViewCreated(int id) {
-    _controller = AmapViewController(id);
+  void onPlatformViewCreated(int id) async {
+    _controller = await AmapViewController.init(id);
     widget.onCreated?.call(_controller);
   }
 }
