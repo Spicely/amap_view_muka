@@ -39,9 +39,18 @@ class _MyAppState extends State<MyApp> {
                   draggable: true,
                   title: '测试',
                   snippet: '测试2222',
-                  alpha: 0.5,
                   onTap: () {
                     print('这是marker点击事件');
+                  },
+                  onDragStart: (latLng) {
+                    print('--------------------------');
+                    print('marker移动开始，当前坐标：${latLng.toJson()}');
+                  },
+                  onDragMove: (latLng) {
+                    print('marker移动中，当前坐标：${latLng.toJson()}');
+                  },
+                  onDragEnd: (latLng) {
+                    print('marker移动结束，当前坐标：${latLng.toJson()}');
                   },
                 ),
               );

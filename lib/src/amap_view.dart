@@ -25,10 +25,14 @@ class _AmapViewState extends State<AmapView> {
 
   @override
   Widget build(BuildContext context) {
+    final gestureRecognizers = <Factory<OneSequenceGestureRecognizer>>[
+      Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer()),
+    ].toSet();
+
     if (Platform.isAndroid) {
       return AndroidView(
         viewType: _viewType,
-        // gestureRecognizers: gestureRecognizers,
+        gestureRecognizers: gestureRecognizers,
         onPlatformViewCreated: onPlatformViewCreated,
         creationParams: {
           'markers': [],
@@ -41,7 +45,7 @@ class _AmapViewState extends State<AmapView> {
     } else {
       return UiKitView(
         viewType: _viewType,
-        // gestureRecognizers: gestureRecognizers,
+        gestureRecognizers: gestureRecognizers,
         // onPlatformViewCreated: onPlatformViewCreated,
         // creationParams: creationParams,
         creationParamsCodec: const StandardMessageCodec(),

@@ -35,7 +35,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
                 var draggable: Boolean = (opts["draggable"] as Boolean?)!!
                 var alpha: Float = (opts["alpha"] as Double?)!!.toFloat()
                 var options = MarkerOptions()
-                options.position(latLng).visible(visible).draggable(draggable).alpha(alpha)
+                options.position(latLng).visible(visible).draggable(draggable).alpha(alpha).zIndex(1.0f)
                 if (title != null) {
                     options.title(title)
                 }
@@ -52,6 +52,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
 
     fun onClick(marker: Marker): Boolean {
         var id = marker.id
+        Log.d("----------------",id)
         var markerId = markerIdToDartMarkerId[id]
         if (markerId != null) {
             var params = hashMapOf<String, String>()
