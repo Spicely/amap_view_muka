@@ -38,19 +38,19 @@ class AmapViewController {
       case 'marker#onDragStart':
         AmapMarker? marker = _markerMap[call.arguments['markerId']];
         if (marker != null) {
-          marker.onDragStart?.call(LatLng.fromJson(call.arguments['latLng'] as Map<String, Double>));
+          marker.onDragStart?.call(LatLng.fromJson(call.arguments['latLng'] as Map<String, double>));
         }
         break;
       case 'marker#onDragMove':
         AmapMarker? marker = _markerMap[call.arguments['markerId']];
         if (marker != null) {
-          marker.onDragMove?.call(LatLng.fromJson(call.arguments['latLng'] as Map<String, Double>));
+          marker.onDragMove?.call(LatLng.fromJson(call.arguments['latLng'] as Map<String, double>));
         }
         break;
       case 'marker#onDragEnd':
         AmapMarker? marker = _markerMap[call.arguments['markerId']];
         if (marker != null) {
-          marker.onDragEnd?.call(LatLng.fromJson(call.arguments['latLng'] as Map<String, Double>));
+          marker.onDragEnd?.call(LatLng.fromJson(call.arguments['latLng'] as Map<String, double>));
         }
         break;
       default:
