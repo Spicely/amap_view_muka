@@ -1,29 +1,53 @@
 part of amap_view_muka;
 
+typedef void AmapMarkerOnTap();
+
+typedef void AmapMarkerOnDragStart(LatLng latLng);
+
+typedef void AmapMarkerOnDragMove(LatLng latLng);
+
+typedef void AmapMarkerOnDragEnd(LatLng latLng);
+
 abstract class AmapMarker {
   /// 作为唯一索引
+  ///
+  /// [必填参数]
   final String id;
 
-  /// 在地图上标记位置的经纬度值。必填参数
-  final LatLng position;
+  /// 在地图上标记位置的经纬度值
+  ///
+  /// [必填参数]
+  LatLng position;
 
   /// 点标记的标题
-  final String? title;
+  String? title;
 
   /// 点标记的内容
-  final String? snippet;
+  String? snippet;
 
   /// 点标记是否可拖拽
-  final bool draggable;
+  bool draggable;
 
   /// 点标记是否可见
-  final bool visible;
+  bool visible;
 
   /// 点标记的锚点
-  final String? anchor;
+  String? anchor;
 
   /// 点标记的锚点
-  final double alpha;
+  double alpha;
+
+  /// marker点击事件
+  AmapMarkerOnTap? onTap;
+
+  /// marker移动开始事件
+  AmapMarkerOnDragStart? onDragStart;
+
+  /// marker点击事件
+  AmapMarkerOnDragMove? onDragMove;
+
+  /// marker点击事件
+  final AmapMarkerOnDragEnd? onDragEnd;
 
   AmapMarker({
     required this.id,
@@ -34,6 +58,10 @@ abstract class AmapMarker {
     this.draggable = false,
     this.visible = true,
     this.alpha = 1.0,
+    this.onTap,
+    this.onDragStart,
+    this.onDragMove,
+    this.onDragEnd,
   });
 
   Map<String, dynamic> toJson() => {};

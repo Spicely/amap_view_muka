@@ -3,7 +3,7 @@ part of amap_view_muka;
 const _marker = 'plugins.muka.com/amap_view_muka_marker';
 
 class AmapViewController {
-  final List<String> _markerIds = [];
+  final Map<String, AmapMarker> _markerMap = {};
 
   late MethodChannel _markerChannel;
 
@@ -16,9 +16,12 @@ class AmapViewController {
     return AmapViewController._(markerChannel);
   }
 
+  /// 添加单个marker
+  ///
+  /// 已存在的id会被忽略
   Future<void> addMarker(AmapMarker marker) async {
-    if (_markerIds.indexOf(marker.id) == -1) {
-      _markerIds.add(marker.id);
+    if (_markerMap[marker.id] == null) {
+      _markerMap[marker.id] = marker;
       return _markerChannel.invokeMethod('marker#add', marker.toJson());
     }
     return Future.value(false);
@@ -27,7 +30,28 @@ class AmapViewController {
   Future<void> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'marker#onTap':
-        print('marker#onTap');
+        AmapMarker? marker = _markerMap[call.arguments['markerId']];
+        if (marker != null) {
+          marker.onTap?.call();
+        }
+        break;
+      case 'marker#onDragStart':
+        AmapMarker? marker = _markerMap[call.arguments['markerId']];
+        if (marker != null) {
+          marker.onDragStart?.call(LatLng.fromJson(call.arguments['latLng'] as Map<String, Double>));
+        }
+        break;
+      case 'marker#onDragMove':
+        AmapMarker? marker = _markerMap[call.arguments['markerId']];
+        if (marker != null) {
+          marker.onDragMove?.call(LatLng.fromJson(call.arguments['latLng'] as Map<String, Double>));
+        }
+        break;
+      case 'marker#onDragEnd':
+        AmapMarker? marker = _markerMap[call.arguments['markerId']];
+        if (marker != null) {
+          marker.onDragEnd?.call(LatLng.fromJson(call.arguments['latLng'] as Map<String, Double>));
+        }
         break;
       default:
         throw MissingPluginException();

@@ -40,6 +40,9 @@ class _MyAppState extends State<MyApp> {
                   title: '测试',
                   snippet: '测试2222',
                   alpha: 0.5,
+                  onTap: () {
+                    print('这是marker点击事件');
+                  },
                 ),
               );
             },

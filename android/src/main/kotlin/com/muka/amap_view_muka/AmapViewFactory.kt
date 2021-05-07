@@ -22,22 +22,22 @@ import io.flutter.plugin.platform.PlatformViewFactory
 
 
 class AmapViewFactory(
-    private val activity: Activity,
-    private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
+        private val activity: Activity,
+        private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         Log.d("11111111111", "221111111111111111")
         // 申请权限
         ActivityCompat.requestPermissions(
-            activity,
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.READ_PHONE_STATE
-            ),
-            321
+                activity,
+                arrayOf(
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_PHONE_STATE
+                ),
+                321
         )
         Log.d("11111111111", "221144444444444444411111111111111")
         val params = args as Map<String, Any>
@@ -49,11 +49,11 @@ class AmapViewFactory(
 }
 
 class AMapView(
-    context: Context,
-    id: Int,
-    private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding,
-    private val initialMarkers: Any?
-) : PlatformView, MethodChannel.MethodCallHandler, AMap.OnMarkerClickListener {
+        context: Context,
+        id: Int,
+        private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding,
+        private val initialMarkers: Any?
+) : PlatformView, MethodChannel.MethodCallHandler, AMap.OnMarkerClickListener, AMap.OnMarkerDragListener {
     private val mapView: TextureMapView = TextureMapView(context)
 
     private var map: AMap = mapView.map
@@ -69,8 +69,7 @@ class AMapView(
 ////        registrarActivityHashCode = registrar.activity().hashCode()
 //
         // marker控制器
-        methodChannel =
-            MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
+        methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
         methodChannel.setMethodCallHandler(this)
 
         markerController = MarkerController(methodChannel, map)
@@ -99,12 +98,24 @@ class AMapView(
         }
     }
 
-//    override fun onMapClick(point: LatLng) {
-//        var p = Convert.toJson(point)
-//    }
-
+    /// marker点击处理
     override fun onMarkerClick(marker: Marker): Boolean {
         return markerController.onClick(marker)
+    }
+
+    /// marker开始移动
+    override fun onMarkerDragStart(marker: Marker) {
+        markerController.onDrag(marker, "marker#onDragStart")
+    }
+
+    /// marker移动中
+    override fun onMarkerDrag(marker: Marker) {
+        markerController.onDrag(marker, "marker#onDragMove")
+    }
+
+    /// marker移动结束
+    override fun onMarkerDragEnd(marker: Marker) {
+        markerController.onDrag(marker, "marker#onDragEnd")
     }
 
 }

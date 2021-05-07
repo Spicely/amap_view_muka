@@ -44,7 +44,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
                 }
                 var marker = map.addMarker(options)
                 markerIdToMarker[id] = marker
-                markerIdToDartMarkerId[id] = marker.id
+                markerIdToDartMarkerId[marker.id] = id
                 result.success(true)
             }
         }
@@ -54,11 +54,22 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
         var id = marker.id
         var markerId = markerIdToDartMarkerId[id]
         if (markerId != null) {
-            Log.d("111111111111111","-----------------------------------")
-            methodChannel.invokeMethod("marker#onTap", markerId)
+            var params = hashMapOf<String, String>()
+            params["markerId"] = markerId
+            methodChannel.invokeMethod("marker#onTap", params)
             return true
         }
         return false
     }
 
+    fun onDrag(marker: Marker, type: String) {
+        var id = marker.id
+        var markerId = markerIdToDartMarkerId[id]
+        if (markerId != null) {
+            var params = hashMapOf<String, Any>()
+            params["markerId"] = markerId
+            params["latLng"] = Convert.toJson(marker.position)
+            methodChannel.invokeMethod(type, params)
+        }
+    }
 }
