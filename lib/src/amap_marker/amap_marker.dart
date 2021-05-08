@@ -22,6 +22,8 @@ abstract class AmapMarker {
   /// 点标记的标题
   String? title;
 
+  AmapMarkerIcon? icon;
+
   /// 点标记的内容
   String? snippet;
 
@@ -53,6 +55,7 @@ abstract class AmapMarker {
     required this.id,
     required this.position,
     this.title,
+    this.icon,
     this.snippet,
     this.anchor,
     this.draggable = false,
@@ -65,8 +68,6 @@ abstract class AmapMarker {
   });
 
   Map<String, dynamic> toJson() => {};
-
-  dynamic fromJson(Map<String, dynamic> json) => {};
 
   String get type => '';
 }
