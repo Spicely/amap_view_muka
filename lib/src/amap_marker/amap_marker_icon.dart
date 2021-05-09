@@ -1,12 +1,31 @@
 part of amap_view_muka;
 
+class AmapMarkerIconSize {
+  final double height;
+
+  final double width;
+
+  const AmapMarkerIconSize({
+    this.height = 50,
+    this.width = 50,
+  });
+}
+
 abstract class AmapMarkerIcon {
   /// 地址
   final String url;
 
+  /// 图片尺寸
+  ///
+  /// 默认 50 * 50
+  AmapMarkerIconSize size;
+
   String get type => '';
 
-  AmapMarkerIcon(this.url);
+  AmapMarkerIcon(
+    this.url, {
+    this.size = const AmapMarkerIconSize(),
+  });
 
   Map<String, dynamic> toJson() => {};
 }
@@ -19,7 +38,17 @@ class AmapMarkerAssetIcon implements AmapMarkerIcon {
 
   final double scale;
 
-  AmapMarkerAssetIcon(this.url, this.name, this.scale);
+  /// 图片尺寸
+  ///
+  /// 默认 50 * 50
+  AmapMarkerIconSize size;
+
+  AmapMarkerAssetIcon(
+    this.url,
+    this.name,
+    this.scale, {
+    this.size = const AmapMarkerIconSize(),
+  });
 
   /// marker图标类型
   String get type => 'marker#asset';
@@ -38,7 +67,15 @@ class AmapMarkerWebIcon implements AmapMarkerIcon {
   /// 地址
   final String url;
 
-  AmapMarkerWebIcon(this.url);
+  /// 图片尺寸
+  ///
+  /// 默认 50 * 50
+  AmapMarkerIconSize size;
+
+  AmapMarkerWebIcon(
+    this.url, {
+    this.size = const AmapMarkerIconSize(),
+  });
 
   /// marker图标类型
   String get type => 'marker#asset';
