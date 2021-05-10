@@ -23,6 +23,16 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
 
     }
 
+    fun deleteMarker(opts: Map<String, Any>, result: MethodChannel.Result){
+        var id: String = (opts["id"] as String?)!!
+        var markerId = markerIdToDartMarkerId[id]
+        if (markerId != null) {
+            markerIdToDartMarkerId.remove(markerId)
+            markerIdToMarker.remove(id)
+        }
+        result.success(true)
+    }
+
     fun addMarker(opts: Map<String, Any>, result: MethodChannel.Result) {
         var type: String = (opts["type"] as String?)!!
         var id: String = (opts["id"] as String?)!!

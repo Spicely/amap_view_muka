@@ -11,40 +11,40 @@ class AmapDefaultMarker implements AmapMarker {
   /// 作为唯一索引
   final String id;
 
-  AmapMarkerIcon? icon;
+  final AmapMarkerIcon? icon;
 
   /// 在地图上标记位置的经纬度值。必填参数
-  LatLng position;
+  final LatLng position;
 
   /// 点标记的标题
-  String? title;
+  final String? title;
 
   /// 点标记的内容
-  String? snippet;
+  final String? snippet;
 
   /// 点标记是否可拖拽
-  bool draggable;
+  final bool draggable;
 
   /// 点标记是否可见
-  bool visible;
+  final bool visible;
 
   /// 点标记的锚点
-  String? anchor;
+  final String? anchor;
 
   /// 点的透明度
-  double alpha;
+  final double alpha;
 
   /// marker点击事件
-  AmapMarkerOnTap? onTap;
+  final AmapMarkerOnTap? onTap;
 
   /// marker移动开始事件
-  AmapMarkerOnDragStart? onDragStart;
+  final AmapMarkerOnDragStart? onDragStart;
 
   /// marker点击事件
-  AmapMarkerOnDragMove? onDragMove;
+  final AmapMarkerOnDragMove? onDragMove;
 
   /// marker点击事件
-  AmapMarkerOnDragEnd? onDragEnd;
+  final AmapMarkerOnDragEnd? onDragEnd;
 
   AmapDefaultMarker({
     required this.id,

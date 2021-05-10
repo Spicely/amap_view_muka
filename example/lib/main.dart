@@ -55,29 +55,6 @@ class _MyAppState extends State<MyApp> {
                   },
                 ),
               );
-              amapViewController.addMarker(
-                AmapDefaultMarker(
-                  id: '1',
-                  position: LatLng(39.90607, 116.407041),
-                  draggable: true,
-                  title: '测试',
-                  snippet: '测试2222',
-                  icon: AmapMarkerImage.web('https://img.muka.site/icon/marker.jpg'),
-                  onTap: () {
-                    print('这是marker点击事件');
-                  },
-                  onDragStart: (latLng) {
-                    print('--------------------------');
-                    print('marker移动开始，当前坐标：${latLng.toJson()}');
-                  },
-                  onDragMove: (latLng) {
-                    print('marker移动中，当前坐标：${latLng.toJson()}');
-                  },
-                  onDragEnd: (latLng) {
-                    print('marker移动结束，当前坐标：${latLng.toJson()}');
-                  },
-                ),
-              );
             },
           ),
         ),

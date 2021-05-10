@@ -17,36 +17,30 @@ abstract class AmapMarker {
   /// 在地图上标记位置的经纬度值
   ///
   /// [必填参数]
-  LatLng position;
+  final LatLng position;
 
-  /// 点标记的标题
-  String? title;
-
-  AmapMarkerIcon? icon;
-
-  /// 点标记的内容
-  String? snippet;
+  final AmapMarkerIcon? icon;
 
   /// 点标记是否可拖拽
-  bool draggable;
+  final bool draggable;
 
   /// 点标记是否可见
-  bool visible;
+  final bool visible;
 
   /// 点标记的锚点
-  String? anchor;
+  final String? anchor;
 
   /// 点标记的锚点
-  double alpha;
+  final double alpha;
 
   /// marker点击事件
-  AmapMarkerOnTap? onTap;
+  final AmapMarkerOnTap? onTap;
 
   /// marker移动开始事件
-  AmapMarkerOnDragStart? onDragStart;
+  final AmapMarkerOnDragStart? onDragStart;
 
   /// marker点击事件
-  AmapMarkerOnDragMove? onDragMove;
+  final AmapMarkerOnDragMove? onDragMove;
 
   /// marker点击事件
   final AmapMarkerOnDragEnd? onDragEnd;
@@ -54,9 +48,7 @@ abstract class AmapMarker {
   AmapMarker({
     required this.id,
     required this.position,
-    this.title,
     this.icon,
-    this.snippet,
     this.anchor,
     this.draggable = false,
     this.visible = true,

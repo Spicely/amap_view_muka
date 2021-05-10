@@ -96,7 +96,9 @@ class AMapView(
         when (call.method) {
             "marker#add" -> {
                 markerController.addMarker(call.arguments as Map<String, Any>, result)
-
+            }
+            "marker#delete" -> {
+                markerController.deleteMarker(call.arguments as Map<String, Any>, result)
             }
         }
     }

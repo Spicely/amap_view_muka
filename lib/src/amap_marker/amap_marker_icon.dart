@@ -96,8 +96,8 @@ class AmapMarkerImage {
     return AmapMarkerAssetIcon(url, assetBundleImageKey.name, assetBundleImageKey.scale);
   }
 
-  /// 从互联网中读取
-  static AmapMarkerIcon web(String url) {
-    return AmapMarkerWebIcon(url);
-  }
+  // /// 从互联网中读取
+  // static AmapMarkerIcon web(String url) {
+  //   return AmapMarkerWebIcon(url);
+  // }
 }

@@ -27,6 +27,17 @@ class AmapViewController {
     return Future.value(false);
   }
 
+  /// 删除单个marker
+  ///
+  /// 不在的id会被忽略
+  Future<void> removeMarker(String id) async {
+    if (_markerMap[id] != null) {
+      _markerMap.remove(id);
+      return _markerChannel.invokeMethod('marker#delete', {'id': id});
+    }
+    return Future.value(false);
+  }
+
   Future<void> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'marker#onTap':
