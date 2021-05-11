@@ -11,8 +11,6 @@ class AmapDefaultMarker implements AmapMarker {
   /// 作为唯一索引
   final String id;
 
-  final AmapMarkerIcon? icon;
-
   /// 在地图上标记位置的经纬度值。必填参数
   final LatLng position;
 
@@ -46,6 +44,15 @@ class AmapDefaultMarker implements AmapMarker {
   /// marker点击事件
   final AmapMarkerOnDragEnd? onDragEnd;
 
+  /// marker自定义图标
+  final AmapMarkerIcon? icon;
+
+  /// marker自定义infoWindow
+  final AmapMarkerInfoWindow? infoWindow;
+
+  /// 显示infoWindow
+  final bool showInfoWindow;
+
   AmapDefaultMarker({
     required this.id,
     required this.position,
@@ -60,6 +67,8 @@ class AmapDefaultMarker implements AmapMarker {
     this.onDragStart,
     this.onDragMove,
     this.onDragEnd,
+    this.infoWindow,
+    this.showInfoWindow = false,
   });
 
   @override
@@ -74,6 +83,7 @@ class AmapDefaultMarker implements AmapMarker {
         'draggable': this.draggable,
         'alpha': this.alpha,
         'icon': this.icon?.toJson(),
+        'infoWindow': this.infoWindow?.toJson(),
       };
 
   @override
@@ -89,6 +99,7 @@ class AmapDefaultMarker implements AmapMarker {
         draggable: json['draggable'] as bool,
         alpha: json['alpha'] as double,
         icon: json['icon'] ?? _getAmapMarkerIcon(json['icon']),
+        infoWindow: json['infoWindow'] ?? _getAmapMarkerInfoWindow(json['infoWindow']),
       );
 }
 
@@ -98,5 +109,14 @@ AmapMarkerIcon _getAmapMarkerIcon(Map<dynamic, dynamic> json) {
       return AmapMarkerAssetIcon.fromJson(json);
     default:
       return AmapMarkerWebIcon.fromJson(json);
+  }
+}
+
+AmapMarkerInfoWindow _getAmapMarkerInfoWindow(Map<dynamic, dynamic> json) {
+  switch (json['type']) {
+    // case 'marker#asset':
+    //   return AmapMarkerAssetIcon.fromJson(json);
+    default:
+      return AmapMarkerCardInfoWindow.fromJson(json);
   }
 }

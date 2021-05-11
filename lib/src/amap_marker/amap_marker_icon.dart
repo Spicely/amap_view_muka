@@ -18,7 +18,7 @@ abstract class AmapMarkerIcon {
   /// 图片尺寸
   ///
   /// 默认 50 * 50
-  AmapMarkerIconSize size;
+  final AmapMarkerIconSize size;
 
   String get type => '';
 
@@ -41,7 +41,7 @@ class AmapMarkerAssetIcon implements AmapMarkerIcon {
   /// 图片尺寸
   ///
   /// 默认 50 * 50
-  AmapMarkerIconSize size;
+  final AmapMarkerIconSize size;
 
   AmapMarkerAssetIcon(
     this.url,
@@ -70,7 +70,7 @@ class AmapMarkerWebIcon implements AmapMarkerIcon {
   /// 图片尺寸
   ///
   /// 默认 50 * 50
-  AmapMarkerIconSize size;
+  final AmapMarkerIconSize size;
 
   AmapMarkerWebIcon(
     this.url, {

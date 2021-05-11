@@ -19,8 +19,6 @@ abstract class AmapMarker {
   /// [必填参数]
   final LatLng position;
 
-  final AmapMarkerIcon? icon;
-
   /// 点标记是否可拖拽
   final bool draggable;
 
@@ -45,6 +43,15 @@ abstract class AmapMarker {
   /// marker点击事件
   final AmapMarkerOnDragEnd? onDragEnd;
 
+  /// marker自定义图标
+  final AmapMarkerIcon? icon;
+
+  /// marker自定义infoWindow
+  final AmapMarkerInfoWindow? infoWindow;
+
+  /// 显示infoWindow
+  final bool showInfoWindow;
+
   AmapMarker({
     required this.id,
     required this.position,
@@ -57,6 +64,8 @@ abstract class AmapMarker {
     this.onDragStart,
     this.onDragMove,
     this.onDragEnd,
+    this.infoWindow,
+    this.showInfoWindow = false,
   });
 
   Map<String, dynamic> toJson() => {};
