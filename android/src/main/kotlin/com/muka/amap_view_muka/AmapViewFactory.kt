@@ -53,7 +53,10 @@ class AMapView(
     id: Int,
     private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding,
     private val initialMarkers: Any?
-) : PlatformView, MethodChannel.MethodCallHandler, AMap.OnMarkerClickListener,
+) : PlatformView,
+    MethodChannel.MethodCallHandler,
+    AMap.InfoWindowAdapter,
+    AMap.OnMarkerClickListener,
     AMap.OnMarkerDragListener {
     private val mapView: TextureMapView = TextureMapView(context)
 
@@ -121,6 +124,14 @@ class AMapView(
     /// marker移动结束
     override fun onMarkerDragEnd(marker: Marker) {
         markerController.onDrag(marker, "marker#onDragEnd")
+    }
+
+    override fun getInfoWindow(marker: Marker): View {
+        TODO("Not yet implemented")
+    }
+
+    override fun getInfoContents(marker: Marker): View {
+        TODO("Not yet implemented")
     }
 
 }

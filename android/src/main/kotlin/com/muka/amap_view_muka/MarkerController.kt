@@ -47,6 +47,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
         var options = MarkerOptions()
         options.position(latLng).visible(visible).draggable(draggable).alpha(alpha).zIndex(1.0f)
         var icon: Map<String, Any>? = (opts["icon"] as Map<String, Any>?)
+        var infoWindow: Map<String, Any>? = (opts["infoWindow"] as Map<String, Any>?)
 
         if (title != null) {
             options.title(title)
@@ -65,6 +66,10 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
 
                 }
             }
+        }
+        if (infoWindow != null) {
+//            marker.infwi
+            Log.d("----------------", infoWindow.toString())
         }
         when (type) {
             "defaultMarker" -> {
