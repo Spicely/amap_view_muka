@@ -42,6 +42,22 @@ class _MyAppState extends State<MyApp> {
                 children: [
                   ListItem(
                     valueAlignment: Alignment.center,
+                    value: Text('设置蓝点'),
+                    onTap: () async {
+                      print('设置蓝点');
+                      await _amapViewController.setMyLocation(locationStyle: AmapLocationStyle.LOCATION_TYPE_LOCATE);
+                    },
+                  ),
+                  ListItem(
+                    valueAlignment: Alignment.center,
+                    value: Text('关闭蓝点'),
+                    onTap: () async {
+                      print('关闭蓝点');
+                      await _amapViewController.disbleMyLocation();
+                    },
+                  ),
+                  ListItem(
+                    valueAlignment: Alignment.center,
                     value: Text('添加marker'),
                     onTap: () async {
                       await _amapViewController.addMarker(

@@ -1,6 +1,7 @@
 package com.muka.amap_view_muka
 
 import android.util.Log
+import android.view.View
 import com.amap.api.maps.AMap
 import com.amap.api.maps.model.BitmapDescriptorFactory
 import com.amap.api.maps.model.LatLng
@@ -14,7 +15,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
     private val markerIdToMarker = HashMap<String, Marker>();
 
     // markerId(dart端)与传入参数的映射关系，用于区别哪些参数发生变化
-//    private val markerIdToOptions = HashMap<String, UnifiedMarkerOptions>();
+    private val markerIdToOptions = HashMap<String, Map<String, Any>>();
 
     // Marker.Id与dart端markerId的映射关系
     private val markerIdToDartMarkerId = HashMap<String, String>();
@@ -47,7 +48,6 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
         var options = MarkerOptions()
         options.position(latLng).visible(visible).draggable(draggable).alpha(alpha).zIndex(1.0f)
         var icon: Map<String, Any>? = (opts["icon"] as Map<String, Any>?)
-        var infoWindow: Map<String, Any>? = (opts["infoWindow"] as Map<String, Any>?)
 
         if (title != null) {
             options.title(title)
@@ -56,6 +56,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
             options.snippet(snippet)
         }
         var marker = map.addMarker(options)
+        markerIdToOptions[marker.id] = opts
         if(icon != null) {
             when(icon["type"]) {
                 "marker#asset" -> {
@@ -67,10 +68,6 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
                 }
             }
         }
-        if (infoWindow != null) {
-//            marker.infwi
-            Log.d("----------------", infoWindow.toString())
-        }
         when (type) {
             "defaultMarker" -> {
                 markerIdToMarker[id] = marker
@@ -78,6 +75,18 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
                 result.success(true)
             }
         }
+    }
+
+    fun  getInfoWindow(marker: Marker): View? {
+        var id = marker.id
+        var opts = markerIdToOptions[id]
+        if (opts != null) {
+            var infoWindow: Map<String, Any>? = (opts["infoWindow"] as Map<String, Any>?)
+            if (infoWindow != null) {
+                return null
+            }
+        }
+        return null
     }
 
     fun onClick(marker: Marker): Boolean {
