@@ -44,15 +44,16 @@ class _MyAppState extends State<MyApp> {
                     valueAlignment: Alignment.center,
                     value: Text('设置蓝点'),
                     onTap: () async {
-                      print('设置蓝点');
-                      await _amapViewController.setMyLocation(locationStyle: AmapLocationStyle.LOCATION_TYPE_LOCATE);
+                      await _amapViewController.setMyLocation(
+                        locationStyle: AmapLocationStyle.LOCATION_TYPE_LOCATION_ROTATE,
+                        icon: await AmapViewImage.asset(context, 'assets/images/map.png'),
+                      );
                     },
                   ),
                   ListItem(
                     valueAlignment: Alignment.center,
                     value: Text('关闭蓝点'),
                     onTap: () async {
-                      print('关闭蓝点');
                       await _amapViewController.disbleMyLocation();
                     },
                   ),
@@ -67,7 +68,7 @@ class _MyAppState extends State<MyApp> {
                           draggable: true,
                           title: '测试',
                           snippet: '测试2222',
-                          icon: await AmapMarkerImage.asset(context, 'assets/images/map.png'),
+                          icon: await AmapViewImage.asset(context, 'assets/images/map.png'),
                           onTap: () {
                             print('这是marker点击事件');
                           },

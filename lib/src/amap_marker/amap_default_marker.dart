@@ -45,7 +45,7 @@ class AmapDefaultMarker implements AmapMarker {
   final AmapMarkerOnDragEnd? onDragEnd;
 
   /// marker自定义图标
-  final AmapMarkerIcon? icon;
+  final AmapImage? icon;
 
   /// marker自定义infoWindow
   final AmapMarkerInfoWindow? infoWindow;
@@ -98,17 +98,17 @@ class AmapDefaultMarker implements AmapMarker {
         visible: json['visible'] as bool,
         draggable: json['draggable'] as bool,
         alpha: json['alpha'] as double,
-        icon: json['icon'] ?? _getAmapMarkerIcon(json['icon']),
+        icon: json['icon'] ?? _getAmapImage(json['icon']),
         infoWindow: json['infoWindow'] ?? _getAmapMarkerInfoWindow(json['infoWindow']),
       );
 }
 
-AmapMarkerIcon _getAmapMarkerIcon(Map<dynamic, dynamic> json) {
+AmapImage _getAmapImage(Map<dynamic, dynamic> json) {
   switch (json['type']) {
     case 'marker#asset':
-      return AmapMarkerAssetIcon.fromJson(json);
+      return AmapViewAssetImage.fromJson(json);
     default:
-      return AmapMarkerWebIcon.fromJson(json);
+      return AmapViewAssetImage.fromJson(json);
   }
 }
 

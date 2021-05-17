@@ -49,15 +49,19 @@ class AmapViewController {
   /// [enabled] 显示蓝点
   ///
   /// [interval] 设置定位频次方法，单位：毫秒，默认值：1000毫秒，如果传小于1000的任何值将按照1000计算。该方法只会作用在会执行连续定位的工作模式上
+  ///
+  /// [icon] 自定义图标
   Future<void> setMyLocation({
     AmapLocationStyle locationStyle = AmapLocationStyle.LOCATION_TYPE_FOLLOW,
     bool enabled = true,
     int interval = 1000,
+    AmapImage? icon,
   }) async {
     return _markerChannel.invokeMethod('enabledMyLocation', {
       'locationStyle': locationStyle.index,
       'enabled': enabled,
       'interval': interval,
+      'icon': icon?.toJson(),
     });
   }
 

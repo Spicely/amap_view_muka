@@ -17,5 +17,5 @@ part 'src/amap_view_controller.dart';
 /*** Marker */
 part 'src/amap_marker/amap_marker.dart';
 part 'src/amap_marker/amap_default_marker.dart';
-part 'src/amap_marker/amap_marker_icon.dart';
+part 'src/amap_image.dart';
 part 'src/amap_marker/amap_marker_info_window.dart';

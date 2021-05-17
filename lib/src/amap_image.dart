@@ -1,36 +1,36 @@
 part of amap_view_muka;
 
-class AmapMarkerIconSize {
+class AmapImageSize {
   final double height;
 
   final double width;
 
-  const AmapMarkerIconSize({
-    this.height = 50,
-    this.width = 50,
+  const AmapImageSize({
+    this.height = 80,
+    this.width = 80,
   });
 }
 
-abstract class AmapMarkerIcon {
+abstract class AmapImage {
   /// 地址
   final String url;
 
   /// 图片尺寸
   ///
   /// 默认 50 * 50
-  final AmapMarkerIconSize size;
+  final AmapImageSize size;
 
   String get type => '';
 
-  AmapMarkerIcon(
+  AmapImage(
     this.url, {
-    this.size = const AmapMarkerIconSize(),
+    this.size = const AmapImageSize(),
   });
 
   Map<String, dynamic> toJson() => {};
 }
 
-class AmapMarkerAssetIcon implements AmapMarkerIcon {
+class AmapViewAssetImage implements AmapImage {
   /// 地址
   final String url;
 
@@ -41,13 +41,13 @@ class AmapMarkerAssetIcon implements AmapMarkerIcon {
   /// 图片尺寸
   ///
   /// 默认 50 * 50
-  final AmapMarkerIconSize size;
+  final AmapImageSize size;
 
-  AmapMarkerAssetIcon(
+  AmapViewAssetImage(
     this.url,
     this.name,
     this.scale, {
-    this.size = const AmapMarkerIconSize(),
+    this.size = const AmapImageSize(),
   });
 
   /// marker图标类型
@@ -60,21 +60,21 @@ class AmapMarkerAssetIcon implements AmapMarkerIcon {
         'scale': this.scale,
       };
 
-  factory AmapMarkerAssetIcon.fromJson(Map<dynamic, dynamic> json) => AmapMarkerAssetIcon(json['url'], json['name'], json['scale']);
+  factory AmapViewAssetImage.fromJson(Map<dynamic, dynamic> json) => AmapViewAssetImage(json['url'], json['name'], json['scale']);
 }
 
-class AmapMarkerWebIcon implements AmapMarkerIcon {
+class AmapWebImage implements AmapImage {
   /// 地址
   final String url;
 
   /// 图片尺寸
   ///
   /// 默认 50 * 50
-  final AmapMarkerIconSize size;
+  final AmapImageSize size;
 
-  AmapMarkerWebIcon(
+  AmapWebImage(
     this.url, {
-    this.size = const AmapMarkerIconSize(),
+    this.size = const AmapImageSize(),
   });
 
   /// marker图标类型
@@ -85,19 +85,19 @@ class AmapMarkerWebIcon implements AmapMarkerIcon {
         'type': this.type,
       };
 
-  factory AmapMarkerWebIcon.fromJson(Map<dynamic, dynamic> json) => AmapMarkerWebIcon(json['url']);
+  factory AmapWebImage.fromJson(Map<dynamic, dynamic> json) => AmapWebImage(json['url']);
 }
 
-class AmapMarkerImage {
+class AmapViewImage {
   /// 从assets读取
-  static Future<AmapMarkerIcon> asset(BuildContext context, String url, {AssetBundle? bundle, String? package}) async {
+  static Future<AmapImage> asset(BuildContext context, String url, {AssetBundle? bundle, String? package}) async {
     final AssetImage assetImage = AssetImage(url, package: package, bundle: bundle);
     final AssetBundleImageKey assetBundleImageKey = await assetImage.obtainKey(createLocalImageConfiguration(context));
-    return AmapMarkerAssetIcon(url, assetBundleImageKey.name, assetBundleImageKey.scale);
+    return AmapViewAssetImage(url, assetBundleImageKey.name, assetBundleImageKey.scale);
   }
 
   // /// 从互联网中读取
-  // static AmapMarkerIcon web(String url) {
+  // static AmapImage web(String url) {
   //   return AmapMarkerWebIcon(url);
   // }
 }
