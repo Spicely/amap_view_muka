@@ -1,14 +1,24 @@
 part of amap_view_muka;
 
 class AmapImageSize {
-  final double height;
+  final int height;
 
-  final double width;
+  final int width;
 
-  const AmapImageSize({
+  AmapImageSize({
     this.height = 80,
     this.width = 80,
   });
+
+  Map<String, dynamic> toJson() => {
+        'height': this.height,
+        'width': this.width,
+      };
+
+  factory AmapImageSize.fromJson(Map<dynamic, dynamic> json) => AmapImageSize(
+        height: json['height'],
+        width: json['width'],
+      );
 }
 
 abstract class AmapImage {
@@ -17,14 +27,14 @@ abstract class AmapImage {
 
   /// 图片尺寸
   ///
-  /// 默认 50 * 50
-  final AmapImageSize size;
+  /// 默认 80 * 80
+  final AmapImageSize? size;
 
   String get type => '';
 
   AmapImage(
     this.url, {
-    this.size = const AmapImageSize(),
+    this.size,
   });
 
   Map<String, dynamic> toJson() => {};
@@ -40,14 +50,14 @@ class AmapViewAssetImage implements AmapImage {
 
   /// 图片尺寸
   ///
-  /// 默认 50 * 50
-  final AmapImageSize size;
+  /// 默认 80 * 80
+  final AmapImageSize? size;
 
   AmapViewAssetImage(
     this.url,
     this.name,
     this.scale, {
-    this.size = const AmapImageSize(),
+    this.size,
   });
 
   /// marker图标类型
@@ -58,6 +68,7 @@ class AmapViewAssetImage implements AmapImage {
         'type': this.type,
         'name': this.name,
         'scale': this.scale,
+        'size': this.size == null ? AmapImageSize().toJson() : this.size!.toJson(),
       };
 
   factory AmapViewAssetImage.fromJson(Map<dynamic, dynamic> json) => AmapViewAssetImage(json['url'], json['name'], json['scale']);
@@ -69,12 +80,12 @@ class AmapWebImage implements AmapImage {
 
   /// 图片尺寸
   ///
-  /// 默认 50 * 50
-  final AmapImageSize size;
+  /// 默认 80 * 80
+  final AmapImageSize? size;
 
   AmapWebImage(
     this.url, {
-    this.size = const AmapImageSize(),
+    this.size,
   });
 
   /// marker图标类型
@@ -83,6 +94,7 @@ class AmapWebImage implements AmapImage {
   Map<String, dynamic> toJson() => {
         'url': this.url,
         'type': this.type,
+        'size': this.size == null ? AmapImageSize().toJson() : this.size!.toJson(),
       };
 
   factory AmapWebImage.fromJson(Map<dynamic, dynamic> json) => AmapWebImage(json['url']);
@@ -90,10 +102,16 @@ class AmapWebImage implements AmapImage {
 
 class AmapViewImage {
   /// 从assets读取
-  static Future<AmapImage> asset(BuildContext context, String url, {AssetBundle? bundle, String? package}) async {
+  static Future<AmapImage> asset(
+    BuildContext context,
+    String url, {
+    AssetBundle? bundle,
+    String? package,
+    AmapImageSize? size,
+  }) async {
     final AssetImage assetImage = AssetImage(url, package: package, bundle: bundle);
     final AssetBundleImageKey assetBundleImageKey = await assetImage.obtainKey(createLocalImageConfiguration(context));
-    return AmapViewAssetImage(url, assetBundleImageKey.name, assetBundleImageKey.scale);
+    return AmapViewAssetImage(url, assetBundleImageKey.name, assetBundleImageKey.scale, size: size);
   }
 
   // /// 从互联网中读取

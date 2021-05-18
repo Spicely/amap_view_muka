@@ -1,7 +1,12 @@
 package com.muka.amap_view_muka
 
+import android.content.Context
+import android.content.res.AssetManager
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import com.amap.api.maps.AMap
 import com.amap.api.maps.model.BitmapDescriptorFactory
 import com.amap.api.maps.model.LatLng
@@ -35,7 +40,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
         result.success(true)
     }
 
-    fun addMarker(opts: Map<String, Any>, result: MethodChannel.Result) {
+    fun addMarker(opts: Map<String, Any>, context: Context, result: MethodChannel.Result) {
         val type: String = (opts["type"] as String?)!!
         val id: String = (opts["id"] as String?)!!
         val position: Map<String, Any> = (opts["position"] as Map<String, Any>?)!!
@@ -61,7 +66,13 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
         if(icon != null) {
             when(icon["type"]) {
                 "marker#asset" -> {
-                    val asset = BitmapDescriptorFactory.fromAsset(FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(icon["url"] as String))
+                    val size = icon["size"] as Map<String, Any>
+                    val imageView = ImageView(context)
+                    val params = ViewGroup.LayoutParams(size["width"] as Int, size["height"]as Int)
+                    val assetManager: AssetManager = context.assets
+                    imageView.setImageBitmap(BitmapFactory.decodeStream(assetManager.open(FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(icon["url"] as String))))
+                    imageView.layoutParams = params
+                    val asset = BitmapDescriptorFactory.fromView(imageView)
                     marker.setIcon(asset)
                 }
                 "marker#web" -> {

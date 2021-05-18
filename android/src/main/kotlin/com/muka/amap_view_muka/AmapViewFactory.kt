@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.location.Location
 import android.util.Log
 import android.view.View
@@ -106,7 +107,7 @@ class AMapView(
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "marker#add" -> {
-                markerController.addMarker(call.arguments as Map<String, Any>, result)
+                markerController.addMarker(call.arguments as Map<String, Any>, context, result)
             }
             "marker#delete" -> {
                 markerController.deleteMarker(call.arguments as Map<String, Any>, result)
@@ -118,6 +119,26 @@ class AMapView(
                 val enabled = (opts["enabled"] as Boolean?)!!
                 val myLocationStyle = MyLocationStyle()
                 val icon: Map<String, Any>? = (opts["icon"] as Map<String, Any>?)
+                val anchor: Map<String, Any>? = (opts["anchor"] as Map<String, Any>?)
+                val strokeColor = opts["strokeColor"] as List<Int>?
+                val radiusFillColor = opts["radiusFillColor"] as List<Int>?
+                val strokeWidth = opts["strokeWidth"] as Double?
+
+                if (anchor != null) {
+                    myLocationStyle.anchor((anchor["u"] as Double).toFloat(), (anchor["v"] as Double).toFloat())
+                }
+
+                if (strokeColor != null) {
+                    myLocationStyle.strokeColor(Color.rgb(strokeColor[0], strokeColor[1], strokeColor[2]))
+                }
+
+                if (radiusFillColor != null) {
+                    myLocationStyle.radiusFillColor(Color.rgb(radiusFillColor[0], radiusFillColor[1], radiusFillColor[2]))
+                }
+
+                if (strokeWidth != null) {
+                    myLocationStyle.strokeWidth(strokeWidth.toFloat())
+                }
 
                 when (locationStyle) {
                     1 -> {
@@ -151,9 +172,9 @@ class AMapView(
                 if (icon != null) {
                     when (icon["type"]) {
                         "marker#asset" -> {
-                            val size = icon["size"] as Map<String, Int>
+                            val size = icon["size"] as Map<String, Any>
                             val imageView = ImageView(context)
-                            val params = ViewGroup.LayoutParams(size["width"]!!, size["height"]!!)
+                            val params = ViewGroup.LayoutParams(size["width"] as Int, size["height"] as Int)
                             val assetManager: AssetManager = context.assets
                             imageView.setImageBitmap(BitmapFactory.decodeStream(assetManager.open(FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(icon["url"] as String))))
                             imageView.layoutParams = params

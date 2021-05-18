@@ -2,8 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:amap_view_muka/amap_view_muka.dart';
 import 'package:flutter_muka/flutter_muka.dart';
 
+import 'create_amap/create_amap.dart';
+
 void main() {
-  runApp(MyApp());
+  runApp(
+    MaterialApp(
+      home: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -12,8 +18,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late AmapViewController _amapViewController;
-
   @override
   void initState() {
     super.initState();
@@ -26,70 +30,34 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Column(
-          mainAxisSize: MainAxisSize.max,
+        body: ListView(
           children: [
-            Expanded(
-              child: AmapView(
-                onCreated: (amapViewController) async {
-                  _amapViewController = amapViewController;
-                },
-              ),
+            ListItem(
+              title: Text('创建地图'),
+              showArrow: true,
+              color: Colors.white,
+              showDivider: true,
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => CreateAmap()));
+              },
             ),
-            Container(
-              height: 320,
-              child: ListView(
-                children: [
-                  ListItem(
-                    valueAlignment: Alignment.center,
-                    value: Text('设置蓝点'),
-                    onTap: () async {
-                      await _amapViewController.setMyLocation(
-                        locationStyle: AmapLocationStyle.LOCATION_TYPE_LOCATION_ROTATE,
-                        icon: await AmapViewImage.asset(context, 'assets/images/map.png'),
-                      );
-                    },
-                  ),
-                  ListItem(
-                    valueAlignment: Alignment.center,
-                    value: Text('关闭蓝点'),
-                    onTap: () async {
-                      await _amapViewController.disbleMyLocation();
-                    },
-                  ),
-                  ListItem(
-                    valueAlignment: Alignment.center,
-                    value: Text('添加marker'),
-                    onTap: () async {
-                      await _amapViewController.addMarker(
-                        AmapDefaultMarker(
-                          id: '1',
-                          position: LatLng(39.90607, 116.407041),
-                          draggable: true,
-                          title: '测试',
-                          snippet: '测试2222',
-                          icon: await AmapViewImage.asset(context, 'assets/images/map.png'),
-                          onTap: () {
-                            print('这是marker点击事件');
-                          },
-                          onDragStart: (latLng) {
-                            print('--------------------------');
-                            print('marker移动开始，当前坐标：${latLng.toJson()}');
-                          },
-                          onDragMove: (latLng) {
-                            print('marker移动中，当前坐标：${latLng.toJson()}');
-                          },
-                          onDragEnd: (latLng) {
-                            print('marker移动结束，当前坐标：${latLng.toJson()}');
-                          },
-                          showInfoWindow: true,
-                          infoWindow: AmapMarkerCardInfoWindow(),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+            ListItem(
+              title: Text('与地图交互'),
+              showArrow: true,
+              color: Colors.white,
+              showDivider: true,
+            ),
+            ListItem(
+              title: Text('在地图上绘制'),
+              showArrow: true,
+              color: Colors.white,
+              showDivider: true,
+            ),
+            ListItem(
+              title: Text('获取地图数据'),
+              showArrow: true,
+              color: Colors.white,
+              // showDivider: true,
             )
           ],
         ),
@@ -97,3 +65,34 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+// ListItem(
+//                   valueAlignment: Alignment.center,
+//                   value: Text('添加marker'),
+//                   onTap: () async {
+//                     await _amapViewController.addMarker(
+//                       AmapDefaultMarker(
+//                         id: '1',
+//                         position: LatLng(39.90607, 116.407041),
+//                         draggable: true,
+//                         title: '测试',
+//                         snippet: '测试2222',
+//                         icon: await AmapViewImage.asset(context, 'assets/images/map.png'),
+//                         onTap: () {
+//                           print('这是marker点击事件');
+//                         },
+//                         onDragStart: (latLng) {
+//                           print('--------------------------');
+//                           print('marker移动开始，当前坐标：${latLng.toJson()}');
+//                         },
+//                         onDragMove: (latLng) {
+//                           print('marker移动中，当前坐标：${latLng.toJson()}');
+//                         },
+//                         onDragEnd: (latLng) {
+//                           print('marker移动结束，当前坐标：${latLng.toJson()}');
+//                         },
+//                         showInfoWindow: true,
+//                         infoWindow: AmapMarkerCardInfoWindow(),
+//                       ),
+//                     );
+//                   },
+//                 ),

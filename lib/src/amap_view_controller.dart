@@ -28,6 +28,27 @@ enum AmapLocationStyle {
   LOCATION_TYPE_MAP_ROTATE_NO_CENTER,
 }
 
+class AmapAnchor {
+  final double u;
+
+  final double v;
+
+  AmapAnchor(this.u, this.v);
+
+  Map<String, dynamic> toJson() => {
+        'u': this.u,
+        'v': this.v,
+      };
+
+  AmapAnchor copyWith({
+    double? uParam,
+    double? vParam,
+  }) =>
+      AmapAnchor(uParam ?? u, vParam ?? v);
+
+  factory AmapAnchor.fromJson(Map<String, dynamic> json) => AmapAnchor(json['u'], json['v']);
+}
+
 class AmapViewController {
   final Map<String, AmapMarker> _markerMap = {};
 
@@ -56,12 +77,22 @@ class AmapViewController {
     bool enabled = true,
     int interval = 1000,
     AmapImage? icon,
+    AmapAnchor? anchor,
+    Color? strokeColor,
+    Color? radiusFillColor,
+    double? strokeWidth,
   }) async {
     return _markerChannel.invokeMethod('enabledMyLocation', {
       'locationStyle': locationStyle.index,
       'enabled': enabled,
       'interval': interval,
       'icon': icon?.toJson(),
+      'anchor': anchor?.toJson(),
+      'strokeColor': strokeColor != null ? [strokeColor.value >> 16 & 0xFF, strokeColor.value >> 8 & 0xFF, strokeColor.value & 0xFF] : null,
+      'radiusFillColor': radiusFillColor != null
+          ? [radiusFillColor.value >> 16 & 0xFF, radiusFillColor.value >> 8 & 0xFF, radiusFillColor.value & 0xFF]
+          : null,
+      'strokeWidth': strokeWidth,
     });
   }
 
@@ -83,7 +114,7 @@ class AmapViewController {
 
   /// 删除单个marker
   ///
-  /// 不在的id会被忽略
+  /// 不存在的id会被忽略
   Future<void> removeMarker(String id) async {
     if (_markerMap[id] != null) {
       _markerMap.remove(id);
