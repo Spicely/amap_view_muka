@@ -180,7 +180,7 @@ class AMapView(
                             val imageView = ImageView(context)
                             val params = ViewGroup.LayoutParams(size["width"] as Int, size["height"] as Int)
                             val assetManager: AssetManager = context.assets
-                            imageView.setImageBitmap(BitmapFactory.decodeStream(assetManager.open(FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(icon["url"] as String))))
+                            imageView.setImageBitmap(BitmapFactory.decodeStream(assetManager.open(Convert.getFlutterAsset(icon["url"] as String, icon["package"] as String?))))
                             imageView.layoutParams = params
                             val asset = BitmapDescriptorFactory.fromView(imageView)
                             myLocationStyle.myLocationIcon(asset)
@@ -252,19 +252,30 @@ class AMapView(
                 flutterPluginBinding.applicationContext.startActivity(Intent(context, OfflineMapActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 result.success(true)
             }
-            "setOfflineCustomMapStyle" -> {
+            "setOffLineCustomMapStyle" -> {
                 /// 设置离线自定义地图
                 val opts = call.arguments as Map<String, Any>
                 val dataPath = (opts["dataPath"] as String?)!!
                 val extraPath = (opts["extraPath"] as String?)!!
                 val texturePath = opts["texturePath"] as String?
+                val packageName = opts["package"] as String?
                 val options = CustomMapStyleOptions()
                         .setEnable(true)
-                        .setStyleDataPath(FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(dataPath))
-                        .setStyleExtraPath(FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(extraPath))
+                        .setStyleDataPath(Convert.getFlutterAsset(dataPath, packageName))
+                        .setStyleExtraPath(Convert.getFlutterAsset(extraPath, packageName))
                 if (texturePath != null) {
-                    options.styleTexturePath = FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(texturePath)
+                    options.styleTexturePath = Convert.getFlutterAsset(texturePath, packageName)
                 }
+                map.setCustomMapStyle(options);
+                result.success(true)
+            }
+            "setOnLineCustomMapStyle" -> {
+                /// 设置在线自定义地图
+                val opts = call.arguments as Map<String, Any>
+                val styleId = (opts["styleId"] as String?)!!
+                val options = CustomMapStyleOptions()
+                    .setEnable(true)
+                    .setStyleId(styleId)
                 map.setCustomMapStyle(options);
                 result.success(true)
             }

@@ -240,15 +240,24 @@ class AmapViewController {
   /// [extraPath] 扩展内容，如网格背景色等
   ///
   /// [texturePath] 纹理图片(zip文件)
-  Future<void> setOfflineCustomMapStyle(
+  Future<void> setOffLineCustomMapStyle(
     String dataPath,
     String extraPath, {
     String? texturePath,
+    String? package,
   }) {
-    return _markerChannel.invokeMethod('setOfflineCustomMapStyle', {
+    return _markerChannel.invokeMethod('setOffLineCustomMapStyle', {
       'dataPath': dataPath,
       'extraPath': extraPath,
       'texturePath': texturePath,
+      'package': package,
     });
+  }
+
+  /// 设置在线自定义地图
+  ///
+  /// [styleId] 样式ID
+  Future<void> setOnLineCustomMapStyle(String styleId) {
+    return _markerChannel.invokeMethod('setOnLineCustomMapStyle', {'styleId': styleId});
   }
 }
