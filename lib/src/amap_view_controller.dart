@@ -2,6 +2,28 @@ part of amap_view_muka;
 
 const _marker = 'plugins.muka.com/amap_view_muka_marker';
 
+enum AmapViewType {
+  /// 导航地图
+  MAP_TYPE_NAVI,
+
+  /// 夜景地图
+  MAP_TYPE_NIGHT,
+
+  /// 白昼地图（即普通地图）
+  MAP_TYPE_NORMAL,
+
+  /// 卫星图
+  MAP_TYPE_SATELLITE,
+}
+
+enum AmapViewLanguage {
+  /// 中文
+  CHINESE,
+
+  /// 英文
+  ENGLISH,
+}
+
 enum AmapLocationStyle {
   /// 只定位一次 地图不会移动
   LOCATION_TYPE_SHOW,
@@ -101,6 +123,49 @@ class AmapViewController {
     return _markerChannel.invokeMethod('disbleMyLocation');
   }
 
+  /// 设置缩放等级
+  Future<void> setZoomLevel(double level) {
+    return _markerChannel.invokeMethod('setZoomLevel', {'level': level});
+  }
+
+  /// 设置地图图层
+  Future<void> setMapType(AmapViewType type) {
+    return _markerChannel.invokeMethod('setMapType', {'type': type.index});
+  }
+
+  /// 设置地图语言
+  Future<void> setMapLanguage(AmapViewLanguage language) {
+    return _markerChannel.invokeMethod('setMapLanguage', {'language': language.index});
+  }
+
+  /// 设置室内地图显示
+  Future<void> setIndoorMap(bool enabled) {
+    return _markerChannel.invokeMethod('setIndoorMap', {'enabled': enabled});
+  }
+
+  /// 设置室内位置
+  ///
+  /// [latLng] 定位点的经纬度
+  ///
+  /// [floorNo] 定位点的楼层号
+  ///
+  /// [direction] 定位点的方向
+  ///
+  /// [accuracy] 	定位点的精度
+  Future<void> setLocatingPosition(
+    LatLng latLng,
+    int floorNo,
+    double direction,
+    double accuracy,
+  ) {
+    return _markerChannel.invokeMethod('setLocatingPosition', {
+      'latLng': latLng.toJson(),
+      'floorNo': floorNo,
+      'direction': direction,
+      'accuracy': accuracy,
+    });
+  }
+
   /// 添加单个marker
   ///
   /// 已存在的id会被忽略
@@ -161,5 +226,29 @@ class AmapViewController {
       default:
         throw MissingPluginException();
     }
+  }
+
+  /// 打开离线地图  [使用官方提供的UI]
+  Future<void> openOfflineMap() {
+    return _markerChannel.invokeMethod('openOfflineMap');
+  }
+
+  /// 设置离线自定义地图
+  ///
+  /// [dataPath] 具体样式配置
+  ///
+  /// [extraPath] 扩展内容，如网格背景色等
+  ///
+  /// [texturePath] 纹理图片(zip文件)
+  Future<void> setOfflineCustomMapStyle(
+    String dataPath,
+    String extraPath, {
+    String? texturePath,
+  }) {
+    return _markerChannel.invokeMethod('setOfflineCustomMapStyle', {
+      'dataPath': dataPath,
+      'extraPath': extraPath,
+      'texturePath': texturePath,
+    });
   }
 }

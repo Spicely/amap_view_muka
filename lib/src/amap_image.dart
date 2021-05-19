@@ -44,9 +44,7 @@ class AmapViewAssetImage implements AmapImage {
   /// 地址
   final String url;
 
-  final String name;
-
-  final double scale;
+  final String? package;
 
   /// 图片尺寸
   ///
@@ -54,9 +52,8 @@ class AmapViewAssetImage implements AmapImage {
   final AmapImageSize? size;
 
   AmapViewAssetImage(
-    this.url,
-    this.name,
-    this.scale, {
+    this.url, {
+    this.package,
     this.size,
   });
 
@@ -66,12 +63,15 @@ class AmapViewAssetImage implements AmapImage {
   Map<String, dynamic> toJson() => {
         'url': this.url,
         'type': this.type,
-        'name': this.name,
-        'scale': this.scale,
+        'package': this.package,
         'size': this.size == null ? AmapImageSize().toJson() : this.size!.toJson(),
       };
 
-  factory AmapViewAssetImage.fromJson(Map<dynamic, dynamic> json) => AmapViewAssetImage(json['url'], json['name'], json['scale']);
+  factory AmapViewAssetImage.fromJson(Map<dynamic, dynamic> json) => AmapViewAssetImage(
+        json['url'],
+        package: json['package'],
+        size: json['size'] != null ? AmapImageSize.fromJson(json['size']) : null,
+      );
 }
 
 class AmapWebImage implements AmapImage {
@@ -102,16 +102,16 @@ class AmapWebImage implements AmapImage {
 
 class AmapViewImage {
   /// 从assets读取
-  static Future<AmapImage> asset(
-    BuildContext context,
+  static AmapImage asset(
     String url, {
-    AssetBundle? bundle,
     String? package,
     AmapImageSize? size,
-  }) async {
-    final AssetImage assetImage = AssetImage(url, package: package, bundle: bundle);
-    final AssetBundleImageKey assetBundleImageKey = await assetImage.obtainKey(createLocalImageConfiguration(context));
-    return AmapViewAssetImage(url, assetBundleImageKey.name, assetBundleImageKey.scale, size: size);
+  }) {
+    return AmapViewAssetImage(
+      url,
+      package: package,
+      size: size,
+    );
   }
 
   // /// 从互联网中读取

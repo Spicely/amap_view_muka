@@ -3,6 +3,7 @@ package com.muka.amap_view_muka
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.AssetManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -12,11 +13,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.startActivity
 import com.amap.api.maps.AMap
+import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.TextureMapView
 import com.amap.api.maps.model.BitmapDescriptorFactory
+import com.amap.api.maps.model.CustomMapStyleOptions
 import com.amap.api.maps.model.Marker
 import com.amap.api.maps.model.MyLocationStyle
+import com.amap.api.maps.offlinemap.OfflineMapActivity
 import com.muka.amap_view_muka.AmapViewMukaPlugin.Companion.AMAP_MUKA_MARKER
 import io.flutter.FlutterInjector
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -25,7 +30,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
-import java.io.FileInputStream
 
 
 class AmapViewFactory(
@@ -113,7 +117,7 @@ class AMapView(
                 markerController.deleteMarker(call.arguments as Map<String, Any>, result)
             }
             "enabledMyLocation" -> {
-                val opts = call.arguments as Map<*, *>
+                val opts = call.arguments as Map<String, Any>
                 val locationStyle = (opts["locationStyle"] as Int?)!!
                 val interval = (opts["interval"] as Int?)!!
                 val enabled = (opts["enabled"] as Boolean?)!!
@@ -192,6 +196,76 @@ class AMapView(
             }
             "disbleMyLocation" -> {
                 map.isMyLocationEnabled = false
+                result.success(true)
+            }
+            "setZoomLevel" -> {
+                val opts = call.arguments as Map<String, Any>
+                val level = (opts["level"] as Double?)!!
+                map.moveCamera(CameraUpdateFactory.zoomTo(level.toFloat()))
+                result.success(true)
+            }
+            "setIndoorMap" -> {
+                val opts = call.arguments as Map<String, Any>
+                val enabled = (opts["enabled"] as Boolean?)!!
+                map.showIndoorMap(enabled)
+                result.success(true)
+            }
+//            "setLocatingPosition" -> {
+//                val opts = call.arguments as Map<String, Any>
+//                val latLng = (opts["latLng"] as Map<String, Any>?)!!
+//                map
+//                result.success(true)
+//            }
+            "setMapType" -> {
+                val opts = call.arguments as Map<String, Any>
+                when ((opts["type"] as Int?)!!) {
+                    0 -> {
+                        map.mapType = AMap.MAP_TYPE_NAVI
+                    }
+                    1 -> {
+                        map.mapType = AMap.MAP_TYPE_NIGHT
+                    }
+                    3 -> {
+                        map.mapType = AMap.MAP_TYPE_SATELLITE
+                    }
+                    else -> {
+                        map.mapType = AMap.MAP_TYPE_NORMAL
+                    }
+
+                }
+                result.success(true)
+            }
+            "setMapLanguage" -> {
+                val opts = call.arguments as Map<String, Any>
+                when ((opts["language"] as Int?)!!) {
+                    1 -> {
+                        map.setMapLanguage(AMap.ENGLISH)
+                    }
+                    else -> {
+                        map.setMapLanguage(AMap.CHINESE)
+                    }
+                }
+                result.success(true)
+            }
+            "openOfflineMap" -> {
+                /// 打开离线地图
+                flutterPluginBinding.applicationContext.startActivity(Intent(context, OfflineMapActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                result.success(true)
+            }
+            "setOfflineCustomMapStyle" -> {
+                /// 设置离线自定义地图
+                val opts = call.arguments as Map<String, Any>
+                val dataPath = (opts["dataPath"] as String?)!!
+                val extraPath = (opts["extraPath"] as String?)!!
+                val texturePath = opts["texturePath"] as String?
+                val options = CustomMapStyleOptions()
+                        .setEnable(true)
+                        .setStyleDataPath(FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(dataPath))
+                        .setStyleExtraPath(FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(extraPath))
+                if (texturePath != null) {
+                    options.styleTexturePath = FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(texturePath)
+                }
+                map.setCustomMapStyle(options);
                 result.success(true)
             }
         }

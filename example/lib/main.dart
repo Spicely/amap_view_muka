@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:amap_view_muka/amap_view_muka.dart';
 import 'package:flutter_muka/flutter_muka.dart';
 
-import 'create_amap/create_amap.dart';
+import 'create_amap/amap.dart';
 
 void main() {
   runApp(
@@ -38,7 +37,7 @@ class _MyAppState extends State<MyApp> {
               color: Colors.white,
               showDivider: true,
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => CreateAmap()));
+                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Amap()));
               },
             ),
             ListItem(
