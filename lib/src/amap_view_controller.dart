@@ -16,6 +16,23 @@ enum AmapViewType {
   MAP_TYPE_SATELLITE,
 }
 
+enum AmapViewLogoPosition {
+  /// 左边
+  LOGO_POSITION_BOTTOM_LEFT,
+
+  /// 底部
+  LOGO_MARGIN_BOTTOM,
+
+  /// 右边
+  LOGO_MARGIN_RIGHT,
+
+  /// 地图底部居中
+  LOGO_POSITION_BOTTOM_CENTER,
+
+  /// 地图右下角
+  LOGO_POSITION_BOTTOM_RIGHT,
+}
+
 enum AmapViewLanguage {
   /// 中文
   CHINESE,
@@ -267,5 +284,82 @@ class AmapViewController {
       'texturePath': texturePath,
       'package': package,
     });
+  }
+
+  /// 缩放按钮
+  Future<void> setZoomControlsEnabled(bool enabled) {
+    return _markerChannel.invokeMethod('setZoomControlsEnabled', {'enabled': enabled});
+  }
+
+  /// 指南针
+  Future<void> setCompassEnabled(bool enabled) {
+    return _markerChannel.invokeMethod('setCompassEnabled', {'enabled': enabled});
+  }
+
+  /// 定位按钮
+  Future<void> setMyLocationButtonEnabled(bool enabled) {
+    return _markerChannel.invokeMethod('setMyLocationButtonEnabled', {'enabled': enabled});
+  }
+
+  /// 地图Logo位置
+  Future<void> setLogoPosition(AmapViewLogoPosition position) {
+    return _markerChannel.invokeMethod('setLogoPosition', {'position': position.index});
+  }
+
+  /// 缩放手势
+  Future<void> setZoomGesturesEnabled(bool enabled) {
+    return _markerChannel.invokeMethod('setZoomGesturesEnabled', {'enabled': enabled});
+  }
+
+  /// 滑动手势
+  Future<void> setScrollGesturesEnabled(bool enabled) {
+    return _markerChannel.invokeMethod('setScrollGesturesEnabled', {'enabled': enabled});
+  }
+
+  /// 旋转手势
+  Future<void> setRotateGesturesEnabled(bool enabled) {
+    return _markerChannel.invokeMethod('setRotateGesturesEnabled', {'enabled': enabled});
+  }
+
+  /// 倾斜手势
+  Future<void> setTiltGesturesEnabled(bool enabled) {
+    return _markerChannel.invokeMethod('setTiltGesturesEnabled', {'enabled': enabled});
+  }
+
+  /// 所有手势
+  Future<void> setAllGesturesEnabled(bool enabled) {
+    return _markerChannel.invokeMethod('setAllGesturesEnabled ', {'enabled': enabled});
+  }
+
+  /// 获取缩放手势状态
+  Future<bool?> getZoomGesturesEnabled() {
+    return _markerChannel.invokeMethod('getZoomGesturesEnabled');
+  }
+
+  /// 获取滑动手势状态
+  Future<bool?> getScrollGesturesEnabled() {
+    return _markerChannel.invokeMethod('getScrollGesturesEnabled');
+  }
+
+  /// 获取旋转手势状态
+  Future<bool?> getRotateGesturesEnabled() {
+    return _markerChannel.invokeMethod('getRotateGesturesEnabled');
+  }
+
+  /// 获取倾斜手势状态
+  Future<bool?> getTiltGesturesEnabled() {
+    return _markerChannel.invokeMethod('getTiltGesturesEnabled');
+  }
+
+  /// 设置以中心点进行手势
+  Future<bool?> setGestureScaleByMapCenter(bool enabled) {
+    return _markerChannel.invokeMethod('setGestureScaleByMapCenter', {'enabled': enabled});
+  }
+
+  /// 设置中心点
+  ///
+  /// x、y均为屏幕坐标，屏幕左上角为坐标原点，即(0,0)点。
+  Future<bool?> setPointToCenter(int x, int y) {
+    return _markerChannel.invokeMethod('setPointToCenter', {'x': x, 'y': y});
   }
 }
