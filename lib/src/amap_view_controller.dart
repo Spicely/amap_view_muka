@@ -257,7 +257,15 @@ class AmapViewController {
   /// 设置在线自定义地图
   ///
   /// [styleId] 样式ID
-  Future<void> setOnLineCustomMapStyle(String styleId) {
-    return _markerChannel.invokeMethod('setOnLineCustomMapStyle', {'styleId': styleId});
+  Future<void> setOnLineCustomMapStyle(
+    String styleId, {
+    String? texturePath,
+    String? package,
+  }) {
+    return _markerChannel.invokeMethod('setOnLineCustomMapStyle', {
+      'styleId': styleId,
+      'texturePath': texturePath,
+      'package': package,
+    });
   }
 }

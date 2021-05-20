@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.startActivity
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.TextureMapView
@@ -23,7 +22,6 @@ import com.amap.api.maps.model.Marker
 import com.amap.api.maps.model.MyLocationStyle
 import com.amap.api.maps.offlinemap.OfflineMapActivity
 import com.muka.amap_view_muka.AmapViewMukaPlugin.Companion.AMAP_MUKA_MARKER
-import io.flutter.FlutterInjector
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -273,9 +271,14 @@ class AMapView(
                 /// 设置在线自定义地图
                 val opts = call.arguments as Map<String, Any>
                 val styleId = (opts["styleId"] as String?)!!
+                val texturePath = opts["texturePath"] as String?
+                val packageName = opts["package"] as String?
                 val options = CustomMapStyleOptions()
                     .setEnable(true)
                     .setStyleId(styleId)
+                if (texturePath != null) {
+                    options.styleTexturePath = Convert.getFlutterAsset(texturePath, packageName)
+                }
                 map.setCustomMapStyle(options);
                 result.success(true)
             }

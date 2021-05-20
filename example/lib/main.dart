@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_muka/flutter_muka.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'create_amap/amap.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await [Permission.location, Permission.storage].request();
+
   runApp(
     MaterialApp(
       home: MyApp(),

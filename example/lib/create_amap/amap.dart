@@ -112,8 +112,7 @@ class _AmapState extends State<Amap> {
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            await _amapViewController.setOfflineCustomMapStyle('assets/style.data', 'assets/style_extra.data');
-                            print(111);
+                            await _amapViewController.setOffLineCustomMapStyle('assets/style.data', 'assets/style_extra.data');
                           },
                           child: Text('设置离线地图'),
                         ),
