@@ -3,6 +3,7 @@ import 'package:flutter_muka/flutter_muka.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'create_amap/amap.dart';
+import 'create_amap/interactive.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,6 +51,9 @@ class _MyAppState extends State<MyApp> {
               showArrow: true,
               color: Colors.white,
               showDivider: true,
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Interactive()));
+              },
             ),
             ListItem(
               title: Text('在地图上绘制'),

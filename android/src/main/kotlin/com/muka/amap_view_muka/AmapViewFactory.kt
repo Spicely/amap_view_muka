@@ -1,13 +1,16 @@
 package com.muka.amap_view_muka
 
 import android.Manifest
+import android.R
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.res.AssetManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.location.Location
+import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -17,10 +20,7 @@ import com.amap.api.maps.AMap
 import com.amap.api.maps.AMapOptions
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.TextureMapView
-import com.amap.api.maps.model.BitmapDescriptorFactory
-import com.amap.api.maps.model.CustomMapStyleOptions
-import com.amap.api.maps.model.Marker
-import com.amap.api.maps.model.MyLocationStyle
+import com.amap.api.maps.model.*
 import com.amap.api.maps.offlinemap.OfflineMapActivity
 import com.muka.amap_view_muka.AmapViewMukaPlugin.Companion.AMAP_MUKA_MARKER
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -29,6 +29,11 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class AmapViewFactory(
@@ -67,7 +72,10 @@ class AMapView(
     MethodChannel.MethodCallHandler,
     AMap.InfoWindowAdapter,
     AMap.OnMarkerClickListener,
+    AMap.OnMapClickListener,
+    AMap.OnCameraChangeListener,
     AMap.OnMyLocationChangeListener,
+    AMap.OnMapScreenShotListener,
     AMap.OnMarkerDragListener {
     private val mapView: TextureMapView = TextureMapView(context)
 
@@ -76,6 +84,8 @@ class AMapView(
     private val methodChannel: MethodChannel
 
     private var markerController: MarkerController
+
+    private var resultSkip: MethodChannel.Result? = null
 
     init {
         mapView.onCreate(null)
@@ -90,8 +100,15 @@ class AMapView(
 
         markerController = MarkerController(methodChannel, map)
 
+        // 地图点击事件监听
+        map.setOnMapClickListener(this)
+        // 地图移动事件监听
+        map.setOnCameraChangeListener(this)
+        /// marker点击事件
         map.setOnMarkerClickListener(this)
+        /// marker拖拽事件
         map.setOnMarkerDragListener(this)
+        /// 定位蓝点
         map.setOnMyLocationChangeListener(this)
 
 
@@ -417,6 +434,49 @@ class AMapView(
                 map.setPointToCenter(x, y)
                 result.success(true)
             }
+            "animateCamera" -> {
+                val opts = call.arguments as Map<String, Any>
+                val cameraPosition = (opts["cameraPosition"] as Map<String, Any>?)!!
+                val latLng = (cameraPosition["latLng"] as Map<String, Any>?)!!
+                val level = (cameraPosition["level"] as Double?)!!
+                val angle = (cameraPosition["angle"] as Double?)!!
+                val yawAngle = (cameraPosition["yawAngle"] as Double?)!!
+                val duration = (opts["duration"] as Int?)
+                val mCameraUpdate = CameraUpdateFactory.newCameraPosition(
+                    CameraPosition(
+                        LatLng(
+                            latLng["latitude"] as Double,
+                            latLng["longitude"] as Double
+                        ), level.toFloat(), angle.toFloat(), yawAngle.toFloat()
+                    )
+                )
+                if (duration == null) {
+                    map.moveCamera(mCameraUpdate)
+                } else {
+                    map.animateCamera(mCameraUpdate, duration.toLong(), null)
+                }
+                result.success(true)
+            }
+            "setMapStatusLimits" -> {
+                val opts = call.arguments as Map<String, Any>
+                val southwestLatLng = (opts["southwestLatLng"] as Map<String, Any>?)!!
+                val northeastLatLng = (opts["northeastLatLng"] as Map<String, Any>?)!!
+                val latLngBounds = LatLngBounds(
+                    LatLng(
+                        southwestLatLng["latitude"] as Double,
+                        southwestLatLng["longitude"] as Double
+                    ), LatLng(
+                        northeastLatLng["latitude"] as Double,
+                        northeastLatLng["longitude"] as Double
+                    )
+                )
+                map.setMapStatusLimits(latLngBounds)
+                result.success(true)
+            }
+            "getMapScreenShot" -> {
+                map.getMapScreenShot(this)
+                resultSkip = result
+            }
         }
     }
 
@@ -451,6 +511,52 @@ class AMapView(
 
     override fun onMyLocationChange(it: Location) {
 //        Log.e("高德地图", "onMyLocationChange: 定位失败");
+    }
+
+    override fun onMapScreenShot(bitmap: Bitmap) {
+    }
+
+    override fun onMapScreenShot(bitmap: Bitmap, status: Int) {
+        val sdf = SimpleDateFormat("yyyyMMddHHmmss")
+        if (null == R.attr.bitmap) {
+            resultSkip?.error("400", "null", status)
+        }
+        try {
+            val path =
+                context.getExternalFilesDir(null).toString() + "/map_" + sdf.format(Date()) + ".png"
+            val fos = FileOutputStream(path)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            try {
+                fos.flush()
+            } catch (e: IOException) {
+                resultSkip?.error("400", e.printStackTrace().toString(), status)
+            }
+            try {
+                fos.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            resultSkip?.success(path)
+        } catch (e: FileNotFoundException) {
+            resultSkip?.error("400", e.printStackTrace().toString(), status)
+        }
+    }
+
+    override fun onMapClick(point: LatLng) {
+        val arguments = HashMap<String, Any>()
+        arguments["latitude"] = point.latitude
+        arguments["longitude"] = point.longitude
+        methodChannel.invokeMethod("map#onTap", arguments)
+    }
+
+    override fun onCameraChange(position: CameraPosition) {
+        var arguments = Convert.toJson(position)
+        methodChannel.invokeMethod("map#onTap", arguments)
+    }
+
+    override fun onCameraChangeFinish(position: CameraPosition) {
+        var arguments = Convert.toJson(position)
+        methodChannel.invokeMethod("camera#onIdle", arguments)
     }
 
 

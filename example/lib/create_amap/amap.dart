@@ -14,7 +14,7 @@ class _AmapState extends State<Amap> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('显示蓝点'),
+        title: Text('创建地图'),
       ),
       body: Column(
         mainAxisSize: MainAxisSize.max,

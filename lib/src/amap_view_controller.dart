@@ -141,6 +141,8 @@ class AmapViewController {
   }
 
   /// 设置缩放等级
+  ///
+  /// 地图的缩放级别一共分为 17 级，从 3 到 19。数字越大，展示的图面信息越精细。
   Future<void> setZoomLevel(double level) {
     return _markerChannel.invokeMethod('setZoomLevel', {'level': level});
   }
@@ -257,6 +259,8 @@ class AmapViewController {
   /// [extraPath] 扩展内容，如网格背景色等
   ///
   /// [texturePath] 纹理图片(zip文件)
+  ///
+  /// [package] 资源包来源
   Future<void> setOffLineCustomMapStyle(
     String dataPath,
     String extraPath, {
@@ -274,6 +278,10 @@ class AmapViewController {
   /// 设置在线自定义地图
   ///
   /// [styleId] 样式ID
+  ///
+  /// [texturePath] 纹理图片(zip文件)
+  ///
+  /// [package] 资源包来源
   Future<void> setOnLineCustomMapStyle(
     String styleId, {
     String? texturePath,
@@ -361,5 +369,34 @@ class AmapViewController {
   /// x、y均为屏幕坐标，屏幕左上角为坐标原点，即(0,0)点。
   Future<bool?> setPointToCenter(int x, int y) {
     return _markerChannel.invokeMethod('setPointToCenter', {'x': x, 'y': y});
+  }
+
+  /// 地图视角移动 [不传时间则无动画]
+  ///
+  /// [cameraPosition] 位置信息
+  ///
+  /// [duration] 动画时间 [毫秒]
+  Future<void> animateCamera(CameraPosition cameraPosition, {int? duration}) {
+    return _markerChannel.invokeMethod('animateCamera', {
+      'cameraPosition': cameraPosition.toJson(),
+      'duration': duration,
+    });
+  }
+
+  /// 限制地图的显示范围
+  ///
+  /// [southwestLatLng] 位置信息
+  ///
+  /// [northeastLatLng] 位置信息
+  Future<void> setMapStatusLimits(LatLng southwestLatLng, LatLng northeastLatLng) {
+    return _markerChannel.invokeMethod('setMapStatusLimits', {
+      'southwestLatLng': southwestLatLng.toJson(),
+      'northeastLatLng': northeastLatLng.toJson(),
+    });
+  }
+
+  /// 地图截屏
+  Future<String?> getMapScreenShot() {
+    return _markerChannel.invokeMethod('getMapScreenShot');
   }
 }
