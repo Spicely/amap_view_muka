@@ -26,6 +26,9 @@ class _AmapState extends State<Amap> {
                   onCreated: (amapViewController) {
                     _amapViewController = amapViewController;
                   },
+                  language: AmapViewLanguage.ENGLISH,
+                  type: AmapViewType.MAP_TYPE_NIGHT,
+                  zoomLevel: 18,
                 ),
                 Column(
                   children: [

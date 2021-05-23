@@ -55,11 +55,8 @@ class AmapViewFactory(
             321
         )
         Log.d("11111111111", "221144444444444444411111111111111")
-        val params = args as Map<*, *>
-//        var opts = Convert.toUnifiedMapOptions(params["options"])
-        var initialMarkers = params["markers"]
-        println(initialMarkers)
-        return AMapView(context, viewId, flutterPluginBinding, initialMarkers)
+        val params = args as Map<String, Any>
+        return AMapView(context, viewId, flutterPluginBinding, params)
     }
 }
 
@@ -67,7 +64,7 @@ class AMapView(
     private val context: Context,
     private val id: Int,
     private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding,
-    private val initialMarkers: Any?
+    private val params:  Map<String, Any>
 ) : PlatformView,
     MethodChannel.MethodCallHandler,
     AMap.InfoWindowAdapter,
@@ -92,7 +89,7 @@ class AMapView(
 //        map.setOnMapLoadedListener(this)
 //
 ////        registrarActivityHashCode = registrar.activity().hashCode()
-//
+        Convert.initParams(params, map)
         // marker控制器
         methodChannel =
             MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")

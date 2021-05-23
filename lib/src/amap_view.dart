@@ -10,10 +10,22 @@ class AmapView extends StatefulWidget {
   /// 地图初始化完成
   final AmapViewOnCreated? onCreated;
 
+  /// 地图类型
+  final AmapViewType? type;
+
+  /// 地图语言
+  final AmapViewLanguage? language;
+
+  /// 缩放等级
+  final double? zoomLevel;
+
   const AmapView({
     Key? key,
     this.creationParams,
     this.onCreated,
+    this.type,
+    this.language,
+    this.zoomLevel,
   }) : super(key: key);
 
   @override
@@ -36,6 +48,9 @@ class _AmapViewState extends State<AmapView> {
         onPlatformViewCreated: onPlatformViewCreated,
         creationParams: {
           'markers': [],
+          'type': widget.type?.index,
+          'index': widget.language?.index,
+          'zoomLevel': widget.zoomLevel,
         },
         creationParamsCodec: const StandardMessageCodec(),
         // layoutDirection: widget.layoutDirection,
