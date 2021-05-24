@@ -435,16 +435,16 @@ class AMapView(
                 val opts = call.arguments as Map<String, Any>
                 val cameraPosition = (opts["cameraPosition"] as Map<String, Any>?)!!
                 val latLng = (cameraPosition["latLng"] as Map<String, Any>?)!!
-                val level = (cameraPosition["level"] as Double?)!!
-                val angle = (cameraPosition["angle"] as Double?)!!
-                val yawAngle = (cameraPosition["yawAngle"] as Double?)!!
-                val duration = (opts["duration"] as Int?)
+                val zoom = (cameraPosition["zoom"] as Double?)!!
+                val tile = (cameraPosition["tile"] as Double?)!!
+                val bearing = (cameraPosition["bearing"] as Double?)!!
+                val duration = cameraPosition["duration"] as Int?
                 val mCameraUpdate = CameraUpdateFactory.newCameraPosition(
                     CameraPosition(
                         LatLng(
                             latLng["latitude"] as Double,
                             latLng["longitude"] as Double
-                        ), level.toFloat(), angle.toFloat(), yawAngle.toFloat()
+                        ), zoom.toFloat(), tile.toFloat(), bearing.toFloat()
                     )
                 )
                 if (duration == null) {
@@ -541,19 +541,24 @@ class AMapView(
 
     override fun onMapClick(point: LatLng) {
         val arguments = HashMap<String, Any>()
-        arguments["latitude"] = point.latitude
-        arguments["longitude"] = point.longitude
-        methodChannel.invokeMethod("map#onTap", arguments)
+        val latLng = HashMap<String, Any>()
+        latLng["latitude"] = point.latitude
+        latLng["longitude"] = point.longitude
+        arguments["latLng"] = latLng
+        arguments["level"] = map.cameraPosition.zoom
+        arguments["angle"] = map.cameraPosition.tilt.toDouble()
+        arguments["yawAngle"] = map.cameraPosition.bearing.toDouble()
+        methodChannel.invokeMethod("map#onMapClick", arguments)
     }
 
     override fun onCameraChange(position: CameraPosition) {
         var arguments = Convert.toJson(position)
-        methodChannel.invokeMethod("map#onTap", arguments)
+        methodChannel.invokeMethod("map#onMapMove", arguments)
     }
 
     override fun onCameraChangeFinish(position: CameraPosition) {
         var arguments = Convert.toJson(position)
-        methodChannel.invokeMethod("camera#onIdle", arguments)
+        methodChannel.invokeMethod("camera#onMapIdle", arguments)
     }
 
 

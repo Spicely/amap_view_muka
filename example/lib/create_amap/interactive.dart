@@ -87,8 +87,7 @@ class _InteractiveState extends State<Interactive> {
                         ElevatedButton(
                           onPressed: () async {
                             await _amapViewController.animateCamera(
-                              CameraPosition(LatLng(39.978719, 116.667966), 16, 20, 20),
-                              duration: 200,
+                              CameraPosition(LatLng(39.978719, 116.667966), 16, 20, 20, duration: 200),
                             );
                           },
                           child: Text('移动视图'),

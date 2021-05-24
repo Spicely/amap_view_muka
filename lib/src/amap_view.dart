@@ -4,6 +4,12 @@ const _viewType = 'plugins.muka.com/amap_view_muka';
 
 typedef void AmapViewOnCreated(AmapViewController controller);
 
+typedef void AmapViewOnMapClick(CameraPosition cameraPosition);
+
+typedef void AmapViewOnMapMove(CameraPosition cameraPosition);
+
+typedef void AmapViewOnMapIdle(CameraPosition cameraPosition);
+
 class MyLocationStyle {
   final AmapLocationStyle locationStyle;
 
@@ -86,6 +92,50 @@ class AmapView extends StatefulWidget {
   /// 蓝点样式
   final MyLocationStyle? myLocationStyle;
 
+  /// 室内地图
+  final bool? indoorMap;
+
+  /// 缩放按钮
+  final bool? zoomControlsEnabled;
+
+  /// 指南针
+  final bool? compassEnabled;
+
+  /// 定位按钮
+  final bool? myLocationButtonEnabled;
+
+  /// 地图Logo位置
+  final AmapViewLogoPosition? logoPosition;
+
+  /// 缩放手势
+  final bool? zoomGesturesEnabled;
+
+  /// 滑动手势
+  final bool? scrollGesturesEnabled;
+
+  /// 旋转手势
+  final bool? rotateGesturesEnabled;
+
+  /// 倾斜手势
+  final bool? tiltGesturesEnabled;
+
+  /// 所有手势
+  final bool? allGesturesEnabled;
+
+  /// 地图显示位置
+  final CameraPosition? cameraPosition;
+
+  final AmapPoint? pointToCenter;
+
+  /// 点击地图
+  final AmapViewOnMapClick? onMapClick;
+
+  /// 地图移动
+  final AmapViewOnMapMove? onMapMove;
+
+  /// 地图移动结束
+  final AmapViewOnMapIdle? onMapIdle;
+
   const AmapView({
     Key? key,
     this.creationParams,
@@ -94,6 +144,21 @@ class AmapView extends StatefulWidget {
     this.language,
     this.zoomLevel,
     this.myLocationStyle,
+    this.indoorMap,
+    this.zoomControlsEnabled,
+    this.compassEnabled,
+    this.myLocationButtonEnabled,
+    this.logoPosition,
+    this.zoomGesturesEnabled,
+    this.allGesturesEnabled,
+    this.rotateGesturesEnabled,
+    this.scrollGesturesEnabled,
+    this.tiltGesturesEnabled,
+    this.cameraPosition,
+    this.pointToCenter,
+    this.onMapClick,
+    this.onMapIdle,
+    this.onMapMove,
   }) : super(key: key);
 
   @override
@@ -119,7 +184,19 @@ class _AmapViewState extends State<AmapView> {
           'type': widget.type?.index,
           'language': widget.language?.index,
           'zoomLevel': widget.zoomLevel,
-          'myLocationStyle': widget.myLocationStyle?.toJson()
+          'myLocationStyle': widget.myLocationStyle?.toJson(),
+          'indoorMap': widget.indoorMap,
+          'zoomControlsEnabled': widget.zoomControlsEnabled,
+          'compassEnabled': widget.compassEnabled,
+          'myLocationButtonEnabled': widget.myLocationButtonEnabled,
+          'logoPosition': widget.logoPosition?.index,
+          'zoomGesturesEnabled': widget.zoomGesturesEnabled,
+          'scrollGesturesEnabled': widget.scrollGesturesEnabled,
+          'rotateGesturesEnabled': widget.rotateGesturesEnabled,
+          'tiltGesturesEnabled': widget.tiltGesturesEnabled,
+          'allGesturesEnabled': widget.allGesturesEnabled,
+          'cameraPosition': widget.cameraPosition,
+          'pointToCenter': widget.pointToCenter?.toJson(),
         },
         creationParamsCodec: const StandardMessageCodec(),
         // layoutDirection: widget.layoutDirection,
@@ -140,7 +217,7 @@ class _AmapViewState extends State<AmapView> {
   }
 
   void onPlatformViewCreated(int id) async {
-    _controller = await AmapViewController.init(id);
+    _controller = await AmapViewController.init(id, this);
     widget.onCreated?.call(_controller);
   }
 }

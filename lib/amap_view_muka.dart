@@ -18,5 +18,6 @@ part 'src/amap_view_controller.dart';
 part 'src/amap_marker/amap_marker.dart';
 part 'src/amap_marker/amap_default_marker.dart';
 part 'src/amap_image.dart';
+part 'src/amap_point.dart';
 part 'src/camera_position.dart';
 part 'src/amap_marker/amap_marker_info_window.dart';

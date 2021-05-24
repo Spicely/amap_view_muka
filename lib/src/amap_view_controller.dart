@@ -93,13 +93,15 @@ class AmapViewController {
 
   late MethodChannel _markerChannel;
 
-  AmapViewController._(this._markerChannel) {
+  late _AmapViewState _mapState;
+
+  AmapViewController._(this._markerChannel, this._mapState) {
     _markerChannel.setMethodCallHandler(_handleMethodCall);
   }
 
-  static Future<AmapViewController> init(int id) async {
+  static Future<AmapViewController> init(int id, _AmapViewState state) async {
     MethodChannel markerChannel = MethodChannel('${_marker}_$id');
-    return AmapViewController._(markerChannel);
+    return AmapViewController._(markerChannel, state);
   }
 
   /// 设置蓝点 并开启
@@ -242,6 +244,15 @@ class AmapViewController {
           }));
         }
         break;
+      case 'map#onMapClick':
+        _mapState.widget.onMapClick?.call(CameraPosition.fromJson(call.arguments));
+        break;
+      case 'map#onMapMove':
+        _mapState.widget.onMapMove?.call(CameraPosition.fromJson(call.arguments));
+        break;
+      case 'map#onMapIdle':
+        _mapState.widget.onMapIdle?.call(CameraPosition.fromJson(call.arguments));
+        break;
       default:
         throw MissingPluginException();
     }
@@ -336,7 +347,7 @@ class AmapViewController {
 
   /// 所有手势
   Future<void> setAllGesturesEnabled(bool enabled) {
-    return _markerChannel.invokeMethod('setAllGesturesEnabled ', {'enabled': enabled});
+    return _markerChannel.invokeMethod('setAllGesturesEnabled', {'enabled': enabled});
   }
 
   /// 获取缩放手势状态
@@ -374,12 +385,9 @@ class AmapViewController {
   /// 地图视角移动 [不传时间则无动画]
   ///
   /// [cameraPosition] 位置信息
-  ///
-  /// [duration] 动画时间 [毫秒]
-  Future<void> animateCamera(CameraPosition cameraPosition, {int? duration}) {
+  Future<void> animateCamera(CameraPosition cameraPosition) {
     return _markerChannel.invokeMethod('animateCamera', {
       'cameraPosition': cameraPosition.toJson(),
-      'duration': duration,
     });
   }
 
