@@ -545,9 +545,9 @@ class AMapView(
         latLng["latitude"] = point.latitude
         latLng["longitude"] = point.longitude
         arguments["latLng"] = latLng
-        arguments["level"] = map.cameraPosition.zoom
-        arguments["angle"] = map.cameraPosition.tilt.toDouble()
-        arguments["yawAngle"] = map.cameraPosition.bearing.toDouble()
+        arguments["zoom"] = map.cameraPosition.zoom
+        arguments["tilt"] = map.cameraPosition.tilt.toDouble()
+        arguments["bearing"] = map.cameraPosition.bearing.toDouble()
         methodChannel.invokeMethod("map#onMapClick", arguments)
     }
 

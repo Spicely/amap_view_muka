@@ -80,10 +80,10 @@ class AmapAnchor {
       };
 
   AmapAnchor copyWith({
-    double? uParam,
-    double? vParam,
+    double? u,
+    double? v,
   }) =>
-      AmapAnchor(uParam ?? u, vParam ?? v);
+      AmapAnchor(u ?? this.u, v ?? this.v);
 
   factory AmapAnchor.fromJson(Map<String, dynamic> json) => AmapAnchor(json['u'], json['v']);
 }

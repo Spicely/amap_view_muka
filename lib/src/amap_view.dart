@@ -52,30 +52,30 @@ class MyLocationStyle {
         'strokeWidth': strokeWidth,
       };
   MyLocationStyle copyWith({
-    AmapLocationStyle? locationStyleParams,
-    bool? enabledParams,
-    int? intervalParams,
-    AmapImage? iconParams,
-    AmapAnchor? anchorParams,
-    Color? strokeColorParams,
-    Color? radiusFillColorParams,
-    double? strokeWidthParams,
+    AmapLocationStyle? locationStyle,
+    bool? enabled,
+    int? interval,
+    AmapImage? icon,
+    AmapAnchor? anchor,
+    Color? strokeColor,
+    Color? radiusFillColor,
+    double? strokeWidth,
   }) {
     return MyLocationStyle(
-      locationStyle: locationStyleParams ?? locationStyle,
-      enabled: enabledParams ?? enabled,
-      interval: intervalParams ?? interval,
-      icon: iconParams ?? icon,
-      anchor: anchorParams ?? anchor,
-      strokeColor: strokeColorParams ?? strokeColor,
-      radiusFillColor: radiusFillColorParams ?? radiusFillColor,
-      strokeWidth: strokeWidthParams ?? strokeWidth,
+      locationStyle: locationStyle ?? this.locationStyle,
+      enabled: enabled ?? this.enabled,
+      interval: interval ?? this.interval,
+      icon: icon ?? this.icon,
+      anchor: anchor ?? this.anchor,
+      strokeColor: strokeColor ?? this.strokeColor,
+      radiusFillColor: radiusFillColor ?? this.radiusFillColor,
+      strokeWidth: strokeWidth ?? this.strokeWidth,
     );
   }
 }
 
 class AmapView extends StatefulWidget {
-  final dynamic creationParams;
+  final dynamic creation;
 
   /// 地图初始化完成
   final AmapViewOnCreated? onCreated;
@@ -87,7 +87,7 @@ class AmapView extends StatefulWidget {
   final AmapViewLanguage? language;
 
   /// 缩放等级
-  final double? zoomLevel;
+  final double? zoom;
 
   /// 蓝点样式
   final MyLocationStyle? myLocationStyle;
@@ -138,11 +138,11 @@ class AmapView extends StatefulWidget {
 
   const AmapView({
     Key? key,
-    this.creationParams,
+    this.creation,
     this.onCreated,
     this.type,
     this.language,
-    this.zoomLevel,
+    this.zoom,
     this.myLocationStyle,
     this.indoorMap,
     this.zoomControlsEnabled,
@@ -173,42 +173,42 @@ class _AmapViewState extends State<AmapView> {
     final gestureRecognizers = <Factory<OneSequenceGestureRecognizer>>[
       Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer()),
     ].toSet();
-
+    Map<String, dynamic> _creationParams = {
+      'markers': [],
+      'type': widget.type?.index,
+      'language': widget.language?.index,
+      'zoomLevel': widget.zoom,
+      'myLocationStyle': widget.myLocationStyle?.toJson(),
+      'indoorMap': widget.indoorMap,
+      'zoomControlsEnabled': widget.zoomControlsEnabled,
+      'compassEnabled': widget.compassEnabled,
+      'myLocationButtonEnabled': widget.myLocationButtonEnabled,
+      'logoPosition': widget.logoPosition?.index,
+      'zoomGesturesEnabled': widget.zoomGesturesEnabled,
+      'scrollGesturesEnabled': widget.scrollGesturesEnabled,
+      'rotateGesturesEnabled': widget.rotateGesturesEnabled,
+      'tiltGesturesEnabled': widget.tiltGesturesEnabled,
+      'allGesturesEnabled': widget.allGesturesEnabled,
+      'cameraPosition': widget.cameraPosition,
+      'pointToCenter': widget.pointToCenter?.toJson(),
+    };
     if (Platform.isAndroid) {
       return AndroidView(
         viewType: _viewType,
         gestureRecognizers: gestureRecognizers,
         onPlatformViewCreated: onPlatformViewCreated,
-        creationParams: {
-          'markers': [],
-          'type': widget.type?.index,
-          'language': widget.language?.index,
-          'zoomLevel': widget.zoomLevel,
-          'myLocationStyle': widget.myLocationStyle?.toJson(),
-          'indoorMap': widget.indoorMap,
-          'zoomControlsEnabled': widget.zoomControlsEnabled,
-          'compassEnabled': widget.compassEnabled,
-          'myLocationButtonEnabled': widget.myLocationButtonEnabled,
-          'logoPosition': widget.logoPosition?.index,
-          'zoomGesturesEnabled': widget.zoomGesturesEnabled,
-          'scrollGesturesEnabled': widget.scrollGesturesEnabled,
-          'rotateGesturesEnabled': widget.rotateGesturesEnabled,
-          'tiltGesturesEnabled': widget.tiltGesturesEnabled,
-          'allGesturesEnabled': widget.allGesturesEnabled,
-          'cameraPosition': widget.cameraPosition,
-          'pointToCenter': widget.pointToCenter?.toJson(),
-        },
+        creationParams: _creationParams,
         creationParamsCodec: const StandardMessageCodec(),
-        // layoutDirection: widget.layoutDirection,
         layoutDirection: TextDirection.ltr,
+        // layoutDirection: widget.layoutDirection,
         // hitTestBehavior: widget.hitTestBehavior,
       );
     } else {
       return UiKitView(
         viewType: _viewType,
         gestureRecognizers: gestureRecognizers,
-        // onPlatformViewCreated: onPlatformViewCreated,
-        // creationParams: creationParams,
+        onPlatformViewCreated: onPlatformViewCreated,
+        creationParams: _creationParams,
         creationParamsCodec: const StandardMessageCodec(),
         // layoutDirection: widget.layoutDirection,
         // hitTestBehavior: widget.hitTestBehavior,

@@ -31,16 +31,17 @@ class CameraPosition {
         'duration': duration,
       };
   CameraPosition copyWith({
-    LatLng? latLngParams,
-    double? zoomParams,
-    double? tiltParams,
-    double? bearingParams,
-    int? durationParams,
+    LatLng? latLng,
+    double? zoom,
+    double? tilt,
+    double? bearing,
+    int? duration,
   }) {
-    return CameraPosition(latLngParams ?? latLng, zoomParams ?? zoom, tiltParams ?? tilt, bearingParams ?? bearing,
-        duration: durationParams ?? duration);
+    return CameraPosition(latLng ?? this.latLng, zoom ?? this.zoom, tilt ?? this.tilt, bearing ?? this.bearing,
+        duration: duration ?? this.duration);
   }
 
   factory CameraPosition.fromJson(Map<dynamic, dynamic> json) =>
-      CameraPosition(LatLng.fromJson(json['latLng']), json['zoom'], json['tilt'], json['bearing'], duration: json['duration']);
+      CameraPosition(LatLng.fromJson(Map<String, dynamic>.from(json['latLng'])), json['zoom'], json['tilt'], json['bearing'],
+          duration: json['duration']);
 }
