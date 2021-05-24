@@ -89,7 +89,7 @@ class AMapView(
 //        map.setOnMapLoadedListener(this)
 //
 ////        registrarActivityHashCode = registrar.activity().hashCode()
-        Convert.initParams(params, map)
+        Convert.initParams(params, map, context)
         // marker控制器
         methodChannel =
             MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
