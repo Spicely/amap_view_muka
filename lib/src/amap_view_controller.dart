@@ -190,10 +190,21 @@ class AmapViewController {
   /// 添加单个marker
   ///
   /// 已存在的id会被忽略
-  Future<void> addMarker(AmapMarker marker) async {
+  Future<bool?> addMarker(AmapMarker marker) async {
     if (_markerMap[marker.id] == null) {
       _markerMap[marker.id] = marker;
       return _markerChannel.invokeMethod('marker#add', marker.toJson());
+    }
+    return Future.value(false);
+  }
+
+  /// 更新单个marker
+  ///
+  /// 没有的id会返回false
+  Future<bool?> updateMarker(AmapMarker marker) async {
+    if (_markerMap[marker.id] != null) {
+      print('marker#update');
+      return _markerChannel.invokeMethod('marker#update', marker.toJson());
     }
     return Future.value(false);
   }
@@ -406,5 +417,10 @@ class AmapViewController {
   /// 地图截屏
   Future<String?> getMapScreenShot() {
     return _markerChannel.invokeMethod('getMapScreenShot');
+  }
+
+  /// 地图显示位置
+  Future<bool?> setCameraPosition(CameraPosition cameraPosition) {
+    return _markerChannel.invokeMethod('setCameraPosition', {'cameraPosition': cameraPosition.toJson()});
   }
 }

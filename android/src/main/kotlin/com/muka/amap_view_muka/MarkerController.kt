@@ -3,7 +3,6 @@ package com.muka.amap_view_muka
 import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.BitmapFactory
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -14,7 +13,6 @@ import com.amap.api.maps.model.Marker
 import com.amap.api.maps.model.MarkerOptions
 import io.flutter.FlutterInjector
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.view.FlutterMain
 
 class MarkerController(private val methodChannel: MethodChannel, private val map: AMap) {
     // markerId(dart端)与marker的映射关系
@@ -30,7 +28,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
 
     }
 
-    fun deleteMarker(opts: Map<String, Any>, result: MethodChannel.Result){
+    fun deleteMarker(opts: Map<String, Any>, result: MethodChannel.Result) {
         val id: String = (opts["id"] as String?)!!
         val markerId = markerIdToDartMarkerId[id]
         if (markerId != null) {
@@ -63,14 +61,19 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
         }
         val marker = map.addMarker(options)
         markerIdToOptions[marker.id] = opts
-        if(icon != null) {
-            when(icon["type"]) {
+        if (icon != null) {
+            when (icon["type"]) {
                 "marker#asset" -> {
                     val size = icon["size"] as Map<String, Any>
                     val imageView = ImageView(context)
-                    val params = ViewGroup.LayoutParams(size["width"] as Int, size["height"]as Int)
+                    val params = ViewGroup.LayoutParams(size["width"] as Int, size["height"] as Int)
                     val assetManager: AssetManager = context.assets
-                    imageView.setImageBitmap(BitmapFactory.decodeStream(assetManager.open(FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(icon["url"] as String))))
+                    imageView.setImageBitmap(BitmapFactory.decodeStream(assetManager.open(
+                        FlutterInjector.instance().flutterLoader()
+                            .getLookupKeyForAsset(icon["url"] as String)
+                    )
+                    )
+                    )
                     imageView.layoutParams = params
                     val asset = BitmapDescriptorFactory.fromView(imageView)
                     marker.setIcon(asset)
@@ -89,7 +92,64 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
         }
     }
 
-    fun  getInfoWindow(marker: Marker): View? {
+    fun updateMarker(opts: Map<String, Any>, context: Context, result: MethodChannel.Result) {
+        val type: String = (opts["type"] as String?)!!
+        val id: String = (opts["id"] as String?)!!
+        val position: Map<String, Any> = (opts["position"] as Map<String, Any>?)!!
+        val latLng = LatLng(position["latitude"] as Double, position["longitude"] as Double)
+        val title: String? = opts["title"] as String?
+        val snippet: String? = opts["snippet"] as String?
+//                        var anchor: String? = call.argument("anchor")
+        val visible: Boolean = (opts["visible"] as Boolean?)!!
+        val draggable: Boolean = (opts["draggable"] as Boolean?)!!
+        val alpha: Float = (opts["alpha"] as Double?)!!.toFloat()
+
+        val marker = markerIdToMarker[id]!!
+        marker.position = latLng
+        marker.isVisible = visible
+        marker.isDraggable = draggable
+        marker.alpha = alpha
+
+        val icon: Map<String, Any>? = (opts["icon"] as Map<String, Any>?)
+        if (title != null) {
+            marker.title = title
+        }
+        if (snippet != null) {
+            marker.snippet = snippet
+        }
+        markerIdToOptions[marker.id] = opts
+        if (icon != null) {
+            when (icon["type"]) {
+                "marker#asset" -> {
+                    val size = icon["size"] as Map<String, Any>
+                    val imageView = ImageView(context)
+                    val params = ViewGroup.LayoutParams(size["width"] as Int, size["height"] as Int)
+                    val assetManager: AssetManager = context.assets
+                    imageView.setImageBitmap(BitmapFactory.decodeStream(assetManager.open(
+                        FlutterInjector.instance().flutterLoader()
+                            .getLookupKeyForAsset(icon["url"] as String)
+                    )
+                    )
+                    )
+                    imageView.layoutParams = params
+                    val asset = BitmapDescriptorFactory.fromView(imageView)
+                    marker.setIcon(asset)
+                }
+                "marker#web" -> {
+
+                }
+            }
+        }
+        when (type) {
+            "defaultMarker" -> {
+                markerIdToMarker[id] = marker
+                markerIdToDartMarkerId[marker.id] = id
+                result.success(true)
+            }
+        }
+    }
+
+    fun getInfoWindow(marker: Marker): View? {
         val id = marker.id
         val opts = markerIdToOptions[id]
         if (opts != null) {

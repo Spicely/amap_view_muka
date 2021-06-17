@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_muka/flutter_muka.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'amap_search.dart';
 import 'create_amap/amap.dart';
 import 'create_amap/interactive.dart';
 
@@ -65,8 +66,17 @@ class _MyAppState extends State<MyApp> {
               title: Text('获取地图数据'),
               showArrow: true,
               color: Colors.white,
-              // showDivider: true,
-            )
+              showDivider: true,
+            ),
+            ListItem(
+              title: Text('当前位置'),
+              showArrow: true,
+              color: Colors.white,
+              showDivider: true,
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AmapSearch()));
+              },
+            ),
           ],
         ),
       ),

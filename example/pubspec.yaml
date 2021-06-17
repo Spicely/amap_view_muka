@@ -20,11 +20,14 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
   flutter_muka:
-    git: https://github.com/Spicely/flutter-muka.git
+    git:
+      url: https://github.com/Spicely/flutter-muka.git
+      ref: dev
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  amap_location_muka: ^0.1.1
 
 dev_dependencies:
   flutter_test:

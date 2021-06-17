@@ -127,6 +127,9 @@ class AMapView(
             "marker#add" -> {
                 markerController.addMarker(call.arguments as Map<String, Any>, context, result)
             }
+            "marker#update" -> {
+                markerController.updateMarker(call.arguments as Map<String, Any>, context, result)
+            }
             "marker#delete" -> {
                 markerController.deleteMarker(call.arguments as Map<String, Any>, result)
             }
@@ -249,12 +252,10 @@ class AMapView(
                 map.showIndoorMap(enabled)
                 result.success(true)
             }
-//            "setLocatingPosition" -> {
-//                val opts = call.arguments as Map<String, Any>
-//                val latLng = (opts["latLng"] as Map<String, Any>?)!!
-//                map
-//                result.success(true)
-//            }
+            "setCameraPosition" -> {
+                Convert.initParams(call.arguments as Map<String, Any>, map, context)
+                result.success(true)
+            }
             "setMapType" -> {
                 val opts = call.arguments as Map<String, Any>
                 when ((opts["type"] as Int?)!!) {
