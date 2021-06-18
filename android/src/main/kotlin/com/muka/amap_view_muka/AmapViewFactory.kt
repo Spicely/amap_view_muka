@@ -559,7 +559,7 @@ class AMapView(
 
     override fun onCameraChangeFinish(position: CameraPosition) {
         var arguments = Convert.toJson(position)
-        methodChannel.invokeMethod("camera#onMapIdle", arguments)
+        methodChannel.invokeMethod("map#onMapIdle", arguments)
     }
 
 

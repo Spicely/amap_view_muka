@@ -19,6 +19,9 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
+  flutter_easyrefresh: ^2.2.1
+  amap_search_muka:
+    path: ../../amap_search_muka
   flutter_muka:
     git:
       url: https://github.com/Spicely/flutter-muka.git

@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
               color: Colors.white,
               showDivider: true,
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AmapSearch()));
+                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AmapSearchLoc()));
               },
             ),
           ],

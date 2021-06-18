@@ -203,7 +203,6 @@ class AmapViewController {
   /// 没有的id会返回false
   Future<bool?> updateMarker(AmapMarker marker) async {
     if (_markerMap[marker.id] != null) {
-      print('marker#update');
       return _markerChannel.invokeMethod('marker#update', marker.toJson());
     }
     return Future.value(false);
