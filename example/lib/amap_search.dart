@@ -142,10 +142,14 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
                               return ListItem(
+                                fieldType: FieldType.TITLE,
                                 title: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(_data[index].name),
+                                    Text(
+                                      _data[index].name,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                     Text(
                                       _data[index].address,
                                       overflow: TextOverflow.ellipsis,
