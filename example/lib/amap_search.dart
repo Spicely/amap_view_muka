@@ -127,10 +127,9 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
                                 .replaceAll(reGeocode.city!, '')
                                 .replaceAll(reGeocode.district!, ''));
                         _data.add(_current);
-                        List<SearchPoi> pois = await AmapSearch.poiPeripherySearch(_latLng!);
-                        _data.addAll(pois.map((e) {
-                          print(e.toJson());
-                          return AmapPoi(name: e.address, address: e.address);
+                        PoiSearchResult result = await AmapSearch.poiPeripherySearch(_latLng!);
+                        _data.addAll(result.pois.map((e) {
+                          return AmapPoi(name: e.title, address: e.province + e.city + e.address);
                         }).toList());
                         setState(() {});
                       },

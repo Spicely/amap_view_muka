@@ -4,17 +4,17 @@ packages:
   amap_core:
     dependency: transitive
     description:
-      name: amap_core
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../../amap_view"
+      relative: true
+    source: path
     version: "1.0.1"
   amap_location_muka:
     dependency: "direct main"
     description:
-      name: amap_location_muka
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1"
+      path: "../../amap_location_muka"
+      relative: true
+    source: path
+    version: "0.1.2"
   amap_search_muka:
     dependency: "direct main"
     description:
