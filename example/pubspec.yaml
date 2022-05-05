@@ -7,6 +7,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
+  flutter: ">=1.20.0"
 
 dependencies:
   flutter:
@@ -23,9 +24,7 @@ dependencies:
   amap_search_muka:
     path: ../../amap_search_muka
   flutter_muka:
-    git:
-      url: https://github.com/Spicely/flutter-muka.git
-      ref: dev
+     path: ../../flutter_muka
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
