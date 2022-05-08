@@ -19,7 +19,7 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
 
   EasyRefreshController _controller = EasyRefreshController();
 
-  List<AmapPoi> _data = [];
+  List<AMapPoi> _data = [];
 
   int _page = 1;
 
@@ -118,19 +118,9 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
                         noMoreText: '没有更多了',
                       ),
                       onRefresh: () async {
-                        ReGeocode reGeocode = await AmapSearch.reGeocodeSearch(_latLng!);
-                        _data = [];
-                        AmapPoi _current = AmapPoi(
-                            address: reGeocode.formatAddress!,
-                            name: reGeocode.formatAddress!
-                                .replaceAll(reGeocode.province!, '')
-                                .replaceAll(reGeocode.city!, '')
-                                .replaceAll(reGeocode.district!, ''));
-                        _data.add(_current);
-                        PoiSearchResult result = await AmapSearch.poiPeripherySearch(_latLng!);
-                        _data.addAll(result.pois.map((e) {
-                          return AmapPoi(name: e.title, address: e.province + e.city + e.address);
-                        }).toList());
+                        List<AMapPoi> data = await AmapSearch.searchLatLng(_latLng!);
+                        _data = data;
+
                         setState(() {});
                       },
                       onLoad: () async {
@@ -146,11 +136,11 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      _data[index].name,
+                                      _data[index].title!,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
-                                      _data[index].address,
+                                      _data[index].address!,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(color: Colors.black38),
                                     ),
@@ -186,16 +176,4 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
       ),
     );
   }
-}
-
-class AmapPoi {
-  final String address;
-  final double? distance;
-
-  final String name;
-  const AmapPoi({
-    required this.address,
-    this.distance,
-    required this.name,
-  });
 }

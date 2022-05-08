@@ -1,3 +1,4 @@
+import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_muka/flutter_muka.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -8,6 +9,11 @@ import 'create_amap/interactive.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  AmapLocation.updatePrivacyAgree(true);
+  AmapLocation.updatePrivacyShow(true, true);
+
+  AmapLocation.setApiKey("6e630e675873f2a548f55ba99ee8c571", "56250708b9588800db63161534716f8c");
 
   await [Permission.location, Permission.storage].request();
 
