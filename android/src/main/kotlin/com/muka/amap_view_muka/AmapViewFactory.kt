@@ -39,7 +39,7 @@ class AmapViewFactory(
     private val activity: Activity,
     private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
-    override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
+    override fun create(context: Context?, viewId: Int, args: Any?): PlatformView {
         Log.d("11111111111", "221111111111111111")
         // 申请权限
         ActivityCompat.requestPermissions(
@@ -55,7 +55,7 @@ class AmapViewFactory(
         )
         Log.d("11111111111", "221144444444444444411111111111111")
         val params = args as Map<String, Any>
-        return AMapView(context, viewId, flutterPluginBinding, params)
+        return AMapView(context!!, viewId, flutterPluginBinding, params)
     }
 }
 

@@ -118,7 +118,7 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
                         noMoreText: '没有更多了',
                       ),
                       onRefresh: () async {
-                        List<AMapPoi> data = await AmapSearch.searchLatLng(_latLng!);
+                        List<AMapPoi> data = await AMapSearch.searchAround(_latLng!);
                         _data = data;
 
                         setState(() {});
@@ -136,7 +136,7 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      _data[index].title!,
+                                      _data[index].name!,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     Text(
