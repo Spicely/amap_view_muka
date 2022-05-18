@@ -13,14 +13,14 @@ class CameraPosition {
   final double bearing;
 
   /// 动画时间 不填写没有动画
-  final int? duration;
+  final int duration;
 
   const CameraPosition(
     this.latLng,
     this.zoom,
     this.tilt,
     this.bearing, {
-    this.duration,
+    this.duration = 0,
   });
 
   Map<String, dynamic> toJson() => {
