@@ -1,0 +1,101 @@
+PODS:
+  - AMap3DMap (9.1.0):
+    - AMapFoundation (~> 1.6.9)
+  - amap_location_muka (0.0.1):
+    - AMapLocation
+    - Flutter
+  - amap_search_muka (0.0.1):
+    - AMapSearch
+    - Flutter
+  - amap_view_muka (0.0.1):
+    - AMap3DMap
+    - Flutter
+  - AMapFoundation (1.6.9)
+  - AMapLocation (2.8.0):
+    - AMapFoundation (~> 1.6.9)
+  - AMapSearch (9.2.0):
+    - AMapFoundation (~> 1.6.9)
+  - connectivity_plus (0.0.1):
+    - Flutter
+    - ReachabilitySwift
+  - Flutter (1.0.0)
+  - image_picker_ios (0.0.1):
+    - Flutter
+  - package_info (0.0.1):
+    - Flutter
+  - path_provider_ios (0.0.1):
+    - Flutter
+  - permission_handler_apple (9.0.4):
+    - Flutter
+  - r_upgrade (0.0.1):
+    - Flutter
+  - ReachabilitySwift (5.0.0)
+  - scan (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - amap_location_muka (from `.symlinks/plugins/amap_location_muka/ios`)
+  - amap_search_muka (from `.symlinks/plugins/amap_search_muka/ios`)
+  - amap_view_muka (from `.symlinks/plugins/amap_view_muka/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
+  - Flutter (from `Flutter`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - package_info (from `.symlinks/plugins/package_info/ios`)
+  - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - r_upgrade (from `.symlinks/plugins/r_upgrade/ios`)
+  - scan (from `.symlinks/plugins/scan/ios`)
+
+SPEC REPOS:
+  trunk:
+    - AMap3DMap
+    - AMapFoundation
+    - AMapLocation
+    - AMapSearch
+    - ReachabilitySwift
+
+EXTERNAL SOURCES:
+  amap_location_muka:
+    :path: ".symlinks/plugins/amap_location_muka/ios"
+  amap_search_muka:
+    :path: ".symlinks/plugins/amap_search_muka/ios"
+  amap_view_muka:
+    :path: ".symlinks/plugins/amap_view_muka/ios"
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/ios"
+  Flutter:
+    :path: Flutter
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
+  package_info:
+    :path: ".symlinks/plugins/package_info/ios"
+  path_provider_ios:
+    :path: ".symlinks/plugins/path_provider_ios/ios"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  r_upgrade:
+    :path: ".symlinks/plugins/r_upgrade/ios"
+  scan:
+    :path: ".symlinks/plugins/scan/ios"
+
+SPEC CHECKSUMS:
+  AMap3DMap: a1ba024c96017912499330afdc3a7885acd083f8
+  amap_location_muka: f33b431c50a8d849dec9388b83b0e9585e67726f
+  amap_search_muka: a7827b0589d93eaf22f4ad50daf519072c54e482
+  amap_view_muka: a5056b15d337584bcf69342a2a42ac30b1714a4d
+  AMapFoundation: 8d8ecbb0b2e9ce5487995360d26c885d94642bfd
+  AMapLocation: 5ef44a1117be7dc541cb7a7d43d03c5ee91e4387
+  AMapSearch: b461cdf25b39cdca8957017de2f376cd1ac5da85
+  connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
+  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  image_picker_ios: b786a5dcf033a8336a657191401bfdf12017dabb
+  package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
+  path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
+  permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
+  r_upgrade: 44d715c61914cce3d01ea225abffe894fd51c114
+  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  scan: aea35bb4aa59ccc8839c576a18cd57c7d492cc86
+
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+
+COCOAPODS: 1.10.1
