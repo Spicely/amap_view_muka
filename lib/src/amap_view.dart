@@ -189,7 +189,7 @@ class _AmapViewState extends State<AmapView> {
       'rotateGesturesEnabled': widget.rotateGesturesEnabled,
       'tiltGesturesEnabled': widget.tiltGesturesEnabled,
       'allGesturesEnabled': widget.allGesturesEnabled,
-      'cameraPosition': widget.cameraPosition,
+      'cameraPosition': widget.cameraPosition?.toJson(),
       'pointToCenter': widget.pointToCenter?.toJson(),
     };
     if (Platform.isAndroid) {
