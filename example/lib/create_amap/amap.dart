@@ -26,7 +26,7 @@ class _AmapState extends State<Amap> {
                   onCreated: (amapViewController) {
                     _amapViewController = amapViewController;
                   },
-                  cameraPosition: CameraPosition(LatLng(104.066301, 30.572961), 15, 20, 45),
+                  cameraPosition: CameraPosition(LatLng(30.572961, 104.066301), 15, 20, 45),
                   language: AmapViewLanguage.ENGLISH,
                   type: AmapViewType.MAP_TYPE_NIGHT,
                   zoom: 18,
@@ -68,6 +68,12 @@ class _AmapState extends State<Amap> {
                             await _amapViewController.setMapType(AmapViewType.MAP_TYPE_SATELLITE);
                           },
                           child: Text('卫星图'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            await _amapViewController.setMapType(AmapViewType.MAP_TYPE_BUS);
+                          },
+                          child: Text('公交地图'),
                         )
                       ],
                     ),

@@ -35,7 +35,7 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
         mapView = MAMapView(frame: _frame)
         // 自动调整宽高
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        channel = FlutterMethodChannel(name: "plugins.muka.com/amap_view_\(viewId)", binaryMessenger: register.messenger())
+        channel = FlutterMethodChannel(name: "plugins.muka.com/amap_view_muka_marker_\(viewId)", binaryMessenger: register.messenger())
         
         markerController = MarkerController(withChannel: channel, withMap: mapView)
         
@@ -45,10 +45,9 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
         
         
         mapView.delegate = self
-        
         // 处理参数
         if let args = args as? [String: Any] {
-            Convert.interpretMapOptions(options: args["options"], delegate: self)
+            Convert.interpretMapOptions(options: args, delegate: self)
             updateInitialMarkers(options: args["markersToAdd"])
         }
     }
@@ -60,12 +59,12 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
     func onMethodCall(methodCall: FlutterMethodCall, result: @escaping FlutterResult) {
         switch(methodCall.method) {
         case "map#waitForMap":
-            result(nil)
+            result(true)
         case "map#update":
             if let args = methodCall.arguments as? [String: Any] {
                 Convert.interpretMapOptions(options: args["options"], delegate: self)
             }
-            result(nil)
+            result(true)
         case "markers#update":
             if let args = methodCall.arguments as? [String: Any] {
                 if let markersToAdd = (args["markersToAdd"] as? [Any]) {
@@ -78,9 +77,19 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
                     markerController.removeMarkers(markerIdsToRemove: markerIdsToRemove)
                 }
             }
-            result(nil)
+            result(true)
         case "camera#update":
-            result(nil)
+            result(true)
+        case "setMapType":
+            if let args = methodCall.arguments as? [String: Any] {
+                setMapType(mapType: args["type"] as! Int)
+            }
+            result(true)
+        case "setMapLanguage":
+            if let args = methodCall.arguments as? [String: Any] {
+                setMapLanguage(language: args["language"] as! Int)
+            }
+            result(true)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -197,22 +206,42 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
     func setCameraPosition(camera: CameraPosition) {
         mapView.setCenter(CLLocationCoordinate2D(latitude: camera.target.latitude, longitude:  camera.target.longitude), animated: true)
         mapView.setZoomLevel(CGFloat(camera.zoom), animated: true)
-        mapView.setCameraDegree(CGFloat(camera.tilt), animated: true, duration: 0)
+        mapView.setCameraDegree(CGFloat(camera.tilt), animated: true, duration: CFTimeInterval(camera.duration))
     }
     
     func setMapType(mapType: Int) {
         switch mapType {
-        case 2:
-            mapView.mapType = MAMapType.satellite
-        case 3:
-            mapView.mapType = MAMapType.standardNight
-        case 4:
+        case 0:
             mapView.mapType = MAMapType.navi
-        case 5:
+        case 1:
+            mapView.mapType = MAMapType.standardNight
+        case 3:
+            mapView.mapType = MAMapType.satellite
+        case 4:
             mapView.mapType = MAMapType.bus
         default:
             mapView.mapType = MAMapType.standard
         }
+    }
+    func setMapLanguage(language: Int) {
+        switch language {
+        case 1:
+            mapView.mapLanguage = 1
+        default:
+            mapView.mapLanguage = 0
+        }
+    }
+    
+    func setMapZoomLevel(zommLevel: Double) {
+        mapView.zoomLevel = zommLevel
+    }
+    
+    func setMapIndoorMap(indoorMap: Bool) {
+        mapView.isShowsIndoorMap = indoorMap
+    }
+    
+    func setMapzoomControlsEnabled(zoomControlsEnabled: Bool) {
+        mapView.isZoomEnabled = zoomControlsEnabled
     }
     
     func setRotateGesturesEnabled(rotateGesturesEnabled: Bool) {

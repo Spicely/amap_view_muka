@@ -16,24 +16,38 @@ class Convert {
             if let cameraPosition = opts["cameraPosition"] as? [String: Any] {
                 delegate.setCameraPosition(camera: toCameraPosition(opts: cameraPosition))
             }
+            if let type = opts["type"] as? Int {
+                delegate.setMapType(mapType: type)
+            }
+            if let language = opts["language"] as? Int {
+                delegate.setMapLanguage(language: language)
+            }
+            if let zoomLevel = opts["zoomLevel"] as? Double {
+                delegate.setMapZoomLevel(zommLevel: zoomLevel)
+            }
+            if let indoorMap = opts["indoorMap"] as? Bool {
+                delegate.setMapIndoorMap(indoorMap: indoorMap)
+            }
+            if let zoomControlsEnabled = opts["zoomControlsEnabled"] as? Bool {
+                delegate.setMapzoomControlsEnabled(zoomControlsEnabled: zoomControlsEnabled)
+            }
+            
             if let compassEnabled = opts["compassEnabled"] as? Bool {
                 delegate.setCompassEnabled(compassEnabled: compassEnabled)
             }
-            if let mapType = opts["mapType"] as? Int {
-                delegate.setMapType(mapType: mapType)
-            }
-            if let myLocationEnabled = opts["myLocationEnabled"] as? Bool {
-                delegate.setMyLocationEnabled(myLocationEnabled: myLocationEnabled)
-            }
-            if let scaleControlsEnabled = opts["scaleControlsEnabled"] as? Bool {
-                delegate.setScaleEnabled(scaleEnabled: scaleControlsEnabled)
-            }
-            if let zoomControlsEnabled = opts["zoomControlsEnabled"] as? Bool {
-                delegate.setZoomEnabled(zoomEnabled: zoomControlsEnabled)
-            }
-            if let scrollGesturesEnabled = opts["scrollGesturesEnabled"] as? Bool {
-                delegate.setScrollEnabled(scrollEnabled: scrollGesturesEnabled)
-            }
+//
+//            if let myLocationEnabled = opts["myLocationEnabled"] as? Bool {
+//                delegate.setMyLocationEnabled(myLocationEnabled: myLocationEnabled)
+//            }
+//            if let scaleControlsEnabled = opts["scaleControlsEnabled"] as? Bool {
+//                delegate.setScaleEnabled(scaleEnabled: scaleControlsEnabled)
+//            }
+//            if let zoomControlsEnabled = opts["zoomControlsEnabled"] as? Bool {
+//                delegate.setZoomEnabled(zoomEnabled: zoomControlsEnabled)
+//            }
+//            if let scrollGesturesEnabled = opts["scrollGesturesEnabled"] as? Bool {
+//                delegate.setScrollEnabled(scrollEnabled: scrollGesturesEnabled)
+//            }
         }
     }
     
@@ -41,7 +55,7 @@ class Convert {
         let bearing = opts["bearing"] as! Double
         let tilt = opts["tilt"] as! Double
         let zoom = opts["zoom"] as! Double
-        let target = toLatLng(options: opts["target"]!)
+        let target = toLatLng(options: opts["latLng"]!)
         let duration = opts["duration"] as! Int
         return CameraPosition(bearing: bearing, tilt: tilt, zoom: zoom, target: target, duration: duration)
     }

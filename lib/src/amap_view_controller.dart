@@ -14,6 +14,9 @@ enum AmapViewType {
 
   /// 卫星图
   MAP_TYPE_SATELLITE,
+
+  /// 公交地图
+  MAP_TYPE_BUS,
 }
 
 enum AmapViewLogoPosition {
