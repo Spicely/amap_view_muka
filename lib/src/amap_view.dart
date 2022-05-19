@@ -90,7 +90,7 @@ class AmapView extends StatefulWidget {
   final double? zoom;
 
   /// markers
-  final List<AmapMarker> markers;
+  final List<AmapMarker>? markers;
 
   /// 蓝点样式
   final MyLocationStyle? myLocationStyle;
@@ -162,7 +162,7 @@ class AmapView extends StatefulWidget {
     this.onMapClick,
     this.onMapIdle,
     this.onMapMove,
-    this.markers = const [],
+    this.markers,
   }) : super(key: key);
 
   @override
@@ -178,7 +178,7 @@ class _AmapViewState extends State<AmapView> {
       Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer()),
     ].toSet();
     Map<String, dynamic> _creationParams = {
-      'markers': widget.markers.map((e) => e.toJson()).toList(),
+      'markers': widget.markers?.map((e) => e.toJson()).toList(),
       'type': widget.type?.index,
       'language': widget.language?.index,
       'zoomLevel': widget.zoom,

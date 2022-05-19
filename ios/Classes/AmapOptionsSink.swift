@@ -5,6 +5,7 @@
 //  Created by Spice ly on 2022/5/18.
 //
 
+
 protocol AmapOptionsSink {
     func setCameraPosition(camera: CameraPosition)
     func setCompassEnabled(compassEnabled: Bool)
@@ -20,5 +21,4 @@ protocol AmapOptionsSink {
     func setZoomEnabled(zoomEnabled: Bool)
     func setIndoorMap(indoorEnabled: Bool)
 }
-
 

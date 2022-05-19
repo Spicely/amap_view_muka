@@ -8,6 +8,7 @@
 import Flutter
 import MAMapKit
 import AMapFoundationKit
+import UIKit
 
 class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, AmapOptionsSink {
     func setIndoorMap(indoorEnabled: Bool) {
@@ -109,7 +110,7 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
             let ops =  markerController.markerIdToOptions.first(where:{ (arr,val) -> Bool in
                 if let v = val as? [String: Any] {
                     if let position = v["position"] as? [String: Double] {
-                        if (position["latitude"] == annotation.coordinate.latitude && position["longitude"] == annotation.coordinate.longitude ){
+                        if (position["latitude"] == annotation.coordinate.latitude && position["longitude"] == annotation.coordinate.longitude ) {
                             return true
                         }
                         return false
@@ -124,28 +125,20 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
             var annotationView: MAPinAnnotationView?
             
             if let opts = ops?.value as? [String: Any] {
-                if let icon = opts["icon"] as? [Any] {
-                    switch icon[0] as! String {
-                    case "fromAssetImageWithText":
+                if let icon = opts["icon"] as? [String: Any] {
+                    print(icon)
+                    switch icon["type"] as! String {
+                    case "marker#asset":
                         annotationView = MAPinAnnotationView(annotation: annotation, reuseIdentifier: pointReuseIndetifier)
                         annotationView!.canShowCallout = true
                         annotationView!.animatesDrop = true
-                        annotationView!.isDraggable = true
-                        annotationView!.image = UIImage(imageLiteralResourceName:  flutterRegister.lookupKey(forAsset: icon[1] as! String))
+                        annotationView!.isDraggable = opts["draggable"] as! Bool
                         
-                        if let labelText = icon[3] as? [String: Any] {
-                            if let offset = labelText["offset"] as? [Any] {
-                                let labelView = UILabel.init(frame: CGRect(x: offset[0] as! Int,y: offset[1] as! Int,width: annotationView!.image.cgImage?.width ?? 0,height: annotationView!.image.cgImage?.height ?? 0))
-                                labelView.font = UIFont.systemFont(ofSize: labelText["size"] as! CGFloat)
-                                if let color = labelText["color"] as? [Any] {
-                                    labelView.textColor = UIColor(red: color[0] as! CGFloat / 255, green: color[1] as! CGFloat / 255, blue: color[2] as! CGFloat / 255, alpha: 1)
-                                }
-                                labelView.textAlignment = NSTextAlignment.center
-                                labelView.text = labelText["text"] as? String
-                                annotationView?.addSubview(labelView)
-                            }
-                            
-                        }
+                        
+                        let size = icon["size"] as! [String: Int]
+                        let img = UIImage(imageLiteralResourceName: flutterRegister.lookupKey(forAsset: icon["url"] as! String))
+                        annotationView!.image = img
+                        annotationView!.image?.draw(in: CGRect(x:0, y:0, width: CGFloat(size["width"]!), height: CGFloat(size["height"]!)), blendMode: CGBlendMode.screen, alpha: CGFloat(opts["alpha"] as! Double))
                     default:
                         annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: pointReuseIndetifier) as! MAPinAnnotationView?
                         
@@ -154,19 +147,13 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
                         }
                         print("----------------")
                     }
+                } else {
+                    annotationView = MAPinAnnotationView(annotation: annotation, reuseIdentifier: pointReuseIndetifier)
+                    annotationView!.canShowCallout = true
+                    annotationView!.animatesDrop = true
+                    annotationView!.isDraggable = true
                 }
-            } else {
-                print("233333333333333333333333")
-                annotationView!.canShowCallout = true
-                annotationView!.animatesDrop = true
-                annotationView!.isDraggable = true
             }
-            // print(annotationView!.value(forKey: "markerId") as Any)
-            //                annotationView!.rightCalloutAccessoryView = UIButton(type: UIButtonType.detailDisclosure)
-            
-            //                let idx = annotations.index(of: annotation as! MAPointAnnotation)
-            //                annotationView!.pinColor = MAPinAnnotationColor(rawValue: idx!%3)!
-            
             return annotationView!
         }
         

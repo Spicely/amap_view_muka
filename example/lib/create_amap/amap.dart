@@ -23,6 +23,17 @@ class _AmapState extends State<Amap> {
             child: Stack(
               children: [
                 AmapView(
+                  markers: [
+                    AmapDefaultMarker(
+                      id: '1',
+                      position: LatLng(30.572961, 104.066301),
+                    ),
+                    AmapDefaultMarker(
+                      id: '2',
+                      position: LatLng(30.573961, 104.066301),
+                      icon: AmapViewImage.asset('assets/images/map.png', size: AmapImageSize(height: 40, width: 40)),
+                    ),
+                  ],
                   onCreated: (amapViewController) {
                     _amapViewController = amapViewController;
                   },
