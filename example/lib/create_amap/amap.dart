@@ -32,13 +32,12 @@ class _AmapState extends State<Amap> {
                   zoom: 18,
                   onMapClick: (cameraPosition) {
                     print('地图点击：${cameraPosition.toJson()}');
-                    print('地图点击：${cameraPosition.copyWith(duration: 2).toJson()}');
                   },
                   onMapMove: (cameraPosition) {
-                    // print('地图移动：${cameraPosition.toJson()}');
+                    print('地图移动：${cameraPosition.toJson()}');
                   },
                   onMapIdle: (cameraPosition) {
-                    // print('地图移动结束：${cameraPosition.toJson()}');
+                    print('地图移动结束：${cameraPosition.toJson()}');
                   },
                 ),
                 Column(

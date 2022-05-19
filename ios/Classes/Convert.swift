@@ -56,7 +56,7 @@ class Convert {
         let tilt = opts["tilt"] as! Double
         let zoom = opts["zoom"] as! Double
         let target = toLatLng(options: opts["latLng"]!)
-        let duration = opts["duration"] as! Int
+        let duration = opts["duration"] as? Int ?? 0
         return CameraPosition(bearing: bearing, tilt: tilt, zoom: zoom, target: target, duration: duration)
     }
 
@@ -66,7 +66,7 @@ class Convert {
         let longitude = opts["longitude"] as! Double
         return LatLng(latitude: latitude, longitude: longitude)
     }
-//
+    
     class func toJson(latLng: LatLng) -> Dictionary<String, Any> {
         var data = [String: Any]()
         data["latitude"] = latLng.latitude

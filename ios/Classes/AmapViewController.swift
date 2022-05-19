@@ -178,23 +178,25 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
         print("mapWillMoveByUser ===>", mapView.centerCoordinate)
     }
     
+    func mapView(_ mapView: MAMapView!, mapMoveByUser wasUserAction: Bool) {
+        print("mapWillMoveByUser ===>", mapView.centerCoordinate)
+    }
+    
     // 地图移动结束调用
     func mapView(_ mapView: MAMapView!, mapDidMoveByUser wasUserAction: Bool) {
-        let center = LatLng(latitude: mapView.centerCoordinate.latitude, longitude: mapView.centerCoordinate.longitude)
-        let position = CameraPosition(bearing: 0, tilt: Double(mapView.cameraDegree), zoom: Double(mapView.zoomLevel), target: center, duration: 0)
-        let args: [String: Any] = ["position": Convert.toJson(position: position)]
-        channel.invokeMethod("camera#onIdle", arguments: args)
+        let args: [String: Any] = ["latLng": Convert.toJson(location: mapView.centerCoordinate), "zoom": mapView.zoomLevel, "tilt": mapView.cameraDegree, "bearing": mapView.rotationDegree,"duration": 0]
+        channel.invokeMethod("map#onMapIdle", arguments: args)
+    }
+    
+    // 单击地图返回经纬度
+    func mapView(_ mapView: MAMapView!, didSingleTappedAt coordinate: CLLocationCoordinate2D) {
+        let args: [String: Any] = ["latLng": Convert.toJson(location: coordinate), "zoom": mapView.zoomLevel, "tilt": mapView.cameraDegree, "bearing": mapView.rotationDegree,"duration": 0]
+        channel.invokeMethod("map#onMapClick", arguments: args)
     }
     
     // 地图定位失败调用
     func mapView(_ mapView: MAMapView!, didFailToLocateUserWithError error: Error!) {
         print("didFailToLocateUserWithError ===>", error as Any)
-    }
-    
-    // 单击地图返回经纬度
-    func mapView(_ mapView: MAMapView!, didSingleTappedAt coordinate: CLLocationCoordinate2D) {
-        let args: [String: Any] = ["position": Convert.toJson(location: coordinate)]
-        channel.invokeMethod("map#onTap", arguments: args)
     }
     
     // 点击地图poi时返回信息
@@ -206,6 +208,7 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
     func setCameraPosition(camera: CameraPosition) {
         mapView.setCenter(CLLocationCoordinate2D(latitude: camera.target.latitude, longitude:  camera.target.longitude), animated: true)
         mapView.setZoomLevel(CGFloat(camera.zoom), animated: true)
+        mapView.setRotationDegree(CGFloat(camera.bearing), animated: true, duration: CFTimeInterval(camera.duration))
         mapView.setCameraDegree(CGFloat(camera.tilt), animated: true, duration: CFTimeInterval(camera.duration))
     }
     

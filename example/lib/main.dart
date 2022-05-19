@@ -44,44 +44,48 @@ class _MyAppState extends State<MyApp> {
         ),
         body: ListView(
           children: [
-            ListItem(
-              title: Text('创建地图'),
-              showArrow: true,
-              color: Colors.white,
-              showDivider: true,
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Amap()));
-              },
-            ),
-            ListItem(
-              title: Text('与地图交互'),
-              showArrow: true,
-              color: Colors.white,
-              showDivider: true,
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Interactive()));
-              },
-            ),
-            ListItem(
-              title: Text('在地图上绘制'),
-              showArrow: true,
-              color: Colors.white,
-              showDivider: true,
-            ),
-            ListItem(
-              title: Text('获取地图数据'),
-              showArrow: true,
-              color: Colors.white,
-              showDivider: true,
-            ),
-            ListItem(
-              title: Text('当前位置'),
-              showArrow: true,
-              color: Colors.white,
-              showDivider: true,
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AmapSearchLoc()));
-              },
+            Column(
+              children: [
+                ListItem(
+                  title: Text('创建地图'),
+                  showArrow: true,
+                  color: Colors.white,
+                  showDivider: true,
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Amap()));
+                  },
+                ),
+                ListItem(
+                  title: Text('与地图交互'),
+                  showArrow: true,
+                  color: Colors.white,
+                  showDivider: true,
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Interactive()));
+                  },
+                ),
+                ListItem(
+                  title: Text('在地图上绘制'),
+                  showArrow: true,
+                  color: Colors.white,
+                  showDivider: true,
+                ),
+                ListItem(
+                  title: Text('获取地图数据'),
+                  showArrow: true,
+                  color: Colors.white,
+                  showDivider: true,
+                ),
+                ListItem(
+                  title: Text('当前位置'),
+                  showArrow: true,
+                  color: Colors.white,
+                  showDivider: true,
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AmapSearchLoc()));
+                  },
+                ),
+              ],
             ),
           ],
         ),
