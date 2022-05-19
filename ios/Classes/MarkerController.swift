@@ -33,7 +33,7 @@ class MarkerController: NSObject {
                 point.title = infoWindow["title"] as? String
                 point.subtitle = infoWindow["snippet"] as? String
             }
-            let markerId = opts["markerId"] as! String
+            let markerId = opts["id"] as! String
             
             // 保存状态
             markerIdToMarker[markerId] = point

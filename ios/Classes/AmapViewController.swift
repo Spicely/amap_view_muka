@@ -48,7 +48,7 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
         // 处理参数
         if let args = args as? [String: Any] {
             Convert.interpretMapOptions(options: args, delegate: self)
-            updateInitialMarkers(options: args["markersToAdd"])
+            updateInitialMarkers(options: args["markers"])
         }
     }
     

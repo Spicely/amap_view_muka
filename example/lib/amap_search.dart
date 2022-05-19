@@ -118,7 +118,7 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
                         noMoreText: '没有更多了',
                       ),
                       onRefresh: () async {
-                        List<AMapPoi> data = await AMapSearch.searchAround(_latLng!);
+                        List<AMapPoi> data = await AmapSearch.searchAround(_latLng!);
                         _data = data;
 
                         setState(() {});
