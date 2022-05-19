@@ -548,6 +548,7 @@ class AMapView(
         arguments["zoom"] = map.cameraPosition.zoom
         arguments["tilt"] = map.cameraPosition.tilt.toDouble()
         arguments["bearing"] = map.cameraPosition.bearing.toDouble()
+        arguments["duration"] = 0
         methodChannel.invokeMethod("map#onMapClick", arguments)
     }
 
