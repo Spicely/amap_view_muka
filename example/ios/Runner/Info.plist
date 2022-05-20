@@ -41,5 +41,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>App需要您的同意,才能访问位置，用于城市定位丶搜索服务、基于位置推荐、筛选服务和地图导航。</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>App需要您的同意,才能访问位置，用于城市定位丶搜索服务、基于位置推荐、筛选服务和地图导航。</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>App需要您的同意,才能在使用期间访问位置,用于城市定位丶搜索服务、基于位置推荐、筛选服务和地图导航。</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>App需要您的同意,才能访问相册，用于图片上传、图片发布服务。</string>
 </dict>
 </plist>

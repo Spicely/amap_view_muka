@@ -59,11 +59,9 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
     
     func onMethodCall(methodCall: FlutterMethodCall, result: @escaping FlutterResult) {
         switch(methodCall.method) {
-        case "map#waitForMap":
-            result(true)
-        case "map#update":
+        case "marker#add":
             if let args = methodCall.arguments as? [String: Any] {
-                Convert.interpretMapOptions(options: args["options"], delegate: self)
+                markerController.addMarker(options: args)
             }
             result(true)
         case "marker#update":
@@ -71,7 +69,34 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
                 markerController.updateMarker(options: args)
             }
             result(true)
-        case "camera#update":
+        case "marker#delete":
+//            if let args = methodCall.arguments as? [String: Any] {
+//                markerController.updateMarker(options: args)
+//            }
+            result(true)
+        case "enabledMyLocation":
+            if let args = methodCall.arguments as? [String: Any] {
+                setMyLocationStyle(myLocationStyle: args)
+            }
+            result(true)
+        case "disbleMyLocation":
+            mapView.showsUserLocation = false
+            mapView.userTrackingMode = .none
+            result(true)
+        case "setZoomLevel":
+            if let args = methodCall.arguments as? [String: Any] {
+                setMapZoomLevel(zommLevel: args["level"] as! Double)
+            }
+            result(true)
+        case "setIndoorMap":
+            if let args = methodCall.arguments as? [String: Any] {
+                setIndoorMap(indoorEnabled: args["enabled"] as! Bool)
+            }
+            result(true)
+        case "setCameraPosition":
+            if let args = methodCall.arguments as? [String: Any] {
+                setCameraPosition(camera: Convert.toCameraPosition(opts: args))
+            }
             result(true)
         case "setMapType":
             if let args = methodCall.arguments as? [String: Any] {
@@ -83,6 +108,90 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
                 setMapLanguage(language: args["language"] as! Int)
             }
             result(true)
+        case "setZoomControlsEnabled":
+            result(true)
+        case "setCompassEnabled":
+            if let args = methodCall.arguments as? [String: Any] {
+                setCompassEnabled(compassEnabled: args["enabled"] as! Bool)
+            }
+            result(true)
+        case "setLogoPosition":
+            if let args = methodCall.arguments as? [String: Any] {
+                setLogoPosition(logoPosition: args["position"] as! Int)
+            }
+            result(true)
+            
+        case "setZoomGesturesEnabled":
+            if let args = methodCall.arguments as? [String: Any] {
+                zoomGesturesEnabled(zoomGesturesEnabled: args["enabled"] as! Bool)
+            }
+            result(true)
+        case "setScrollGesturesEnabled":
+            if let args = methodCall.arguments as? [String: Any] {
+                scrollGesturesEnabled(scrollGesturesEnabled: args["enabled"] as! Bool)
+            }
+            result(true)
+        case "setRotateGesturesEnabled":
+            if let args = methodCall.arguments as? [String: Any] {
+                rotateGesturesEnabled(rotateGesturesEnabled: args["enabled"] as! Bool)
+            }
+            result(true)
+        case "setTiltGesturesEnabled":
+            if let args = methodCall.arguments as? [String: Any] {
+                tiltGesturesEnabled(tiltGesturesEnabled: args["enabled"] as! Bool)
+            }
+            result(true)
+        case "setAllGesturesEnabled":
+            if let args = methodCall.arguments as? [String: Any] {
+                allGesturesEnabled(allGesturesEnabled: args["enabled"] as! Bool)
+            }
+            result(true)
+        case "getZoomGesturesEnabled":
+            result(mapView.isZoomEnabled)
+        case "getScrollGesturesEnabled":
+            result(mapView.isScrollEnabled)
+        case "getRotateGesturesEnabled":
+            result(mapView.isRotateEnabled)
+        case "getTiltGesturesEnabled":
+            result(mapView.isRotateCameraEnabled)
+        case "setGestureScaleByMapCenter":
+            result(true)
+        case "animateCamera":
+            if let args = methodCall.arguments as? [String: Any] {
+                setCameraPosition(camera: Convert.toCameraPosition(opts: args["cameraPosition"] as! [String : Any]))
+            }
+            result(true)
+        case "setMapStatusLimits":
+            if let args = methodCall.arguments as? [String: Any] {
+                setMapStatusLimits(opts: args)
+            }
+            result(true)
+        case "getMapScreenShot":
+            if let args = methodCall.arguments as? [String: Any] {
+                let opts = args["shot"] as! [String: Any]
+                mapView.takeSnapshot(in: CGRect(x: opts["x"] as! Double, y: opts["y"] as! Double, width: opts["width"] as! Double, height: opts["height"] as! Double)) { img,_  in
+                    if img != nil {
+                        let compressImage = img!.jpegData(compressionQuality: opts["compressionQuality"] as! Double)
+                        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).map(\.path)
+                        let filePath = URL(fileURLWithPath: paths[0]).appendingPathComponent("shot_amap.png").path
+                        compressImage.write(to: filePath)
+                        result(filePath)
+                    }
+                    result(nil)
+                }
+            }
+//            mapView.takeSnapshot(in: CGRect(x: 0, y: 0, width: _frame.width, height: _frame.height))
+           
+           
+//        case "map#update":
+//            if let args = methodCall.arguments as? [String: Any] {
+//                Convert.interpretMapOptions(options: args["options"], delegate: self)
+//            }
+//            result(true)
+//
+//        case "camera#update":
+//            result(true)
+       
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -94,11 +203,13 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
         }
     }
     
+   
+    
     // MAMapViewDelegate
     
     // 绘制marker
     func mapView(_ mapView: MAMapView!, viewFor annotation: MAAnnotation!) -> MAAnnotationView! {
-        if annotation.isKind(of: MAPointAnnotation.self) {
+        if annotation is MAPointAnnotation {
             let ops =  markerController.markerIdToOptions.first(where:{ (arr,val) -> Bool in
                 if let v = val as? [String: Any] {
                     if let position = v["position"] as? [String: Double] {
@@ -118,7 +229,6 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
             
             if let opts = ops?.value as? [String: Any] {
                 if let icon = opts["icon"] as? [String: Any] {
-                    print(icon)
                     switch icon["type"] as! String {
                     case "marker#asset":
                         annotationView = MAPinAnnotationView(annotation: annotation, reuseIdentifier: pointReuseIndetifier)
@@ -215,6 +325,13 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
         }
     }
     
+    func setMapStatusLimits(opts: [String: Any]) {
+        let southwestLatLng = opts["southwestLatLng"] as! [String: Double]
+        let northeastLatLng = opts["southwestLatLng"] as! [String: Double]
+        let boundary = MACoordinateRegion.init(center: Convert.toCLLocationCoordinate2D(options: southwestLatLng), span: Convert.toMACoordinateSpan(options: northeastLatLng))
+        mapView.limitRegion = boundary
+    }
+    
     func setMapZoomLevel(zommLevel: Double) {
         mapView.zoomLevel = zommLevel
     }
@@ -239,18 +356,75 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
         mapView.showsCompass = compassEnabled
     }
     
-    func setMyLocationEnabled(myLocationEnabled: Bool) {
-        mapView.showsUserLocation = myLocationEnabled
+    func setLogoPosition(logoPosition: Int) {
+        switch logoPosition {
+        case 1:
+            mapView.logoCenter = CGPoint(x: 0, y: _frame.height - 40)
+        case 2:
+            mapView.logoCenter = CGPoint(x: 40, y: _frame.height - 40)
+        case 3:
+            mapView.logoCenter = CGPoint(x: _frame.width / 2, y: _frame.height - 40)
+        case 4:
+            mapView.logoCenter = CGPoint(x: _frame.width - 40, y: _frame.height - 40)
+        default:
+            mapView.logoCenter = CGPoint(x: 40, y: _frame.height - 40)
+        }
+    }
+    
+    func setMyLocationStyle(myLocationStyle: [String: Any]) {
+        let enabled = myLocationStyle["enabled"] as! Bool
+        mapView.showsUserLocation = enabled
         // 开启用户定位默认开启follow模式
-        if myLocationEnabled {
+        if enabled {
             mapView.userTrackingMode = .follow
         } else {
             mapView.userTrackingMode = .none
         }
+//        let r = MAUserLocationRepresentation()
+//        r.showsHeadingIndicator = true
+//        r.showsAccuracyRing = true
+//        if let icon = myLocationStyle["icon"] as? [String: Any] {
+//            let size = icon["size"] as! [String: Int]
+//            let img = UIImage(imageLiteralResourceName: flutterRegister.lookupKey(forAsset: icon["url"] as! String))
+//            if let newImg = resizeImage(image: img, targetSize: CGSize(width: CGFloat(size["width"]!), height: CGFloat(size["height"]!)), alpha: CGFloat(1.0)) {
+//                r.image = newImg
+//            }
+//        }
+//        if let strokeColor = myLocationStyle["strokeColor"] as? [Int] {
+//            r.strokeColor = UIColor(red: CGFloat(strokeColor[0]/255), green: CGFloat(strokeColor[1]/255), blue: CGFloat(strokeColor[2]/255), alpha: 1.0)
+//        }
+//        if let strokeWidth = myLocationStyle["strokeWidth"] as? Double {
+//            r.lineWidth = strokeWidth
+//        }
+//        if let radiusFillColor = myLocationStyle["radiusFillColor"] as? [Int] {
+//            r.fillColor = UIColor(red: CGFloat(radiusFillColor[0]/255), green: CGFloat(radiusFillColor[1]/255), blue: CGFloat(radiusFillColor[2]/255), alpha: 1.0)
+//        }
+//        
+//        mapView.update(r)
     }
     
-    func setZoomEnabled(zoomEnabled: Bool) {
-        mapView.isZoomEnabled = zoomEnabled
+    func zoomGesturesEnabled(zoomGesturesEnabled: Bool) {
+        mapView.isZoomEnabled = zoomGesturesEnabled
+    }
+    
+    func scrollGesturesEnabled(scrollGesturesEnabled: Bool) {
+        mapView.isScrollEnabled = scrollGesturesEnabled
+    }
+    
+    func rotateGesturesEnabled(rotateGesturesEnabled: Bool) {
+        mapView.isRotateEnabled = rotateGesturesEnabled
+    }
+    
+    func tiltGesturesEnabled(tiltGesturesEnabled: Bool) {
+        mapView.isRotateCameraEnabled = tiltGesturesEnabled
+    }
+    
+    func allGesturesEnabled(allGesturesEnabled: Bool) {
+        zoomGesturesEnabled(zoomGesturesEnabled: allGesturesEnabled)
+        scrollGesturesEnabled(scrollGesturesEnabled: allGesturesEnabled)
+        rotateGesturesEnabled(rotateGesturesEnabled: allGesturesEnabled)
+        tiltGesturesEnabled(tiltGesturesEnabled: allGesturesEnabled)
+        
     }
     
     func setScrollEnabled(scrollEnabled: Bool) {

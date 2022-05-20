@@ -417,12 +417,40 @@ class AmapViewController {
   }
 
   /// 地图截屏
-  Future<String?> getMapScreenShot() {
-    return _markerChannel.invokeMethod('getMapScreenShot');
+  Future<String?> getMapScreenShot(AmapShot shot) {
+    return _markerChannel.invokeMethod('getMapScreenShot', {'shot': shot.toJson()});
   }
 
   /// 地图显示位置
   Future<bool?> setCameraPosition(CameraPosition cameraPosition) {
     return _markerChannel.invokeMethod('setCameraPosition', {'cameraPosition': cameraPosition.toJson()});
   }
+}
+
+class AmapShot {
+  final double x;
+
+  final double y;
+
+  final double width;
+
+  final double height;
+
+  final double compressionQuality;
+
+  AmapShot({
+    this.x = 0.0,
+    this.y = 0.0,
+    this.compressionQuality = 0.6,
+    required this.width,
+    required this.height,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'width': this.width,
+        'height': this.height,
+        'x': this.x,
+        'y': this.y,
+        'compressionQuality': this.compressionQuality,
+      };
 }

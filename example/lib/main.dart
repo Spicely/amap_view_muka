@@ -10,13 +10,6 @@ import 'create_amap/interactive.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  AmapLocation.updatePrivacyAgree(true);
-  AmapLocation.updatePrivacyShow(true, true);
-
-  AmapLocation.setApiKey("6e630e675873f2a548f55ba99ee8c571", "56250708b9588800db63161534716f8c");
-
-  await [Permission.location, Permission.storage].request();
-
   runApp(
     MaterialApp(
       home: MyApp(),
@@ -33,6 +26,12 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    AmapLocation.updatePrivacyAgree(true);
+    AmapLocation.updatePrivacyShow(true, true);
+
+    AmapLocation.setApiKey("6e630e675873f2a548f55ba99ee8c571", "56250708b9588800db63161534716f8c");
+
+    [Permission.locationAlways, Permission.storage].request();
   }
 
   @override

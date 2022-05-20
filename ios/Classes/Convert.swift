@@ -28,26 +28,30 @@ class Convert {
             if let indoorMap = opts["indoorMap"] as? Bool {
                 delegate.setMapIndoorMap(indoorMap: indoorMap)
             }
-            if let zoomControlsEnabled = opts["zoomControlsEnabled"] as? Bool {
-                delegate.setMapzoomControlsEnabled(zoomControlsEnabled: zoomControlsEnabled)
-            }
-            
             if let compassEnabled = opts["compassEnabled"] as? Bool {
                 delegate.setCompassEnabled(compassEnabled: compassEnabled)
             }
-//
-//            if let myLocationEnabled = opts["myLocationEnabled"] as? Bool {
-//                delegate.setMyLocationEnabled(myLocationEnabled: myLocationEnabled)
-//            }
-//            if let scaleControlsEnabled = opts["scaleControlsEnabled"] as? Bool {
-//                delegate.setScaleEnabled(scaleEnabled: scaleControlsEnabled)
-//            }
-//            if let zoomControlsEnabled = opts["zoomControlsEnabled"] as? Bool {
-//                delegate.setZoomEnabled(zoomEnabled: zoomControlsEnabled)
-//            }
-//            if let scrollGesturesEnabled = opts["scrollGesturesEnabled"] as? Bool {
-//                delegate.setScrollEnabled(scrollEnabled: scrollGesturesEnabled)
-//            }
+            if let myLocationStyle = opts["myLocationStyle"] as? [String: Any] {
+                delegate.setMyLocationStyle(myLocationStyle: myLocationStyle)
+            }
+            if let logoPosition = opts["logoPosition"] as? Int {
+                delegate.setLogoPosition(logoPosition: logoPosition)
+            }
+            if let zoomGesturesEnabled = opts["zoomGesturesEnabled"] as? Bool {
+                delegate.zoomGesturesEnabled(zoomGesturesEnabled: zoomGesturesEnabled)
+            }
+            if let scrollGesturesEnabled = opts["scrollGesturesEnabled"] as? Bool {
+                delegate.scrollGesturesEnabled(scrollGesturesEnabled: scrollGesturesEnabled)
+            }
+            if let rotateGesturesEnabled = opts["rotateGesturesEnabled"] as? Bool {
+                delegate.rotateGesturesEnabled(rotateGesturesEnabled: rotateGesturesEnabled)
+            }
+            if let tiltGesturesEnabled = opts["tiltGesturesEnabled"] as? Bool {
+                delegate.tiltGesturesEnabled(tiltGesturesEnabled: tiltGesturesEnabled)
+            }
+            if let allGesturesEnabled = opts["allGesturesEnabled"] as? Bool {
+                delegate.allGesturesEnabled(allGesturesEnabled: allGesturesEnabled)
+            }
         }
     }
     
@@ -65,6 +69,20 @@ class Convert {
         let latitude = opts["latitude"] as! Double
         let longitude = opts["longitude"] as! Double
         return LatLng(latitude: latitude, longitude: longitude)
+    }
+    
+    class func toCLLocationCoordinate2D(options: Any) -> CLLocationCoordinate2D {
+        let opts = options as! [String: Any]
+        let latitude = opts["latitude"] as! Double
+        let longitude = opts["longitude"] as! Double
+        return CLLocationCoordinate2D.init(latitude: latitude, longitude: longitude)
+    }
+    
+    class func toMACoordinateSpan(options: Any) -> MACoordinateSpan {
+        let opts = options as! [String: Any]
+        let latitude = opts["latitude"] as! Double
+        let longitude = opts["longitude"] as! Double
+        return MACoordinateSpan.init(latitudeDelta: latitude, longitudeDelta: longitude)
     }
     
     class func toJson(latLng: LatLng) -> Dictionary<String, Any> {

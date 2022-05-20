@@ -98,13 +98,13 @@ class AmapView extends StatefulWidget {
   /// 室内地图
   final bool? indoorMap;
 
-  /// 缩放按钮
+  /// 缩放按钮 [only Android]
   final bool? zoomControlsEnabled;
 
   /// 指南针
   final bool? compassEnabled;
 
-  /// 定位按钮
+  /// 定位按钮 [only Android]
   final bool? myLocationButtonEnabled;
 
   /// 地图Logo位置
@@ -128,6 +128,7 @@ class AmapView extends StatefulWidget {
   /// 地图显示位置
   final CameraPosition? cameraPosition;
 
+  /// 指定屏幕中心点的手势操作
   final AmapPoint? pointToCenter;
 
   /// 点击地图
