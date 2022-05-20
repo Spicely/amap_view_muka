@@ -95,7 +95,7 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
             result(true)
         case "setCameraPosition":
             if let args = methodCall.arguments as? [String: Any] {
-                setCameraPosition(camera: Convert.toCameraPosition(opts: args))
+                setCameraPosition(camera: Convert.toCameraPosition(opts: args["cameraPosition"] as! [String : Any]))
             }
             result(true)
         case "setMapType":
@@ -239,7 +239,7 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
                     case "marker#asset":
                         annotationView = MAPinAnnotationView(annotation: annotation, reuseIdentifier: pointReuseIndetifier)
                         annotationView!.canShowCallout = true
-                        annotationView!.animatesDrop = true
+                        annotationView!.animatesDrop = false
                         annotationView!.isDraggable = opts["draggable"] as! Bool
                         
                         
@@ -259,7 +259,7 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
                 } else {
                     annotationView = MAPinAnnotationView(annotation: annotation, reuseIdentifier: pointReuseIndetifier)
                     annotationView!.canShowCallout = true
-                    annotationView!.animatesDrop = true
+                    annotationView!.animatesDrop = false
                     annotationView!.isDraggable = true
                 }
             }
