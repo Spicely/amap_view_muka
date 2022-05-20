@@ -120,7 +120,8 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
                 setLogoPosition(logoPosition: args["position"] as! Int)
             }
             result(true)
-            
+        case "setMyLocationButtonEnabled":
+            result(true)
         case "setZoomGesturesEnabled":
             if let args = methodCall.arguments as? [String: Any] {
                 zoomGesturesEnabled(zoomGesturesEnabled: args["enabled"] as! Bool)
@@ -173,14 +174,19 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
                     if img != nil {
                         let compressImage = img!.jpegData(compressionQuality: opts["compressionQuality"] as! Double)
                         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).map(\.path)
-                        let filePath = URL(fileURLWithPath: paths[0]).appendingPathComponent("shot_amap.png").path
-                        compressImage.write(to: filePath)
-                        result(filePath)
+                        let filePath = URL(fileURLWithPath: paths[0]).appendingPathComponent("shot_amap.png")
+                        do {
+                            try compressImage!.write(to: filePath)
+                            result(filePath.path)
+                        } catch {
+                            result(nil)
+                        }
                     }
                     result(nil)
                 }
             }
-//            mapView.takeSnapshot(in: CGRect(x: 0, y: 0, width: _frame.width, height: _frame.height))
+        case "setPointToCenter":
+            result(true)
            
            
 //        case "map#update":
@@ -237,9 +243,9 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
                         annotationView!.isDraggable = opts["draggable"] as! Bool
                         
                         
-                        let size = icon["size"] as! [String: Int]
+                        let size = icon["size"] as! [String: Double]
                         let img = UIImage(imageLiteralResourceName: flutterRegister.lookupKey(forAsset: icon["url"] as! String))
-                        if let newImg = resizeImage(image: img, targetSize: CGSize(width: CGFloat(size["width"]!), height: CGFloat(size["height"]!)), alpha: CGFloat(opts["alpha"] as! Double)) {
+                        if let newImg = resizeImage(image: img, targetSize: CGSize(width: size["width"]!, height: size["height"]!), alpha: CGFloat(opts["alpha"] as! Double)) {
                             annotationView!.image = newImg
                         }
                     default:
@@ -433,18 +439,7 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
     
     
     func resizeImage(image: UIImage, targetSize: CGSize, alpha: CGFloat) -> UIImage? {
-        let size = image.size
-        
-        let widthRatio  = targetSize.width  / size.width
-        let heightRatio = targetSize.height / size.height
-        
-        // Figure out what our orientation is, and use that to form the rectangle
-        var newSize: CGSize
-        if(widthRatio > heightRatio) {
-            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
-        } else {
-            newSize = CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
-        }
+        let newSize = CGSize(width: targetSize.width, height: targetSize.height)
         
         // This is the rect that we've calculated out and this is what is actually used below
         let rect = CGRect(origin: .zero, size: newSize)

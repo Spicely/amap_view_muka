@@ -1,9 +1,9 @@
 part of amap_view_muka;
 
 class AmapImageSize {
-  final int height;
+  final double height;
 
-  final int width;
+  final double width;
 
   AmapImageSize({
     this.height = 80,

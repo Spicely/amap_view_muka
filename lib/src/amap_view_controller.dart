@@ -390,6 +390,8 @@ class AmapViewController {
 
   /// 设置中心点
   ///
+  /// [only Android]
+  ///
   /// x、y均为屏幕坐标，屏幕左上角为坐标原点，即(0,0)点。
   Future<bool?> setPointToCenter(int x, int y) {
     return _markerChannel.invokeMethod('setPointToCenter', {'x': x, 'y': y});
