@@ -71,4 +71,42 @@ abstract class AmapMarker {
   Map<String, dynamic> toJson() => {};
 
   String get type => '';
+
+  dynamic copyWith({
+    LatLng? position,
+
+    /// 点标记是否可拖拽
+    bool? draggable,
+
+    /// 点标记是否可见
+    bool? visible,
+
+    /// 点标记的锚点
+    String? anchor,
+
+    /// 点标记的锚点
+    double? alpha,
+
+    /// marker点击事件
+    AmapMarkerOnTap? onTap,
+
+    /// marker移动开始事件
+    AmapMarkerOnDragStart? onDragStart,
+
+    /// marker点击事件
+    AmapMarkerOnDragMove? onDragMove,
+
+    /// marker点击事件
+    AmapMarkerOnDragEnd? onDragEnd,
+
+    /// marker自定义图标
+    AmapImage? icon,
+
+    /// marker自定义infoWindow
+    AmapMarkerInfoWindow? infoWindow,
+
+    /// 显示infoWindow
+    bool? showInfoWindow,
+  }) =>
+      dynamic;
 }

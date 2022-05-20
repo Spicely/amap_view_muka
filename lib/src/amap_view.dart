@@ -222,6 +222,12 @@ class _AmapViewState extends State<AmapView> {
 
   void onPlatformViewCreated(int id) async {
     _controller = await AmapViewController.init(id, this);
+
+    /// 将参数marker加入缓存
+    widget.markers?.forEach((marker) {
+      _controller._markerMap[marker.id] = marker;
+    });
+
     widget.onCreated?.call(_controller);
   }
 }

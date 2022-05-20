@@ -10,6 +10,18 @@ class Amap extends StatefulWidget {
 class _AmapState extends State<Amap> {
   late AmapViewController _amapViewController;
 
+  List<AmapMarker> _markers = [
+    AmapDefaultMarker(
+      id: '1',
+      position: LatLng(30.572961, 104.066301),
+    ),
+    AmapDefaultMarker(
+      id: '2',
+      position: LatLng(30.573961, 104.066301),
+      icon: AmapViewImage.asset('assets/images/map.png', size: AmapImageSize(height: 40, width: 40)),
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,17 +35,7 @@ class _AmapState extends State<Amap> {
             child: Stack(
               children: [
                 AmapView(
-                  markers: [
-                    AmapDefaultMarker(
-                      id: '1',
-                      position: LatLng(30.572961, 104.066301),
-                    ),
-                    AmapDefaultMarker(
-                      id: '2',
-                      position: LatLng(30.573961, 104.066301),
-                      icon: AmapViewImage.asset('assets/images/map.png', size: AmapImageSize(height: 40, width: 40)),
-                    ),
-                  ],
+                  markers: _markers,
                   onCreated: (amapViewController) {
                     _amapViewController = amapViewController;
                   },
@@ -130,24 +132,38 @@ class _AmapState extends State<Amap> {
                       children: [
                         ElevatedButton(
                           onPressed: () async {
-                            await _amapViewController.disbleMyLocation();
+                            AmapMarker newMarker = _markers[1].copyWith(
+                              position: LatLng(30.602961, 104.066301),
+                            );
+                            print(newMarker.toJson());
+                            await _amapViewController.updateMarker(newMarker);
                           },
-                          child: Text('关闭蓝点'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await _amapViewController.openOfflineMap();
-                          },
-                          child: Text('打开离线地图'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await _amapViewController.setOffLineCustomMapStyle('assets/style.data', 'assets/style_extra.data');
-                          },
-                          child: Text('设置离线地图'),
+                          child: Text('更新marker'),
                         ),
                       ],
                     ),
+                    // Row(
+                    //   children: [
+                    //     ElevatedButton(
+                    //       onPressed: () async {
+                    //         await _amapViewController.disbleMyLocation();
+                    //       },
+                    //       child: Text('关闭蓝点'),
+                    //     ),
+                    //     ElevatedButton(
+                    //       onPressed: () async {
+                    //         await _amapViewController.openOfflineMap();
+                    //       },
+                    //       child: Text('打开离线地图'),
+                    //     ),
+                    //     ElevatedButton(
+                    //       onPressed: () async {
+                    //         await _amapViewController.setOffLineCustomMapStyle('assets/style.data', 'assets/style_extra.data');
+                    //       },
+                    //       child: Text('设置离线地图'),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ],

@@ -29,10 +29,10 @@ class MarkerController: NSObject {
             if let position = opts["position"] as? [String: Double] {
                 point.coordinate = CLLocationCoordinate2D(latitude: position["latitude"]!, longitude: position["longitude"]!)
             }
-            if let infoWindow = opts["infoWindow"] as? [String: Any] {
-                point.title = infoWindow["title"] as? String
-                point.subtitle = infoWindow["snippet"] as? String
-            }
+//            if let infoWindow = opts["infoWindow"] as? [String: Any] {
+//                point.title = infoWindow["title"] as? String
+//                point.subtitle = infoWindow["snippet"] as? String
+//            }
             let markerId = opts["id"] as! String
             
             // 保存状态
@@ -40,8 +40,18 @@ class MarkerController: NSObject {
             markerIdToOptions[markerId] = opts
             
             mapView.addAnnotation(point)
-            
-            // markerIdToDartMarkerId[]
+        }
+    }
+    
+    func updateMarker(options: [String: Any]) {
+        let id = options["id"] as! String
+        if let point = markerIdToMarker[id] {
+            let position = options["position"] as! [String: Double]
+            point.coordinate = CLLocationCoordinate2D(latitude: position["latitude"]!, longitude: position["longitude"]!)
+            if markerIdToOptions[id] != nil {
+                markerIdToOptions[id] = options
+            }
+            mapView.addAnnotation(point)
         }
     }
     

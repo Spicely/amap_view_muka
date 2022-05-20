@@ -89,6 +89,59 @@ class AmapDefaultMarker implements AmapMarker {
   @override
   String get type => 'defaultMarker';
 
+  @override
+  AmapDefaultMarker copyWith({
+    LatLng? position,
+
+    /// 点标记是否可拖拽
+    bool? draggable,
+
+    /// 点标记是否可见
+    bool? visible,
+
+    /// 点标记的锚点
+    String? anchor,
+
+    /// 点标记的锚点
+    double? alpha,
+
+    /// marker点击事件
+    AmapMarkerOnTap? onTap,
+
+    /// marker移动开始事件
+    AmapMarkerOnDragStart? onDragStart,
+
+    /// marker点击事件
+    AmapMarkerOnDragMove? onDragMove,
+
+    /// marker点击事件
+    AmapMarkerOnDragEnd? onDragEnd,
+
+    /// marker自定义图标
+    AmapImage? icon,
+
+    /// marker自定义infoWindow
+    AmapMarkerInfoWindow? infoWindow,
+
+    /// 显示infoWindow
+    bool? showInfoWindow,
+  }) =>
+      AmapDefaultMarker(
+        id: this.id,
+        position: position ?? this.position,
+        draggable: draggable ?? this.draggable,
+        visible: visible ?? this.visible,
+        anchor: anchor ?? this.anchor,
+        alpha: alpha ?? this.alpha,
+        onTap: onTap ?? this.onTap,
+        onDragStart: onDragStart ?? this.onDragStart,
+        onDragMove: onDragMove ?? this.onDragMove,
+        onDragEnd: onDragEnd ?? this.onDragEnd,
+        icon: icon ?? this.icon,
+        infoWindow: infoWindow ?? this.infoWindow,
+        showInfoWindow: showInfoWindow ?? this.showInfoWindow,
+      );
+
   factory AmapDefaultMarker.fromJson(Map<String, dynamic> json) => AmapDefaultMarker(
         id: json['id'] as String,
         position: LatLng.fromJson(json['position'] as Map<String, dynamic>),

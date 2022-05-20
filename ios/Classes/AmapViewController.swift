@@ -66,17 +66,9 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
                 Convert.interpretMapOptions(options: args["options"], delegate: self)
             }
             result(true)
-        case "markers#update":
+        case "marker#update":
             if let args = methodCall.arguments as? [String: Any] {
-                if let markersToAdd = (args["markersToAdd"] as? [Any]) {
-                    markerController.addMarkers(markersToAdd: markersToAdd)
-                }
-                if let markersToChange = args["markersToChange"] as? [Any] {
-                    markerController.changeMarkers(markersToChange: markersToChange)
-                }
-                if let markerIdsToRemove = args["markerIdsToRemove"] as? [Any] {
-                    markerController.removeMarkers(markerIdsToRemove: markerIdsToRemove)
-                }
+                markerController.updateMarker(options: args)
             }
             result(true)
         case "camera#update":
@@ -137,8 +129,9 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
                         
                         let size = icon["size"] as! [String: Int]
                         let img = UIImage(imageLiteralResourceName: flutterRegister.lookupKey(forAsset: icon["url"] as! String))
-                        annotationView!.image = img
-                        annotationView!.image?.draw(in: CGRect(x:0, y:0, width: CGFloat(size["width"]!), height: CGFloat(size["height"]!)), blendMode: CGBlendMode.screen, alpha: CGFloat(opts["alpha"] as! Double))
+                        if let newImg = resizeImage(image: img, targetSize: CGSize(width: CGFloat(size["width"]!), height: CGFloat(size["height"]!)), alpha: CGFloat(opts["alpha"] as! Double)) {
+                            annotationView!.image = newImg
+                        }
                     default:
                         annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: pointReuseIndetifier) as! MAPinAnnotationView?
                         
@@ -264,4 +257,30 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
         mapView.isScrollEnabled = scrollEnabled
     }
     
+    
+    func resizeImage(image: UIImage, targetSize: CGSize, alpha: CGFloat) -> UIImage? {
+        let size = image.size
+        
+        let widthRatio  = targetSize.width  / size.width
+        let heightRatio = targetSize.height / size.height
+        
+        // Figure out what our orientation is, and use that to form the rectangle
+        var newSize: CGSize
+        if(widthRatio > heightRatio) {
+            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
+        } else {
+            newSize = CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
+        }
+        
+        // This is the rect that we've calculated out and this is what is actually used below
+        let rect = CGRect(origin: .zero, size: newSize)
+        
+        // Actually do the resizing to the rect using the ImageContext stuff
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        image.draw(in: rect, blendMode: CGBlendMode.screen, alpha: alpha)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
 }
