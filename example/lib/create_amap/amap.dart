@@ -45,10 +45,10 @@ class _AmapState extends State<Amap> {
                   myLocationStyle: MyLocationStyle(
                     locationStyle: AmapLocationStyle.LOCATION_TYPE_FOLLOW,
                     enabled: true,
-                    // icon: AmapViewImage.asset('assets/images/map.png', size: AmapImageSize(height: 40, width: 40)),
-                    // radiusFillColor: Colors.red,
-                    // strokeColor: Colors.green,
-                    // strokeWidth: 3.0,
+                    icon: AmapViewImage.asset('assets/images/map.png', size: AmapImageSize(height: 40, width: 40)),
+                    radiusFillColor: Colors.red.withOpacity(0.2),
+                    strokeColor: Colors.green,
+                    strokeWidth: 3.0,
                   ),
                   zoom: 18,
                   onMapClick: (cameraPosition) {

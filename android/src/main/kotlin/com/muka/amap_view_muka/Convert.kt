@@ -240,7 +240,7 @@ class Convert {
                             val size = icon["size"] as Map<String, Any>
                             val imageView = ImageView(context)
                             val params =
-                                ViewGroup.LayoutParams(size["width"] as Int, size["height"] as Int)
+                                ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
                             val assetManager: AssetManager = context.assets
                             imageView.setImageBitmap(
                                 BitmapFactory.decodeStream(
