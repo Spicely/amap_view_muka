@@ -38,7 +38,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
         result.success(true)
     }
 
-    fun addMarker(opts: Map<String, Any>, context: Context, result: MethodChannel.Result) {
+    fun addMarker(opts: Map<String, Any>, context: Context) {
         val type: String = (opts["type"] as String?)!!
         val id: String = (opts["id"] as String?)!!
         val position: Map<String, Any> = (opts["position"] as Map<String, Any>?)!!
@@ -66,7 +66,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
                 "marker#asset" -> {
                     val size = icon["size"] as Map<String, Any>
                     val imageView = ImageView(context)
-                    val params = ViewGroup.LayoutParams(size["width"] as Int, size["height"] as Int)
+                    val params = ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
                     val assetManager: AssetManager = context.assets
                     imageView.setImageBitmap(BitmapFactory.decodeStream(assetManager.open(
                         FlutterInjector.instance().flutterLoader()
@@ -87,7 +87,6 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
             "defaultMarker" -> {
                 markerIdToMarker[id] = marker
                 markerIdToDartMarkerId[marker.id] = id
-                result.success(true)
             }
         }
     }
@@ -123,7 +122,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
                 "marker#asset" -> {
                     val size = icon["size"] as Map<String, Any>
                     val imageView = ImageView(context)
-                    val params = ViewGroup.LayoutParams(size["width"] as Int, size["height"] as Int)
+                    val params = ViewGroup.LayoutParams((size["width"] as Double).toInt(),( size["height"] as Double).toInt())
                     val assetManager: AssetManager = context.assets
                     imageView.setImageBitmap(BitmapFactory.decodeStream(assetManager.open(
                         FlutterInjector.instance().flutterLoader()

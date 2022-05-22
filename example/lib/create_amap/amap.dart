@@ -42,14 +42,14 @@ class _AmapState extends State<Amap> {
                   cameraPosition: CameraPosition(LatLng(30.572961, 104.066301), 15, 20, 45),
                   language: AmapViewLanguage.ENGLISH,
                   type: AmapViewType.MAP_TYPE_NIGHT,
-                  myLocationStyle: MyLocationStyle(
-                    locationStyle: AmapLocationStyle.LOCATION_TYPE_FOLLOW,
-                    enabled: true,
-                    icon: AmapViewImage.asset('assets/images/map.png', size: AmapImageSize(height: 40, width: 40)),
-                    radiusFillColor: Colors.red.withOpacity(0.2),
-                    strokeColor: Colors.green,
-                    strokeWidth: 3.0,
-                  ),
+                  // myLocationStyle: MyLocationStyle(
+                  //   locationStyle: AmapLocationStyle.LOCATION_TYPE_FOLLOW,
+                  //   enabled: true,
+                  //   icon: AmapViewImage.asset('assets/images/map.png', size: AmapImageSize(height: 40, width: 40)),
+                  //   radiusFillColor: Colors.red.withOpacity(0.2),
+                  //   strokeColor: Colors.green,
+                  //   strokeWidth: 3.0,
+                  // ),
                   zoom: 18,
                   onMapClick: (cameraPosition) {
                     print('地图点击：${cameraPosition.toJson()}');

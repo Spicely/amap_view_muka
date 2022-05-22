@@ -33,8 +33,8 @@ class AmapMarkerCardInfoWindow implements AmapMarkerInfoWindow {
   });
 
   Map<String, dynamic> toJson() => {
-        'width': this.width,
-        'height': this.height,
+        'width': this.width * window.devicePixelRatio,
+        'height': this.height * window.devicePixelRatio,
         'backgroundColor': this.backgroundColor.toString(),
       };
 

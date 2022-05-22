@@ -100,7 +100,8 @@ class _InteractiveState extends State<Interactive> {
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            String? path = await _amapViewController.getMapScreenShot(AmapShot(width: 200, height: 100));
+                            String? path =
+                                await _amapViewController.getMapScreenShot(AmapShot(width: MediaQuery.of(context).size.width, height: 100));
                             if (path != null) {
                               setState(() {
                                 _path = path;

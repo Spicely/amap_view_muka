@@ -11,8 +11,8 @@ class AmapImageSize {
   });
 
   Map<String, dynamic> toJson() => {
-        'height': this.height,
-        'width': this.width,
+        'height': this.height * window.devicePixelRatio,
+        'width': this.width * window.devicePixelRatio,
       };
 
   factory AmapImageSize.fromJson(Map<dynamic, dynamic> json) => AmapImageSize(

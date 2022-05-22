@@ -42,6 +42,7 @@ class Convert {
         }
 
         fun initParams(params: Map<String, Any>, map: AMap, context: Context) {
+
             /// 地图显示位置
             if (params["cameraPosition"] != null) {
                 val cameraPosition = (params["cameraPosition"] as Map<String, Any>?)!!
@@ -51,12 +52,12 @@ class Convert {
                 val bearing = (cameraPosition["bearing"] as Double?)!!
                 val duration = cameraPosition["duration"] as Int?
                 val mCameraUpdate = CameraUpdateFactory.newCameraPosition(
-                    CameraPosition(
-                        LatLng(
-                            latLng["latitude"] as Double,
-                            latLng["longitude"] as Double
-                        ), zoom.toFloat(), tilt.toFloat(), bearing.toFloat()
-                    )
+                        CameraPosition(
+                                LatLng(
+                                        latLng["latitude"] as Double,
+                                        latLng["longitude"] as Double
+                                ), zoom.toFloat(), tilt.toFloat(), bearing.toFloat()
+                        )
                 )
                 if (duration == null) {
                     map.moveCamera(mCameraUpdate)
@@ -83,6 +84,9 @@ class Convert {
                     }
                     3 -> {
                         map.mapType = AMap.MAP_TYPE_SATELLITE
+                    }
+                    4 -> {
+                        map.mapType = AMap.MAP_TYPE_BUS
                     }
                     else -> {
                         map.mapType = AMap.MAP_TYPE_NORMAL
@@ -119,7 +123,7 @@ class Convert {
             /// 定位按钮
             if (params["myLocationButtonEnabled"] != null) {
                 map.uiSettings.isMyLocationButtonEnabled =
-                    params["myLocationButtonEnabled"] as Boolean
+                        params["myLocationButtonEnabled"] as Boolean
             }
             /// 定位按钮
             if (params["logoPosition"] != null) {
@@ -161,6 +165,7 @@ class Convert {
             if (params["allGesturesEnabled"] != null) {
                 map.uiSettings.setAllGesturesEnabled(params["allGesturesEnabled"] as Boolean)
             }
+
             /// 蓝点设置
             if (params["myLocationStyle"] != null) {
                 val opts = params["myLocationStyle"] as Map<String, Any>
@@ -176,28 +181,28 @@ class Convert {
 
                 if (anchor != null) {
                     myLocationStyle.anchor(
-                        (anchor["u"] as Double).toFloat(),
-                        (anchor["v"] as Double).toFloat()
+                            (anchor["u"] as Double).toFloat(),
+                            (anchor["v"] as Double).toFloat()
                     )
                 }
 
                 if (strokeColor != null) {
                     myLocationStyle.strokeColor(
-                        Color.rgb(
-                            strokeColor[0],
-                            strokeColor[1],
-                            strokeColor[2]
-                        )
+                            Color.rgb(
+                                    strokeColor[0],
+                                    strokeColor[1],
+                                    strokeColor[2]
+                            )
                     )
                 }
 
                 if (radiusFillColor != null) {
                     myLocationStyle.radiusFillColor(
-                        Color.rgb(
-                            radiusFillColor[0],
-                            radiusFillColor[1],
-                            radiusFillColor[2]
-                        )
+                            Color.rgb(
+                                    radiusFillColor[0],
+                                    radiusFillColor[1],
+                                    radiusFillColor[2]
+                            )
                     )
                 }
 
@@ -232,6 +237,8 @@ class Convert {
                     }
                 }
 
+
+
                 myLocationStyle.interval(interval.toLong())
                 myLocationStyle.showMyLocation(enabled)
                 if (icon != null) {
@@ -240,17 +247,17 @@ class Convert {
                             val size = icon["size"] as Map<String, Any>
                             val imageView = ImageView(context)
                             val params =
-                                ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
+                                    ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
                             val assetManager: AssetManager = context.assets
                             imageView.setImageBitmap(
-                                BitmapFactory.decodeStream(
-                                    assetManager.open(
-                                        getFlutterAsset(
-                                            icon["url"] as String,
-                                            icon["package"] as String?
-                                        )
+                                    BitmapFactory.decodeStream(
+                                            assetManager.open(
+                                                    getFlutterAsset(
+                                                            icon["url"] as String,
+                                                            icon["package"] as String?
+                                                    )
+                                            )
                                     )
-                                )
                             )
                             imageView.layoutParams = params
                             val asset = BitmapDescriptorFactory.fromView(imageView)

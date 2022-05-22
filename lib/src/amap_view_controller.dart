@@ -449,8 +449,8 @@ class AmapShot {
   });
 
   Map<String, dynamic> toJson() => {
-        'width': this.width,
-        'height': this.height,
+        'width': this.width * window.devicePixelRatio,
+        'height': this.height * window.devicePixelRatio,
         'x': this.x,
         'y': this.y,
         'compressionQuality': this.compressionQuality,

@@ -1,7 +1,6 @@
 package com.muka.amap_view_muka
 
 import android.Manifest
-import android.R
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -40,7 +39,6 @@ class AmapViewFactory(
     private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context?, viewId: Int, args: Any?): PlatformView {
-        Log.d("11111111111", "221111111111111111")
         // 申请权限
         ActivityCompat.requestPermissions(
             activity,
@@ -53,7 +51,6 @@ class AmapViewFactory(
             ),
             321
         )
-        Log.d("11111111111", "221144444444444444411111111111111")
         val params = args as Map<String, Any>
         return AMapView(context!!, viewId, flutterPluginBinding, params)
     }
@@ -83,18 +80,26 @@ class AMapView(
 
     private var resultSkip: MethodChannel.Result? = null
 
+    private var cropOpts: Map<String, Any>? = null
+
     init {
         mapView.onCreate(null)
 //        map.setOnMapLoadedListener(this)
 //
 ////        registrarActivityHashCode = registrar.activity().hashCode()
-        Convert.initParams(params, map, context)
+
         // marker控制器
         methodChannel =
             MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
         methodChannel.setMethodCallHandler(this)
 
         markerController = MarkerController(methodChannel, map)
+
+        Convert.initParams(params, map, context)
+
+        (params["markers"] as List<*>?)?.forEach {
+            markerController.addMarker(it as Map<String, Any>, context)
+        }
 
         // 地图点击事件监听
         map.setOnMapClickListener(this)
@@ -124,7 +129,8 @@ class AMapView(
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "marker#add" -> {
-                markerController.addMarker(call.arguments as Map<String, Any>, context, result)
+                markerController.addMarker(call.arguments as Map<String, Any>, context)
+                result.success(true)
             }
             "marker#update" -> {
                 markerController.updateMarker(call.arguments as Map<String, Any>, context, result)
@@ -433,10 +439,11 @@ class AMapView(
             }
             "animateCamera" -> {
                 val opts = call.arguments as Map<String, Any>
+
                 val cameraPosition = (opts["cameraPosition"] as Map<String, Any>?)!!
                 val latLng = (cameraPosition["latLng"] as Map<String, Any>?)!!
                 val zoom = (cameraPosition["zoom"] as Double?)!!
-                val tile = (cameraPosition["tile"] as Double?)!!
+                val tilt = (cameraPosition["tilt"] as Double?)!!
                 val bearing = (cameraPosition["bearing"] as Double?)!!
                 val duration = cameraPosition["duration"] as Int?
                 val mCameraUpdate = CameraUpdateFactory.newCameraPosition(
@@ -444,7 +451,7 @@ class AMapView(
                         LatLng(
                             latLng["latitude"] as Double,
                             latLng["longitude"] as Double
-                        ), zoom.toFloat(), tile.toFloat(), bearing.toFloat()
+                        ), zoom.toFloat(), tilt.toFloat(), bearing.toFloat()
                     )
                 )
                 if (duration == null) {
@@ -471,6 +478,8 @@ class AMapView(
                 result.success(true)
             }
             "getMapScreenShot" -> {
+                val opts = call.arguments as Map<String, Any>
+                cropOpts = (opts["shot"] as Map<String, Any>?)!!
                 map.getMapScreenShot(this)
                 resultSkip = result
             }
@@ -515,14 +524,17 @@ class AMapView(
 
     override fun onMapScreenShot(bitmap: Bitmap, status: Int) {
         val sdf = SimpleDateFormat("yyyyMMddHHmmss")
-        if (null == R.attr.bitmap) {
+        if (null == bitmap) {
             resultSkip?.error("400", "null", status)
+            return
         }
         try {
+            Log.d("ssa",cropOpts.toString());
+           val newImag = Bitmap.createBitmap(bitmap, (cropOpts?.get("x") as Double).toInt(), (cropOpts?.get("y") as Double).toInt(), (cropOpts?.get("width") as Double).toInt(), (cropOpts?.get("height") as Double).toInt())
             val path =
                 context.getExternalFilesDir(null).toString() + "/map_" + sdf.format(Date()) + ".png"
             val fos = FileOutputStream(path)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            newImag.compress(Bitmap.CompressFormat.PNG, (cropOpts?.get("compressionQuality") as Double * 100).toInt(), fos)
             try {
                 fos.flush()
             } catch (e: IOException) {
