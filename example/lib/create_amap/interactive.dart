@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:amap_view_muka/amap_view_muka.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_muka/flutter_muka.dart';
 
 class Interactive extends StatefulWidget {
   @override
@@ -10,7 +9,7 @@ class Interactive extends StatefulWidget {
 }
 
 class _InteractiveState extends State<Interactive> {
-  late AmapViewController _amapViewController;
+  late AMapViewController _amapViewController;
   String? _path;
 
   @override
@@ -25,7 +24,7 @@ class _InteractiveState extends State<Interactive> {
           Expanded(
             child: Stack(
               children: [
-                AmapView(
+                AMapView(
                   onCreated: (amapViewController) {
                     _amapViewController = amapViewController;
                   },
@@ -80,7 +79,7 @@ class _InteractiveState extends State<Interactive> {
                       children: [
                         ElevatedButton(
                           onPressed: () async {
-                            await _amapViewController.setLogoPosition(AmapViewLogoPosition.LOGO_POSITION_BOTTOM_RIGHT);
+                            await _amapViewController.setLogoPosition(AMapViewLogoPosition.LOGO_POSITION_BOTTOM_RIGHT);
                           },
                           child: Text('LOGO位置'),
                         ),
@@ -101,7 +100,7 @@ class _InteractiveState extends State<Interactive> {
                         ElevatedButton(
                           onPressed: () async {
                             String? path =
-                                await _amapViewController.getMapScreenShot(AmapShot(width: MediaQuery.of(context).size.width, height: 100));
+                                await _amapViewController.getMapScreenShot(AMapShot(width: MediaQuery.of(context).size.width, height: 100));
                             if (path != null) {
                               setState(() {
                                 _path = path;

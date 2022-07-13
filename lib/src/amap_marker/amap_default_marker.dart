@@ -7,7 +7,7 @@ part of amap_view_muka;
 //// Date: 2021年05月06日 11:16:43 Thursday
 //////////////////////////////////////////////////////////////////////////
 
-class AmapDefaultMarker implements AmapMarker {
+class AMapDefaultMarker implements AMapMarker {
   /// 作为唯一索引
   final String id;
 
@@ -33,27 +33,27 @@ class AmapDefaultMarker implements AmapMarker {
   final double alpha;
 
   /// marker点击事件
-  final AmapMarkerOnTap? onTap;
+  final AMapMarkerOnTap? onTap;
 
   /// marker移动开始事件
-  final AmapMarkerOnDragStart? onDragStart;
+  final AMapMarkerOnDragStart? onDragStart;
 
   /// marker点击事件
-  final AmapMarkerOnDragMove? onDragMove;
+  final AMapMarkerOnDragMove? onDragMove;
 
   /// marker点击事件
-  final AmapMarkerOnDragEnd? onDragEnd;
+  final AMapMarkerOnDragEnd? onDragEnd;
 
   /// marker自定义图标
-  final AmapImage? icon;
+  final AMapImage? icon;
 
   /// marker自定义infoWindow
-  final AmapMarkerInfoWindow? infoWindow;
+  final AMapMarkerInfoWindow? infoWindow;
 
   /// 显示infoWindow
   final bool showInfoWindow;
 
-  AmapDefaultMarker({
+  AMapDefaultMarker({
     required this.id,
     required this.position,
     this.title,
@@ -90,7 +90,7 @@ class AmapDefaultMarker implements AmapMarker {
   String get type => 'defaultMarker';
 
   @override
-  AmapDefaultMarker copyWith({
+  AMapDefaultMarker copyWith({
     LatLng? position,
 
     /// 点标记是否可拖拽
@@ -106,27 +106,27 @@ class AmapDefaultMarker implements AmapMarker {
     double? alpha,
 
     /// marker点击事件
-    AmapMarkerOnTap? onTap,
+    AMapMarkerOnTap? onTap,
 
     /// marker移动开始事件
-    AmapMarkerOnDragStart? onDragStart,
+    AMapMarkerOnDragStart? onDragStart,
 
     /// marker点击事件
-    AmapMarkerOnDragMove? onDragMove,
+    AMapMarkerOnDragMove? onDragMove,
 
     /// marker点击事件
-    AmapMarkerOnDragEnd? onDragEnd,
+    AMapMarkerOnDragEnd? onDragEnd,
 
     /// marker自定义图标
-    AmapImage? icon,
+    AMapImage? icon,
 
     /// marker自定义infoWindow
-    AmapMarkerInfoWindow? infoWindow,
+    AMapMarkerInfoWindow? infoWindow,
 
     /// 显示infoWindow
     bool? showInfoWindow,
   }) =>
-      AmapDefaultMarker(
+      AMapDefaultMarker(
         id: this.id,
         position: position ?? this.position,
         draggable: draggable ?? this.draggable,
@@ -142,7 +142,7 @@ class AmapDefaultMarker implements AmapMarker {
         showInfoWindow: showInfoWindow ?? this.showInfoWindow,
       );
 
-  factory AmapDefaultMarker.fromJson(Map<String, dynamic> json) => AmapDefaultMarker(
+  factory AMapDefaultMarker.fromJson(Map<String, dynamic> json) => AMapDefaultMarker(
         id: json['id'] as String,
         position: LatLng.fromJson(json['position'] as Map<String, dynamic>),
         title: json['title'],
@@ -151,25 +151,25 @@ class AmapDefaultMarker implements AmapMarker {
         visible: json['visible'] as bool,
         draggable: json['draggable'] as bool,
         alpha: json['alpha'] as double,
-        icon: json['icon'] ?? _getAmapImage(json['icon']),
-        infoWindow: json['infoWindow'] ?? _getAmapMarkerInfoWindow(json['infoWindow']),
+        icon: json['icon'] ?? _getAMapImage(json['icon']),
+        infoWindow: json['infoWindow'] ?? _getAMapMarkerInfoWindow(json['infoWindow']),
       );
 }
 
-AmapImage _getAmapImage(Map<dynamic, dynamic> json) {
+AMapImage _getAMapImage(Map<dynamic, dynamic> json) {
   switch (json['type']) {
     case 'marker#asset':
-      return AmapViewAssetImage.fromJson(json);
+      return AMapViewAssetImage.fromJson(json);
     default:
-      return AmapViewAssetImage.fromJson(json);
+      return AMapViewAssetImage.fromJson(json);
   }
 }
 
-AmapMarkerInfoWindow _getAmapMarkerInfoWindow(Map<dynamic, dynamic> json) {
+AMapMarkerInfoWindow _getAMapMarkerInfoWindow(Map<dynamic, dynamic> json) {
   switch (json['type']) {
     // case 'marker#asset':
-    //   return AmapMarkerAssetIcon.fromJson(json);
+    //   return AMapMarkerAssetIcon.fromJson(json);
     default:
-      return AmapMarkerCardInfoWindow.fromJson(json);
+      return AMapMarkerCardInfoWindow.fromJson(json);
   }
 }

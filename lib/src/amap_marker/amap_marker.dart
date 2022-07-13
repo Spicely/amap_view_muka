@@ -1,14 +1,14 @@
 part of amap_view_muka;
 
-typedef void AmapMarkerOnTap();
+typedef void AMapMarkerOnTap();
 
-typedef void AmapMarkerOnDragStart(LatLng latLng);
+typedef void AMapMarkerOnDragStart(LatLng latLng);
 
-typedef void AmapMarkerOnDragMove(LatLng latLng);
+typedef void AMapMarkerOnDragMove(LatLng latLng);
 
-typedef void AmapMarkerOnDragEnd(LatLng latLng);
+typedef void AMapMarkerOnDragEnd(LatLng latLng);
 
-abstract class AmapMarker {
+abstract class AMapMarker {
   /// 作为唯一索引
   ///
   /// [必填参数]
@@ -32,27 +32,27 @@ abstract class AmapMarker {
   final double alpha;
 
   /// marker点击事件
-  final AmapMarkerOnTap? onTap;
+  final AMapMarkerOnTap? onTap;
 
   /// marker移动开始事件
-  final AmapMarkerOnDragStart? onDragStart;
+  final AMapMarkerOnDragStart? onDragStart;
 
   /// marker点击事件
-  final AmapMarkerOnDragMove? onDragMove;
+  final AMapMarkerOnDragMove? onDragMove;
 
   /// marker点击事件
-  final AmapMarkerOnDragEnd? onDragEnd;
+  final AMapMarkerOnDragEnd? onDragEnd;
 
   /// marker自定义图标
-  final AmapImage? icon;
+  final AMapImage? icon;
 
   /// marker自定义infoWindow
-  final AmapMarkerInfoWindow? infoWindow;
+  final AMapMarkerInfoWindow? infoWindow;
 
   /// 显示infoWindow
   final bool showInfoWindow;
 
-  AmapMarker({
+  AMapMarker({
     required this.id,
     required this.position,
     this.icon,
@@ -88,22 +88,22 @@ abstract class AmapMarker {
     double? alpha,
 
     /// marker点击事件
-    AmapMarkerOnTap? onTap,
+    AMapMarkerOnTap? onTap,
 
     /// marker移动开始事件
-    AmapMarkerOnDragStart? onDragStart,
+    AMapMarkerOnDragStart? onDragStart,
 
     /// marker点击事件
-    AmapMarkerOnDragMove? onDragMove,
+    AMapMarkerOnDragMove? onDragMove,
 
     /// marker点击事件
-    AmapMarkerOnDragEnd? onDragEnd,
+    AMapMarkerOnDragEnd? onDragEnd,
 
     /// marker自定义图标
-    AmapImage? icon,
+    AMapImage? icon,
 
     /// marker自定义infoWindow
-    AmapMarkerInfoWindow? infoWindow,
+    AMapMarkerInfoWindow? infoWindow,
 
     /// 显示infoWindow
     bool? showInfoWindow,

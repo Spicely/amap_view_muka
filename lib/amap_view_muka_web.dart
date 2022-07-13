@@ -8,8 +8,8 @@ import 'dart:html' as html show window;
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
-/// A web implementation of the AmapViewMuka plugin.
-class AmapViewMukaWeb {
+/// A web implementation of the AMapViewMuka plugin.
+class AMapViewMukaWeb {
   static void registerWith(Registrar registrar) {
     final MethodChannel channel = MethodChannel(
       'amap_view_muka',
@@ -17,7 +17,7 @@ class AmapViewMukaWeb {
       registrar,
     );
 
-    final pluginInstance = AmapViewMukaWeb();
+    final pluginInstance = AMapViewMukaWeb();
     channel.setMethodCallHandler(pluginInstance.handleMethodCall);
   }
 

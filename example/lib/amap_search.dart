@@ -5,15 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_muka/flutter_muka.dart';
 
-class AmapSearchLoc extends StatefulWidget {
-  const AmapSearchLoc({Key? key}) : super(key: key);
+class AMapSearchLoc extends StatefulWidget {
+  const AMapSearchLoc({Key? key}) : super(key: key);
 
   @override
-  _AmapSearchLocState createState() => _AmapSearchLocState();
+  _AMapSearchLocState createState() => _AMapSearchLocState();
 }
 
-class _AmapSearchLocState extends State<AmapSearchLoc> {
-  AmapViewController? _amapViewController;
+class _AMapSearchLocState extends State<AMapSearchLoc> {
+  AMapViewController? _amapViewController;
 
   ITextEditingController _search = ITextEditingController(text: '');
 
@@ -32,22 +32,22 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Expanded(
-            child: AmapView(
+            child: AMapView(
               onCreated: (amapViewController) async {
                 _amapViewController = amapViewController;
-                Location _loc = await AmapLocation.fetch();
+                Location _loc = await AMapLocation.fetch();
                 _amapViewController?.setCameraPosition(CameraPosition(LatLng(_loc.latitude!, _loc.longitude!), 13, 0, 20, duration: 200));
                 _amapViewController?.addMarker(
-                  AmapDefaultMarker(
+                  AMapDefaultMarker(
                     id: '1',
                     position: LatLng(_loc.latitude!, _loc.longitude!),
-                    icon: AmapViewImage.asset('assets/images/map.png'),
+                    icon: AMapViewImage.asset('assets/images/map.png'),
                   ),
                 );
               },
               onMapIdle: (_cameraPosition) {
                 _amapViewController?.updateMarker(
-                  AmapDefaultMarker(
+                  AMapDefaultMarker(
                     id: '1',
                     position: _cameraPosition.latLng,
                   ),
@@ -57,7 +57,7 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
               },
               onMapMove: (_cameraPosition) async {
                 _amapViewController?.updateMarker(
-                  AmapDefaultMarker(
+                  AMapDefaultMarker(
                     id: '1',
                     position: _cameraPosition.latLng,
                   ),
@@ -118,7 +118,7 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
                         noMoreText: '没有更多了',
                       ),
                       onRefresh: () async {
-                        List<AMapPoi> data = await AmapSearch.searchAround(_latLng!);
+                        List<AMapPoi> data = await AMapSearch.searchAround(_latLng!);
                         _data = data;
 
                         setState(() {});

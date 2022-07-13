@@ -1,11 +1,11 @@
 part of amap_view_muka;
 
-class AmapImageSize {
+class AMapImageSize {
   final double height;
 
   final double width;
 
-  AmapImageSize({
+  AMapImageSize({
     this.height = 80,
     this.width = 80,
   });
@@ -15,24 +15,24 @@ class AmapImageSize {
         'width': this.width * window.devicePixelRatio,
       };
 
-  factory AmapImageSize.fromJson(Map<dynamic, dynamic> json) => AmapImageSize(
+  factory AMapImageSize.fromJson(Map<dynamic, dynamic> json) => AMapImageSize(
         height: json['height'],
         width: json['width'],
       );
 }
 
-abstract class AmapImage {
+abstract class AMapImage {
   /// 地址
   final String url;
 
   /// 图片尺寸
   ///
   /// 默认 80 * 80
-  final AmapImageSize? size;
+  final AMapImageSize? size;
 
   String get type => '';
 
-  AmapImage(
+  AMapImage(
     this.url, {
     this.size,
   });
@@ -40,7 +40,7 @@ abstract class AmapImage {
   Map<String, dynamic> toJson() => {};
 }
 
-class AmapViewAssetImage implements AmapImage {
+class AMapViewAssetImage implements AMapImage {
   /// 地址
   final String url;
 
@@ -49,9 +49,9 @@ class AmapViewAssetImage implements AmapImage {
   /// 图片尺寸
   ///
   /// 默认 80 * 80
-  final AmapImageSize? size;
+  final AMapImageSize? size;
 
-  AmapViewAssetImage(
+  AMapViewAssetImage(
     this.url, {
     this.package,
     this.size,
@@ -64,26 +64,26 @@ class AmapViewAssetImage implements AmapImage {
         'url': this.url,
         'type': this.type,
         'package': this.package,
-        'size': this.size == null ? AmapImageSize().toJson() : this.size!.toJson(),
+        'size': this.size == null ? AMapImageSize().toJson() : this.size!.toJson(),
       };
 
-  factory AmapViewAssetImage.fromJson(Map<dynamic, dynamic> json) => AmapViewAssetImage(
+  factory AMapViewAssetImage.fromJson(Map<dynamic, dynamic> json) => AMapViewAssetImage(
         json['url'],
         package: json['package'],
-        size: json['size'] != null ? AmapImageSize.fromJson(json['size']) : null,
+        size: json['size'] != null ? AMapImageSize.fromJson(json['size']) : null,
       );
 }
 
-class AmapWebImage implements AmapImage {
+class AMapWebImage implements AMapImage {
   /// 地址
   final String url;
 
   /// 图片尺寸
   ///
   /// 默认 80 * 80
-  final AmapImageSize? size;
+  final AMapImageSize? size;
 
-  AmapWebImage(
+  AMapWebImage(
     this.url, {
     this.size,
   });
@@ -94,20 +94,20 @@ class AmapWebImage implements AmapImage {
   Map<String, dynamic> toJson() => {
         'url': this.url,
         'type': this.type,
-        'size': this.size == null ? AmapImageSize().toJson() : this.size!.toJson(),
+        'size': this.size == null ? AMapImageSize().toJson() : this.size!.toJson(),
       };
 
-  factory AmapWebImage.fromJson(Map<dynamic, dynamic> json) => AmapWebImage(json['url']);
+  factory AMapWebImage.fromJson(Map<dynamic, dynamic> json) => AMapWebImage(json['url']);
 }
 
-class AmapViewImage {
+class AMapViewImage {
   /// 从assets读取
-  static AmapImage asset(
+  static AMapImage asset(
     String url, {
     String? package,
-    AmapImageSize? size,
+    AMapImageSize? size,
   }) {
-    return AmapViewAssetImage(
+    return AMapViewAssetImage(
       url,
       package: package,
       size: size,
@@ -115,7 +115,7 @@ class AmapViewImage {
   }
 
   // /// 从互联网中读取
-  // static AmapImage web(String url) {
-  //   return AmapMarkerWebIcon(url);
+  // static AMapImage web(String url) {
+  //   return AMapMarkerWebIcon(url);
   // }
 }
