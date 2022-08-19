@@ -4,22 +4,21 @@ import 'dart:ui' as ui;
 import 'package:amap_view_muka/amap_view_muka.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:widget2image/widget2image.dart';
 
 class Amap extends StatefulWidget {
   @override
-  _AmapState createState() => _AmapState();
+  _AMapState createState() => _AMapState();
 }
 
-class _AmapState extends State<Amap> {
-  late AmapViewController _amapViewController;
+class _AMapState extends State<Amap> {
+  late AMapViewController _amapViewController;
 
-  List<AmapMarker> _markers = [
-    AmapDefaultMarker(
+  List<AMapMarker> _markers = [
+    AMapDefaultMarker(
       id: '1',
       position: LatLng(30.572961, 104.066301),
     ),
-    AmapDefaultMarker(
+    AMapDefaultMarker(
       id: '2',
       position: LatLng(30.573961, 104.066301),
       icon: AMapViewImage.asset('assets/images/map.png', size: AMapImageSize(height: 40, width: 40)),
@@ -40,18 +39,18 @@ class _AmapState extends State<Amap> {
           Expanded(
             child: Stack(
               children: [
-                AmapView(
+                AMapView(
                   markers: _markers,
                   onCreated: (amapViewController) {
                     _amapViewController = amapViewController;
                   },
                   cameraPosition: CameraPosition(LatLng(30.572961, 104.066301), 15, 20, 45),
-                  language: AmapViewLanguage.ENGLISH,
-                  type: AmapViewType.MAP_TYPE_NIGHT,
+                  language: AMapViewLanguage.ENGLISH,
+                  type: AMapViewType.MAP_TYPE_NIGHT,
                   // myLocationStyle: MyLocationStyle(
-                  //   locationStyle: AmapLocationStyle.LOCATION_TYPE_FOLLOW,
+                  //   locationStyle: AMapLocationStyle.LOCATION_TYPE_FOLLOW,
                   //   enabled: true,
-                  //   icon: AmapViewImage.asset('assets/images/map.png', size: AmapImageSize(height: 40, width: 40)),
+                  //   icon: AMapViewImage.asset('assets/images/map.png', size: AMapImageSize(height: 40, width: 40)),
                   //   radiusFillColor: Colors.red.withOpacity(0.2),
                   //   strokeColor: Colors.green,
                   //   strokeWidth: 3.0,
@@ -73,31 +72,31 @@ class _AmapState extends State<Amap> {
                       children: [
                         // ElevatedButton(
                         //   onPressed: () async {
-                        //     await _amapViewController.setMapType(AmapViewType.MAP_TYPE_NAVI);
+                        //     await _amapViewController.setMapType(AMapViewType.MAP_TYPE_NAVI);
                         //   },
                         //   child: Text('导航地图'),
                         // ),
                         ElevatedButton(
                           onPressed: () async {
-                            await _amapViewController.setMapType(AmapViewType.MAP_TYPE_NIGHT);
+                            await _amapViewController.setMapType(AMapViewType.MAP_TYPE_NIGHT);
                           },
                           child: Text('夜景地图'),
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            await _amapViewController.setMapType(AmapViewType.MAP_TYPE_NORMAL);
+                            await _amapViewController.setMapType(AMapViewType.MAP_TYPE_NORMAL);
                           },
                           child: Text('白昼地图'),
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            await _amapViewController.setMapType(AmapViewType.MAP_TYPE_SATELLITE);
+                            await _amapViewController.setMapType(AMapViewType.MAP_TYPE_SATELLITE);
                           },
                           child: Text('卫星图'),
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            await _amapViewController.setMapType(AmapViewType.MAP_TYPE_BUS);
+                            await _amapViewController.setMapType(AMapViewType.MAP_TYPE_BUS);
                           },
                           child: Text('公交地图'),
                         )
@@ -107,21 +106,21 @@ class _AmapState extends State<Amap> {
                       children: [
                         ElevatedButton(
                           onPressed: () async {
-                            await _amapViewController.setMapLanguage(AmapViewLanguage.CHINESE);
+                            await _amapViewController.setMapLanguage(AMapViewLanguage.CHINESE);
                           },
                           child: Text('中文'),
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            await _amapViewController.setMapLanguage(AmapViewLanguage.ENGLISH);
+                            await _amapViewController.setMapLanguage(AMapViewLanguage.ENGLISH);
                           },
                           child: Text('英文'),
                         ),
                         ElevatedButton(
                           onPressed: () async {
                             await _amapViewController.setMyLocation(
-                              locationStyle: AmapLocationStyle.LOCATION_TYPE_FOLLOW,
-                              // anchor: AmapAnchor(0.0, 0),
+                              locationStyle: AMapLocationStyle.LOCATION_TYPE_FOLLOW,
+                              // anchor: AMapAnchor(0.0, 0),
                               strokeColor: Colors.blue,
                               radiusFillColor: Colors.blue.withOpacity(0.2),
                               strokeWidth: 300.0,
@@ -165,7 +164,7 @@ class _AmapState extends State<Amap> {
                             ui.Image image = await render.toImage();
                             ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
                             print(byteData?.buffer.asUint8List());
-                            AmapMarker newMarker = AmapDefaultMarker(
+                            AMapMarker newMarker = AMapDefaultMarker(
                               id: '3',
                               position: LatLng(30.573961, 104.066301),
                               icon: AMapViewImage.uint8List(byteData!.buffer.asUint8List(), size: AMapImageSize(height: 90, width: 90)),

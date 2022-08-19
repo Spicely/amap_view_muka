@@ -2,16 +2,16 @@ part of amap_view_muka;
 
 const _viewType = 'plugins.muka.com/amap_view_muka';
 
-typedef void AmapViewOnCreated(AmapViewController controller);
+typedef void AMapViewOnCreated(AMapViewController controller);
 
-typedef void AmapViewOnMapClick(CameraPosition cameraPosition);
+typedef void AMapViewOnMapClick(CameraPosition cameraPosition);
 
-typedef void AmapViewOnMapMove(CameraPosition cameraPosition);
+typedef void AMapViewOnMapMove(CameraPosition cameraPosition);
 
-typedef void AmapViewOnMapIdle(CameraPosition cameraPosition);
+typedef void AMapViewOnMapIdle(CameraPosition cameraPosition);
 
 class MyLocationStyle {
-  final AmapLocationStyle locationStyle;
+  final AMapLocationStyle locationStyle;
 
   final bool enabled;
 
@@ -19,7 +19,7 @@ class MyLocationStyle {
 
   final AMapImage? icon;
 
-  final AmapAnchor? anchor;
+  final AMapAnchor? anchor;
 
   final Color? strokeColor;
 
@@ -52,11 +52,11 @@ class MyLocationStyle {
         'strokeWidth': strokeWidth,
       };
   MyLocationStyle copyWith({
-    AmapLocationStyle? locationStyle,
+    AMapLocationStyle? locationStyle,
     bool? enabled,
     int? interval,
     AMapImage? icon,
-    AmapAnchor? anchor,
+    AMapAnchor? anchor,
     Color? strokeColor,
     Color? radiusFillColor,
     double? strokeWidth,
@@ -74,23 +74,23 @@ class MyLocationStyle {
   }
 }
 
-class AmapView extends StatefulWidget {
+class AMapView extends StatefulWidget {
   final dynamic creation;
 
   /// 地图初始化完成
-  final AmapViewOnCreated? onCreated;
+  final AMapViewOnCreated? onCreated;
 
   /// 地图类型
-  final AmapViewType? type;
+  final AMapViewType? type;
 
   /// 地图语言
-  final AmapViewLanguage? language;
+  final AMapViewLanguage? language;
 
   /// 缩放等级
   final double? zoom;
 
   /// markers
-  final List<AmapMarker>? markers;
+  final List<AMapMarker>? markers;
 
   /// 蓝点样式
   final MyLocationStyle? myLocationStyle;
@@ -108,7 +108,7 @@ class AmapView extends StatefulWidget {
   final bool? myLocationButtonEnabled;
 
   /// 地图Logo位置
-  final AmapViewLogoPosition? logoPosition;
+  final AMapViewLogoPosition? logoPosition;
 
   /// 缩放手势
   final bool? zoomGesturesEnabled;
@@ -129,18 +129,18 @@ class AmapView extends StatefulWidget {
   final CameraPosition? cameraPosition;
 
   /// 指定屏幕中心点的手势操作 [only Android]
-  final AmapPoint? pointToCenter;
+  final AMapPoint? pointToCenter;
 
   /// 点击地图
-  final AmapViewOnMapClick? onMapClick;
+  final AMapViewOnMapClick? onMapClick;
 
   /// 地图移动
-  final AmapViewOnMapMove? onMapMove;
+  final AMapViewOnMapMove? onMapMove;
 
   /// 地图移动结束
-  final AmapViewOnMapIdle? onMapIdle;
+  final AMapViewOnMapIdle? onMapIdle;
 
-  const AmapView({
+  const AMapView({
     Key? key,
     this.creation,
     this.onCreated,
@@ -167,11 +167,11 @@ class AmapView extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AmapViewState createState() => _AmapViewState();
+  _AMapViewState createState() => _AMapViewState();
 }
 
-class _AmapViewState extends State<AmapView> {
-  late AmapViewController _controller;
+class _AMapViewState extends State<AMapView> {
+  late AMapViewController _controller;
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +222,7 @@ class _AmapViewState extends State<AmapView> {
   }
 
   void onPlatformViewCreated(int id) async {
-    _controller = await AmapViewController.init(id, this);
+    _controller = await AMapViewController.init(id, this);
 
     /// 将参数marker加入缓存
     widget.markers?.forEach((marker) {

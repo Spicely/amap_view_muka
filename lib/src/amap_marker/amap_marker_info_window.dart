@@ -1,6 +1,6 @@
 part of amap_view_muka;
 
-abstract class AmapMarkerInfoWindow {
+abstract class AMapMarkerInfoWindow {
   final Color backgroundColor;
 
   final double height;
@@ -10,7 +10,7 @@ abstract class AmapMarkerInfoWindow {
   /// marker图标类型
   String get type => '';
 
-  AmapMarkerInfoWindow({
+  AMapMarkerInfoWindow({
     this.backgroundColor = Colors.white,
     this.width = 220.0,
     this.height = 110.0,
@@ -19,14 +19,14 @@ abstract class AmapMarkerInfoWindow {
   Map<String, dynamic> toJson() => {};
 }
 
-class AmapMarkerCardInfoWindow implements AmapMarkerInfoWindow {
+class AMapMarkerCardInfoWindow implements AMapMarkerInfoWindow {
   final Color backgroundColor;
 
   final double height;
 
   final double width;
 
-  AmapMarkerCardInfoWindow({
+  AMapMarkerCardInfoWindow({
     this.backgroundColor = Colors.white,
     this.width = 220.0,
     this.height = 110.0,
@@ -38,7 +38,7 @@ class AmapMarkerCardInfoWindow implements AmapMarkerInfoWindow {
         'backgroundColor': this.backgroundColor.toString(),
       };
 
-  factory AmapMarkerCardInfoWindow.fromJson(Map<dynamic, dynamic> json) => AmapMarkerCardInfoWindow(
+  factory AMapMarkerCardInfoWindow.fromJson(Map<dynamic, dynamic> json) => AMapMarkerCardInfoWindow(
         backgroundColor: json['backgroundColor'],
         width: json['width'],
         height: json['height'],

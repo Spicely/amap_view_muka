@@ -14,7 +14,7 @@ packages:
       path: "../../amap_location_muka"
       relative: true
     source: path
-    version: "0.1.5"
+    version: "0.1.6"
   amap_search_muka:
     dependency: "direct main"
     description:
@@ -28,7 +28,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.1.0"
   archive:
     dependency: transitive
     description:

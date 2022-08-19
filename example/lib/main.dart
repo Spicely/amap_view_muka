@@ -26,10 +26,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    AmapLocation.updatePrivacyAgree(true);
-    AmapLocation.updatePrivacyShow(true, true);
+    AMapLocation.updatePrivacyAgree(true);
+    AMapLocation.updatePrivacyShow(true, true);
 
-    AmapLocation.setApiKey("6e630e675873f2a548f55ba99ee8c571", "56250708b9588800db63161534716f8c");
+    AMapLocation.setApiKey("6e630e675873f2a548f55ba99ee8c571", "56250708b9588800db63161534716f8c");
 
     [Permission.locationAlways, Permission.storage].request();
   }
@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> {
                   color: Colors.white,
                   showDivider: true,
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AmapSearchLoc()));
+                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AMapSearchLoc()));
                   },
                 ),
               ],
@@ -97,13 +97,13 @@ class _MyAppState extends State<MyApp> {
 //                   value: Text('添加marker'),
 //                   onTap: () async {
 //                     await _amapViewController.addMarker(
-//                       AmapDefaultMarker(
+//                       AMapDefaultMarker(
 //                         id: '1',
 //                         position: LatLng(39.90607, 116.407041),
 //                         draggable: true,
 //                         title: '测试',
 //                         snippet: '测试2222',
-//                         icon: await AmapViewImage.asset(context, 'assets/images/map.png'),
+//                         icon: await AMapViewImage.asset(context, 'assets/images/map.png'),
 //                         onTap: () {
 //                           print('这是marker点击事件');
 //                         },
@@ -118,7 +118,7 @@ class _MyAppState extends State<MyApp> {
 //                           print('marker移动结束，当前坐标：${latLng.toJson()}');
 //                         },
 //                         showInfoWindow: true,
-//                         infoWindow: AmapMarkerCardInfoWindow(),
+//                         infoWindow: AMapMarkerCardInfoWindow(),
 //                       ),
 //                     );
 //                   },

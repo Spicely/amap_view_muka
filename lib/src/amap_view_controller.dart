@@ -2,7 +2,7 @@ part of amap_view_muka;
 
 const _marker = 'plugins.muka.com/amap_view_muka_marker';
 
-enum AmapViewType {
+enum AMapViewType {
   /// 导航地图
   MAP_TYPE_NAVI,
 
@@ -19,7 +19,7 @@ enum AmapViewType {
   MAP_TYPE_BUS,
 }
 
-enum AmapViewLogoPosition {
+enum AMapViewLogoPosition {
   /// 左边
   LOGO_POSITION_BOTTOM_LEFT,
 
@@ -36,7 +36,7 @@ enum AmapViewLogoPosition {
   LOGO_POSITION_BOTTOM_RIGHT,
 }
 
-enum AmapViewLanguage {
+enum AMapViewLanguage {
   /// 中文
   CHINESE,
 
@@ -44,7 +44,7 @@ enum AmapViewLanguage {
   ENGLISH,
 }
 
-enum AmapLocationStyle {
+enum AMapLocationStyle {
   /// 只定位一次 地图不会移动
   LOCATION_TYPE_SHOW,
 
@@ -70,41 +70,41 @@ enum AmapLocationStyle {
   LOCATION_TYPE_MAP_ROTATE_NO_CENTER,
 }
 
-class AmapAnchor {
+class AMapAnchor {
   final double u;
 
   final double v;
 
-  AmapAnchor(this.u, this.v);
+  AMapAnchor(this.u, this.v);
 
   Map<String, dynamic> toJson() => {
         'u': this.u,
         'v': this.v,
       };
 
-  AmapAnchor copyWith({
+  AMapAnchor copyWith({
     double? u,
     double? v,
   }) =>
-      AmapAnchor(u ?? this.u, v ?? this.v);
+      AMapAnchor(u ?? this.u, v ?? this.v);
 
-  factory AmapAnchor.fromJson(Map<String, dynamic> json) => AmapAnchor(json['u'], json['v']);
+  factory AMapAnchor.fromJson(Map<String, dynamic> json) => AMapAnchor(json['u'], json['v']);
 }
 
-class AmapViewController {
-  final Map<String, AmapMarker> _markerMap = {};
+class AMapViewController {
+  final Map<String, AMapMarker> _markerMap = {};
 
   late MethodChannel _markerChannel;
 
-  late _AmapViewState _mapState;
+  late _AMapViewState _mapState;
 
-  AmapViewController._(this._markerChannel, this._mapState) {
+  AMapViewController._(this._markerChannel, this._mapState) {
     _markerChannel.setMethodCallHandler(_handleMethodCall);
   }
 
-  static Future<AmapViewController> init(int id, _AmapViewState state) async {
+  static Future<AMapViewController> init(int id, _AMapViewState state) async {
     MethodChannel markerChannel = MethodChannel('${_marker}_$id');
-    return AmapViewController._(markerChannel, state);
+    return AMapViewController._(markerChannel, state);
   }
 
   /// 设置蓝点 并开启
@@ -117,11 +117,11 @@ class AmapViewController {
   ///
   /// [icon] 自定义图标
   Future<void> setMyLocation({
-    AmapLocationStyle locationStyle = AmapLocationStyle.LOCATION_TYPE_FOLLOW,
+    AMapLocationStyle locationStyle = AMapLocationStyle.LOCATION_TYPE_FOLLOW,
     bool enabled = true,
     int interval = 1000,
     AMapImage? icon,
-    AmapAnchor? anchor,
+    AMapAnchor? anchor,
     Color? strokeColor,
     Color? radiusFillColor,
     double? strokeWidth,
@@ -153,12 +153,12 @@ class AmapViewController {
   }
 
   /// 设置地图图层
-  Future<void> setMapType(AmapViewType type) {
+  Future<void> setMapType(AMapViewType type) {
     return _markerChannel.invokeMethod('setMapType', {'type': type.index});
   }
 
   /// 设置地图语言
-  Future<void> setMapLanguage(AmapViewLanguage language) {
+  Future<void> setMapLanguage(AMapViewLanguage language) {
     return _markerChannel.invokeMethod('setMapLanguage', {'language': language.index});
   }
 
@@ -193,7 +193,7 @@ class AmapViewController {
   /// 添加单个marker
   ///
   /// 已存在的id会被忽略
-  Future<bool?> addMarker(AmapMarker marker) async {
+  Future<bool?> addMarker(AMapMarker marker) async {
     if (_markerMap[marker.id] == null) {
       _markerMap[marker.id] = marker;
       return _markerChannel.invokeMethod('marker#add', marker.toJson());
@@ -204,7 +204,7 @@ class AmapViewController {
   /// 更新单个marker
   ///
   /// 没有的id会返回false
-  Future<bool?> updateMarker(AmapMarker marker) async {
+  Future<bool?> updateMarker(AMapMarker marker) async {
     if (_markerMap[marker.id] != null) {
       return _markerChannel.invokeMethod('marker#update', marker.toJson());
     }
@@ -225,13 +225,13 @@ class AmapViewController {
   Future<void> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'marker#onTap':
-        AmapMarker? marker = _markerMap[call.arguments['markerId']];
+        AMapMarker? marker = _markerMap[call.arguments['markerId']];
         if (marker != null) {
           marker.onTap?.call();
         }
         break;
       case 'marker#onDragStart':
-        AmapMarker? marker = _markerMap[call.arguments['markerId']];
+        AMapMarker? marker = _markerMap[call.arguments['markerId']];
         if (marker != null) {
           marker.onDragStart?.call(LatLng.fromJson({
             'latitude': call.arguments['latLng']['latitude'],
@@ -240,7 +240,7 @@ class AmapViewController {
         }
         break;
       case 'marker#onDragMove':
-        AmapMarker? marker = _markerMap[call.arguments['markerId']];
+        AMapMarker? marker = _markerMap[call.arguments['markerId']];
         if (marker != null) {
           marker.onDragMove?.call(LatLng.fromJson({
             'latitude': call.arguments['latLng']['latitude'],
@@ -249,7 +249,7 @@ class AmapViewController {
         }
         break;
       case 'marker#onDragEnd':
-        AmapMarker? marker = _markerMap[call.arguments['markerId']];
+        AMapMarker? marker = _markerMap[call.arguments['markerId']];
         if (marker != null) {
           marker.onDragEnd?.call(LatLng.fromJson({
             'latitude': call.arguments['latLng']['latitude'],
@@ -334,7 +334,7 @@ class AmapViewController {
   }
 
   /// 地图Logo位置
-  Future<void> setLogoPosition(AmapViewLogoPosition position) {
+  Future<void> setLogoPosition(AMapViewLogoPosition position) {
     return _markerChannel.invokeMethod('setLogoPosition', {'position': position.index});
   }
 
@@ -419,7 +419,7 @@ class AmapViewController {
   }
 
   /// 地图截屏
-  Future<String?> getMapScreenShot(AmapShot shot) {
+  Future<String?> getMapScreenShot(AMapShot shot) {
     return _markerChannel.invokeMethod('getMapScreenShot', {'shot': shot.toJson()});
   }
 
@@ -429,7 +429,7 @@ class AmapViewController {
   }
 }
 
-class AmapShot {
+class AMapShot {
   final double x;
 
   final double y;
@@ -440,7 +440,7 @@ class AmapShot {
 
   final double compressionQuality;
 
-  AmapShot({
+  AMapShot({
     this.x = 0.0,
     this.y = 0.0,
     this.compressionQuality = 0.6,
