@@ -3,6 +3,7 @@ package com.muka.amap_view_muka
 import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.BitmapFactory
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -74,6 +75,20 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
                     )
                     )
                     )
+                    imageView.layoutParams = params
+                    val asset = BitmapDescriptorFactory.fromView(imageView)
+                    marker.setIcon(asset)
+                }
+                "marker#byteArray" -> {
+                    val size = icon["size"] as Map<String, Any>
+                    val imageView = ImageView(context)
+                    val params =
+                            ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
+                    val data = icon["data"] as ByteArray
+                    print(data)
+                    val length = data.size
+                    var bitmap = BitmapFactory.decodeByteArray(data, 0, length)
+                    imageView.setImageBitmap(bitmap)
                     imageView.layoutParams = params
                     val asset = BitmapDescriptorFactory.fromView(imageView)
                     marker.setIcon(asset)

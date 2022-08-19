@@ -120,7 +120,7 @@ class AmapViewController {
     AmapLocationStyle locationStyle = AmapLocationStyle.LOCATION_TYPE_FOLLOW,
     bool enabled = true,
     int interval = 1000,
-    AmapImage? icon,
+    AMapImage? icon,
     AmapAnchor? anchor,
     Color? strokeColor,
     Color? radiusFillColor,

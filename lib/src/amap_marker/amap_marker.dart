@@ -44,7 +44,7 @@ abstract class AmapMarker {
   final AmapMarkerOnDragEnd? onDragEnd;
 
   /// marker自定义图标
-  final AmapImage? icon;
+  final AMapImage? icon;
 
   /// marker自定义infoWindow
   final AmapMarkerInfoWindow? infoWindow;
@@ -100,7 +100,7 @@ abstract class AmapMarker {
     AmapMarkerOnDragEnd? onDragEnd,
 
     /// marker自定义图标
-    AmapImage? icon,
+    AMapImage? icon,
 
     /// marker自定义infoWindow
     AmapMarkerInfoWindow? infoWindow,

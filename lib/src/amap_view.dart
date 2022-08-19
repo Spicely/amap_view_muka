@@ -17,7 +17,7 @@ class MyLocationStyle {
 
   final int interval;
 
-  final AmapImage? icon;
+  final AMapImage? icon;
 
   final AmapAnchor? anchor;
 
@@ -55,7 +55,7 @@ class MyLocationStyle {
     AmapLocationStyle? locationStyle,
     bool? enabled,
     int? interval,
-    AmapImage? icon,
+    AMapImage? icon,
     AmapAnchor? anchor,
     Color? strokeColor,
     Color? radiusFillColor,

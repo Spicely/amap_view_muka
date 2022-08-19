@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:amap_view_muka/amap_view_muka.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_muka/flutter_muka.dart';
+import 'package:flutter/rendering.dart';
+import 'package:widget2image/widget2image.dart';
 
 class Amap extends StatefulWidget {
   @override
@@ -18,9 +22,11 @@ class _AmapState extends State<Amap> {
     AmapDefaultMarker(
       id: '2',
       position: LatLng(30.573961, 104.066301),
-      icon: AmapViewImage.asset('assets/images/map.png', size: AmapImageSize(height: 40, width: 40)),
+      icon: AMapViewImage.asset('assets/images/map.png', size: AMapImageSize(height: 40, width: 40)),
     ),
   ];
+
+  GlobalKey _globalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -119,9 +125,9 @@ class _AmapState extends State<Amap> {
                               strokeColor: Colors.blue,
                               radiusFillColor: Colors.blue.withOpacity(0.2),
                               strokeWidth: 300.0,
-                              icon: AmapViewImage.asset(
+                              icon: AMapViewImage.asset(
                                 'assets/images/map.png',
-                                size: AmapImageSize(width: 100, height: 400),
+                                size: AMapImageSize(width: 100, height: 400),
                               ),
                             );
                           },
@@ -136,15 +142,36 @@ class _AmapState extends State<Amap> {
                         ),
                       ],
                     ),
+                    RepaintBoundary(
+                      key: _globalKey,
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 90,
+                        width: 90,
+                        color: Colors.red,
+                        child: Column(
+                          children: [
+                            Text('123131'),
+                            Text('1231313333'),
+                          ],
+                        ),
+                      ),
+                    ),
                     Row(
                       children: [
                         ElevatedButton(
                           onPressed: () async {
-                            AmapMarker newMarker = _markers[1].copyWith(
-                              position: LatLng(30.602961, 104.066301),
+                            RenderRepaintBoundary render = _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+                            ui.Image image = await render.toImage();
+                            ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+                            print(byteData?.buffer.asUint8List());
+                            AmapMarker newMarker = AmapDefaultMarker(
+                              id: '3',
+                              position: LatLng(30.573961, 104.066301),
+                              icon: AMapViewImage.uint8List(byteData!.buffer.asUint8List(), size: AMapImageSize(height: 90, width: 90)),
                             );
                             print(newMarker.toJson());
-                            await _amapViewController.updateMarker(newMarker);
+                            await _amapViewController.addMarker(newMarker);
                           },
                           child: Text('更新marker'),
                         ),

@@ -41,7 +41,7 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
                   AmapDefaultMarker(
                     id: '1',
                     position: LatLng(_loc.latitude!, _loc.longitude!),
-                    icon: AmapViewImage.asset('assets/images/map.png'),
+                    icon: AMapViewImage.asset('assets/images/map.png'),
                   ),
                 );
               },
@@ -118,7 +118,7 @@ class _AmapSearchLocState extends State<AmapSearchLoc> {
                         noMoreText: '没有更多了',
                       ),
                       onRefresh: () async {
-                        List<AMapPoi> data = await AmapSearch.searchAround(_latLng!);
+                        List<AMapPoi> data = await AMapSearch.searchAround(_latLng!);
                         _data = data;
 
                         setState(() {});

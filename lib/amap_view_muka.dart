@@ -1,6 +1,7 @@
 library amap_view_muka;
 
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:amap_core/amap_core.dart';

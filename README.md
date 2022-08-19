@@ -64,3 +64,20 @@ Flutter高德地图插件
     </array>
 ```
 
+- 2022/08/19 flutter Widget 转为icon使用
+```
+/// 增加android AMapViewImage.uint8List
+
+RenderRepaintBoundary render = _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+ui.Image image = await render.toImage();
+ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+print(byteData?.buffer.asUint8List());
+AmapMarker newMarker = AMapDefaultMarker(
+    id: '3',
+    position: LatLng(30.573961, 104.066301),
+    icon: AMapViewImage.uint8List(byteData!.buffer.asUint8List(), size: AMapImageSize(height: 90, width: 90)),
+);
+print(newMarker.toJson());
+await _amapViewController.addMarker(newMarker);
+
+```

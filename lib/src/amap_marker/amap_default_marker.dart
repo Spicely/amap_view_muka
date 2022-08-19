@@ -45,7 +45,7 @@ class AmapDefaultMarker implements AmapMarker {
   final AmapMarkerOnDragEnd? onDragEnd;
 
   /// marker自定义图标
-  final AmapImage? icon;
+  final AMapImage? icon;
 
   /// marker自定义infoWindow
   final AmapMarkerInfoWindow? infoWindow;
@@ -118,7 +118,7 @@ class AmapDefaultMarker implements AmapMarker {
     AmapMarkerOnDragEnd? onDragEnd,
 
     /// marker自定义图标
-    AmapImage? icon,
+    AMapImage? icon,
 
     /// marker自定义infoWindow
     AmapMarkerInfoWindow? infoWindow,
@@ -156,12 +156,12 @@ class AmapDefaultMarker implements AmapMarker {
       );
 }
 
-AmapImage _getAmapImage(Map<dynamic, dynamic> json) {
+AMapImage _getAmapImage(Map<dynamic, dynamic> json) {
   switch (json['type']) {
     case 'marker#asset':
-      return AmapViewAssetImage.fromJson(json);
+      return AMapViewAssetImage.fromJson(json);
     default:
-      return AmapViewAssetImage.fromJson(json);
+      return AMapViewAssetImage.fromJson(json);
   }
 }
 
