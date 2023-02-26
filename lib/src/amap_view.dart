@@ -1,6 +1,6 @@
 part of amap_view_muka;
 
-const _viewType = 'plugins.muka.com/amap_view_muka';
+const _viewType = 'plugins.muka.com/amap_navi_view_muka';
 
 typedef void AMapViewOnCreated(AMapViewController controller);
 

@@ -17,9 +17,12 @@ import androidx.core.app.ActivityCompat
 import com.amap.api.maps.AMap
 import com.amap.api.maps.AMapOptions
 import com.amap.api.maps.CameraUpdateFactory
-import com.amap.api.maps.TextureMapView
 import com.amap.api.maps.model.*
 import com.amap.api.maps.offlinemap.OfflineMapActivity
+import com.amap.api.navi.AMapNavi
+import com.amap.api.navi.AMapNaviListener
+import com.amap.api.navi.AMapNaviView
+import com.amap.api.navi.model.*
 import com.muka.amap_view_muka.AmapViewMukaPlugin.Companion.AMAP_MUKA_MARKER
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -69,8 +72,9 @@ class AMapView(
         AMap.OnCameraChangeListener,
         AMap.OnMyLocationChangeListener,
         AMap.OnMapScreenShotListener,
+    AMapNaviListener,
         AMap.OnMarkerDragListener {
-    private val mapView: TextureMapView = TextureMapView(context)
+    private val mapView: AMapNaviView = AMapNaviView(context)
 
     private var map: AMap = mapView.map
 
@@ -78,7 +82,7 @@ class AMapView(
 
     private var markerController: MarkerController
 
-    private var resultSkip: MethodChannel.Result? = null
+    private var resultSkip : MethodChannel.Result? = null
 
     private var cropOpts: Map<String, Any>? = null
 
@@ -127,6 +131,7 @@ class AMapView(
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        val opts = call.arguments as Map<String, Any>
         when (call.method) {
             "marker#add" -> {
                 markerController.addMarker(call.arguments as Map<String, Any>, context)
@@ -139,7 +144,6 @@ class AMapView(
                 markerController.deleteMarker(call.arguments as Map<String, Any>, result)
             }
             "enabledMyLocation" -> {
-                val opts = call.arguments as Map<String, Any>
                 val locationStyle = (opts["locationStyle"] as Int?)!!
                 val interval = (opts["interval"] as Int?)!!
                 val enabled = (opts["enabled"] as Boolean?)!!
@@ -260,13 +264,11 @@ class AMapView(
                 result.success(true)
             }
             "setZoomLevel" -> {
-                val opts = call.arguments as Map<String, Any>
                 val level = (opts["level"] as Double?)!!
                 map.moveCamera(CameraUpdateFactory.zoomTo(level.toFloat()))
                 result.success(true)
             }
             "setIndoorMap" -> {
-                val opts = call.arguments as Map<String, Any>
                 val enabled = (opts["enabled"] as Boolean?)!!
                 map.showIndoorMap(enabled)
                 result.success(true)
@@ -276,7 +278,6 @@ class AMapView(
                 result.success(true)
             }
             "setMapType" -> {
-                val opts = call.arguments as Map<String, Any>
                 when ((opts["type"] as Int?)!!) {
                     0 -> {
                         map.mapType = AMap.MAP_TYPE_NAVI
@@ -295,7 +296,6 @@ class AMapView(
                 result.success(true)
             }
             "setMapLanguage" -> {
-                val opts = call.arguments as Map<String, Any>
                 when ((opts["language"] as Int?)!!) {
                     1 -> {
                         map.setMapLanguage(AMap.ENGLISH)
@@ -318,7 +318,6 @@ class AMapView(
             }
             "setOffLineCustomMapStyle" -> {
                 /// 设置离线自定义地图
-                val opts = call.arguments as Map<String, Any>
                 val dataPath = (opts["dataPath"] as String?)!!
                 val extraPath = (opts["extraPath"] as String?)!!
                 val texturePath = opts["texturePath"] as String?
@@ -335,7 +334,6 @@ class AMapView(
             }
             "setOnLineCustomMapStyle" -> {
                 /// 设置在线自定义地图
-                val opts = call.arguments as Map<String, Any>
                 val styleId = (opts["styleId"] as String?)!!
                 val texturePath = opts["texturePath"] as String?
                 val packageName = opts["package"] as String?
@@ -350,28 +348,24 @@ class AMapView(
             }
             "setZoomControlsEnabled" -> {
                 /// 缩放按钮
-                val opts = call.arguments as Map<String, Any>
                 val enabled = (opts["enabled"] as Boolean?)!!
                 map.uiSettings.isZoomControlsEnabled = enabled
                 result.success(true)
             }
             "setCompassEnabled" -> {
                 /// 指南针
-                val opts = call.arguments as Map<String, Any>
                 val enabled = (opts["enabled"] as Boolean?)!!
                 map.uiSettings.isCompassEnabled = enabled
                 result.success(true)
             }
             "setMyLocationButtonEnabled" -> {
                 /// 定位按钮
-                val opts = call.arguments as Map<String, Any>
                 val enabled = (opts["enabled"] as Boolean?)!!
                 map.uiSettings.isMyLocationButtonEnabled = enabled
                 result.success(true)
             }
             "setLogoPosition" -> {
                 /// 地图Logo位置
-                val opts = call.arguments as Map<String, Any>
                 when ((opts["position"] as Int?)!!) {
                     1 -> {
                         map.uiSettings.logoPosition = AMapOptions.LOGO_MARGIN_BOTTOM
@@ -393,35 +387,30 @@ class AMapView(
             }
             "setZoomGesturesEnabled" -> {
                 /// 缩放手势
-                val opts = call.arguments as Map<String, Any>
                 val enabled = (opts["enabled"] as Boolean?)!!
                 map.uiSettings.isZoomGesturesEnabled = enabled
                 result.success(true)
             }
             "setScrollGesturesEnabled" -> {
                 /// 滑动手势
-                val opts = call.arguments as Map<String, Any>
                 val enabled = (opts["enabled"] as Boolean?)!!
                 map.uiSettings.isScrollGesturesEnabled = enabled
                 result.success(true)
             }
             "setRotateGesturesEnabled" -> {
                 /// 旋转手势
-                val opts = call.arguments as Map<String, Any>
                 val enabled = (opts["enabled"] as Boolean?)!!
                 map.uiSettings.isRotateGesturesEnabled = enabled
                 result.success(true)
             }
             "setTiltGesturesEnabled" -> {
                 /// 倾斜手势
-                val opts = call.arguments as Map<String, Any>
                 val enabled = (opts["enabled"] as Boolean?)!!
                 map.uiSettings.isTiltGesturesEnabled = enabled
                 result.success(true)
             }
             "setAllGesturesEnabled" -> {
                 /// 所有手势
-                val opts = call.arguments as Map<String, Any>
                 val enabled = (opts["enabled"] as Boolean?)!!
                 map.uiSettings.setAllGesturesEnabled(enabled)
                 result.success(true)
@@ -439,23 +428,19 @@ class AMapView(
                 result.success(map.uiSettings.isTiltGesturesEnabled)
             }
             "setGestureScaleByMapCenter" -> {
-                val opts = call.arguments as Map<String, Any>
                 val enabled = (opts["enabled"] as Boolean?)!!
                 map.uiSettings.isGestureScaleByMapCenter = enabled
                 result.success(true)
             }
             "setPointToCenter" -> {
-                val opts = call.arguments as Map<String, Any>
                 val x = (opts["x"] as Int?)!!
                 val y = (opts["y"] as Int?)!!
                 map.setPointToCenter(x, y)
                 result.success(true)
             }
             "animateCamera" -> {
-                val opts = call.arguments as Map<String, Any>
-
-                val cameraPosition = (opts["cameraPosition"] as Map<String, Any>?)!!
-                val latLng = (cameraPosition["latLng"] as Map<String, Any>?)!!
+                val cameraPosition = (opts["cameraPosition"] as Map<*, *>?)!!
+                val latLng = (cameraPosition["latLng"] as Map<*, *>?)!!
                 val zoom = (cameraPosition["zoom"] as Double?)!!
                 val tilt = (cameraPosition["tilt"] as Double?)!!
                 val bearing = (cameraPosition["bearing"] as Double?)!!
@@ -476,9 +461,8 @@ class AMapView(
                 result.success(true)
             }
             "setMapStatusLimits" -> {
-                val opts = call.arguments as Map<String, Any>
-                val southwestLatLng = (opts["southwestLatLng"] as Map<String, Any>?)!!
-                val northeastLatLng = (opts["northeastLatLng"] as Map<String, Any>?)!!
+                val southwestLatLng = (opts["southwestLatLng"] as Map<*, *>?)!!
+                val northeastLatLng = (opts["northeastLatLng"] as Map<*, *>?)!!
                 val latLngBounds = LatLngBounds(
                         LatLng(
                                 southwestLatLng["latitude"] as Double,
@@ -491,14 +475,36 @@ class AMapView(
                 map.setMapStatusLimits(latLngBounds)
                 result.success(true)
             }
+            // 经纬度算路
+            "latLngCalculateDriveRoute" -> {
+                // 获取导航Manager
+                val mAMapNavi = AMapNavi.getInstance(context)
+                // 起点信息
+                val startList: MutableList<NaviLatLng> = Convert.toArrayNaviLatLng(opts["start"] as List<Map<String, Any>>)
+                // 终点信息
+                val endList: MutableList<NaviLatLng> = Convert.toArrayNaviLatLng(opts["end"] as List<Map<String, Any>>)
+                var waysList: List<NaviLatLng>? = null
+                if(opts["ways"]!=null) {
+                     waysList =  Convert.toArrayNaviLatLng(opts["ways"] as List<Map<String, Any>>)
+                }
+                // 经纬度算路
+                mAMapNavi.calculateDriveRoute(
+                    startList,
+                    endList,
+                    waysList,
+                    opts["tactics"] as Int
+                )
+                resultSkip = result
+            }
             "getMapScreenShot" -> {
-                val opts = call.arguments as Map<String, Any>
                 cropOpts = (opts["shot"] as Map<String, Any>?)!!
                 map.getMapScreenShot(this)
                 resultSkip = result
             }
         }
     }
+
+
 
     /// marker点击处理
     override fun onMarkerClick(marker: Marker): Boolean {
@@ -586,6 +592,157 @@ class AMapView(
     override fun onCameraChangeFinish(position: CameraPosition) {
         var arguments = Convert.toJson(position)
         methodChannel.invokeMethod("map#onMapIdle", arguments)
+    }
+
+    override fun onInitNaviFailure() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onInitNaviSuccess() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onStartNavi(p0: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onTrafficStatusUpdate() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onLocationChange(p0: AMapNaviLocation?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onGetNavigationText(p0: Int, p1: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onGetNavigationText(p0: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onEndEmulatorNavi() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onArriveDestination() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onCalculateRouteFailure(p0: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onCalculateRouteFailure(p0: AMapCalcRouteResult?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onReCalculateRouteForYaw() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onReCalculateRouteForTrafficJam() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onArrivedWayPoint(p0: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onGpsOpenStatus(p0: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onNaviInfoUpdate(p0: NaviInfo?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateCameraInfo(p0: Array<out AMapNaviCameraInfo>?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateIntervalCameraInfo(
+        p0: AMapNaviCameraInfo?,
+        p1: AMapNaviCameraInfo?,
+        p2: Int
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onServiceAreaUpdate(p0: Array<out AMapServiceAreaInfo>?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun showCross(p0: AMapNaviCross?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun hideCross() {
+        TODO("Not yet implemented")
+    }
+
+    override fun showModeCross(p0: AMapModelCross?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun hideModeCross() {
+        TODO("Not yet implemented")
+    }
+
+    override fun showLaneInfo(p0: Array<out AMapLaneInfo>?, p1: ByteArray?, p2: ByteArray?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun showLaneInfo(p0: AMapLaneInfo?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun hideLaneInfo() {
+        TODO("Not yet implemented")
+    }
+
+
+    override fun onCalculateRouteSuccess(p0: IntArray?) {
+        TODO("Not yet implemented")
+    }
+    /// 路线规划成功
+    override fun onCalculateRouteSuccess(routeResult: AMapCalcRouteResult?) {
+        // 获取路线数据对象
+        val naviPaths = AMapNavi.getInstance(context).naviPaths
+        resultSkip?.success(     )
+    }
+
+    override fun notifyParallelRoad(p0: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun OnUpdateTrafficFacility(p0: Array<out AMapNaviTrafficFacilityInfo>?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun OnUpdateTrafficFacility(p0: AMapNaviTrafficFacilityInfo?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateAimlessModeStatistics(p0: AimLessModeStat?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateAimlessModeCongestionInfo(p0: AimLessModeCongestionInfo?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onPlayRing(p0: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onNaviRouteNotify(p0: AMapNaviRouteNotifyData?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onGpsSignalWeak(p0: Boolean) {
+        TODO("Not yet implemented")
     }
 
 

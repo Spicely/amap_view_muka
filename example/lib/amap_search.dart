@@ -1,4 +1,3 @@
-import 'package:amap_location_muka/amap_location_muka.dart';
 import 'package:amap_search_muka/amap_search_muka.dart';
 import 'package:amap_view_muka/amap_view_muka.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +34,7 @@ class _AMapSearchLocState extends State<AMapSearchLoc> {
             child: AMapView(
               onCreated: (amapViewController) async {
                 _amapViewController = amapViewController;
-                Location _loc = await AMapLocation.fetch();
+                Location _loc = await AMapViewServer.fetch();
                 _amapViewController?.setCameraPosition(CameraPosition(LatLng(_loc.latitude!, _loc.longitude!), 13, 0, 20, duration: 200));
                 _amapViewController?.addMarker(
                   AMapDefaultMarker(
@@ -131,7 +130,7 @@ class _AMapSearchLocState extends State<AMapSearchLoc> {
                           delegate: SliverChildBuilderDelegate(
                             (context, index) {
                               return ListItem(
-                                fieldType: FieldType.TITLE,
+                                fieldType: FieldType.title,
                                 title: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [

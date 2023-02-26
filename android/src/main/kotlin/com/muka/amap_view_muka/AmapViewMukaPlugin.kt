@@ -2,6 +2,8 @@ package com.muka.amap_view_muka
 
 import android.app.Activity
 import android.text.TextUtils
+import com.amap.api.location.AMapLocationClient
+import com.amap.api.location.AMapLocationClientOption
 import com.amap.api.maps.MapsInitializer
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -19,9 +21,9 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private var channel: MethodChannel? = null
 
     companion object {
-        const val TAG_FLUTTER_FRAGMENT = "plugins.muka.com/amap_view_muka"
-        const val AMAP_MUKA_MARKER = "plugins.muka.com/amap_view_muka_marker"
-        const val AMAP_MUKA_SERVER = "plugins.muka.com/amap_view_muka_server"
+        const val TAG_FLUTTER_FRAGMENT = "plugins.muka.com/amap_navi_view_muka"
+        const val AMAP_MUKA_MARKER = "plugins.muka.com/amap_navi_view_muka_marker"
+        const val AMAP_MUKA_SERVER = "plugins.muka.com/amap_navi_view_muka_server"
     }
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -48,6 +50,7 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         when (call.method) {
             "setApiKey" -> {
                 setApiKey(call.arguments as Map<*, *>)
+                result.success(null)
             }
             "updatePrivacyShow" -> {
                 val hasContains: Boolean = call.argument("hasContains")!!
@@ -59,6 +62,32 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
                 val hasAgree: Boolean = call.argument("hasAgree")!!
                 MapsInitializer.updatePrivacyAgree(activity, hasAgree)
                 result.success(null)
+            }
+            "fetch" -> {
+                var mode: Any? = call.argument("mode")
+                var locationClient = AMapLocationClient(flutterPluginBinding.applicationContext)
+                var locationOption = AMapLocationClientOption()
+                locationOption.locationMode = when (mode) {
+                    1 -> AMapLocationClientOption.AMapLocationMode.Battery_Saving
+                    2 -> AMapLocationClientOption.AMapLocationMode.Device_Sensors
+                    else -> AMapLocationClientOption.AMapLocationMode.Hight_Accuracy
+                }
+                locationClient.setLocationOption(locationOption)
+                locationClient.setLocationListener {
+                    if (it != null) {
+                        if (it.errorCode == 0) {
+                            result.success(Convert.toJson(it))
+                        } else {
+                            result.error(
+                                "AmapError",
+                                "onLocationChanged Error: ${it.errorInfo}",
+                                it.errorInfo
+                            )
+                        }
+                    }
+                    locationClient.stopLocation()
+                }
+                locationClient.startLocation()
             }
             else -> {
                 result.notImplemented()

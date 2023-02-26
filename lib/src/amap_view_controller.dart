@@ -1,6 +1,6 @@
 part of amap_view_muka;
 
-const _marker = 'plugins.muka.com/amap_view_muka_marker';
+const _marker = 'plugins.muka.com/amap_navi_view_muka_marker';
 
 enum AMapViewType {
   /// 导航地图
@@ -426,6 +426,29 @@ class AMapViewController {
   /// 地图显示位置
   Future<bool?> setCameraPosition(CameraPosition cameraPosition) {
     return _markerChannel.invokeMethod('setCameraPosition', {'cameraPosition': cameraPosition.toJson()});
+  }
+
+  /// 经纬度算路
+  ///
+  /// [start]  起点信息
+  ///
+  /// [end]  终点信息
+  ///
+  /// [tactics] 经纬度算路 例：PathPlanningStrategy.DRIVING_DEFAULT
+  ///
+  /// [ways] 途经点信息
+  Future<bool?> latLngCalculateDriveRoute(
+    List<LatLng> start,
+    List<LatLng> end,
+    int tactics, {
+    List<LatLng>? ways,
+  }) {
+    return _markerChannel.invokeMethod('latLngCalculateDriveRoute', {
+      'start': start.map((e) => e.toJson()),
+      'end': end.map((e) => e.toJson()),
+      'ways': ways?..map((e) => e.toJson()),
+      'tactics': tactics,
+    });
   }
 }
 

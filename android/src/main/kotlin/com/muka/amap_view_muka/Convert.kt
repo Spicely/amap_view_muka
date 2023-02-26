@@ -4,8 +4,11 @@ import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.os.Build
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.annotation.RequiresApi
+import com.amap.api.location.AMapLocation
 import com.amap.api.maps.AMap
 import com.amap.api.maps.AMapOptions
 import com.amap.api.maps.CameraUpdateFactory
@@ -13,14 +16,124 @@ import com.amap.api.maps.model.BitmapDescriptorFactory
 import com.amap.api.maps.model.CameraPosition
 import com.amap.api.maps.model.LatLng
 import com.amap.api.maps.model.MyLocationStyle
+import com.amap.api.navi.model.*
 import io.flutter.FlutterInjector
+import java.util.ArrayList
 
 class Convert {
     companion object {
-        fun toJson(latLng: LatLng): Any {
+        fun toJson(params: LatLng): Any {
             val data = HashMap<String, Any>()
-            data["latitude"] = latLng.latitude
-            data["longitude"] = latLng.longitude
+            data["latitude"] = params.latitude
+            data["longitude"] = params.longitude
+            return data
+        }
+
+        fun toJson(params: NaviLatLng): Any {
+            val data = HashMap<String, Any>()
+            data["latitude"] = params.latitude
+            data["longitude"] = params.longitude
+            return data
+        }
+
+        fun toJson(params: AMapNaviLink): Any {
+            val data = HashMap<String, Any>()
+            data["coords"] = params.coords.map { v -> toJson(v) }
+            data["roadName"] = params.roadName
+            data["length"] = params.length
+            data["time"] = params.time
+            data["roadClass"] = params.roadClass
+            data["roadType"] = params.roadType
+            data["ownershipType"] = params.ownershipType
+            data["trafficLights"] = params.trafficLights
+            data["trafficFineStatus"] = params.trafficFineStatus
+            return data
+        }
+
+        fun toJson(params: AMapNaviCameraInfo): Any {
+            val data = HashMap<String, Any>()
+            data["cameraDistance"] = params.cameraDistance
+            data["cameraSpeed"] = params.cameraSpeed
+            data["cameraType"] = params.cameraType
+            data["averageSpeed"] = params.averageSpeed
+            data["reasonableSpeedInRemainDist"] = params.reasonableSpeedInRemainDist
+            data["intervalRemainDistance"] = params.intervalRemainDistance
+            return data
+        }
+
+
+        fun toJson(location: AMapLocation): HashMap<String, Any> {
+            val data = HashMap<String, Any>()
+            data["latitude"] = location.latitude
+            data["longitude"] = location.longitude
+            data["accuracy"] = location.accuracy
+            data["speed"] = location.speed
+            data["time"] = location.time
+            // 以下是定位sdk返回的逆地理信息
+            data["coordType"] = location.coordType
+            data["country"] = location.country
+            data["city"] = location.city
+            data["district"] = location.district
+            data["street"] = location.street
+            data["address"] = location.address
+            data["province"] = location.province
+            return data
+        }
+
+        fun toJson(params: AMapNaviStep): HashMap<String, Any> {
+            val data = HashMap<String, Any>()
+            data["length"] = params.length
+            data["time"] = params.time
+            data["tollCost"] = params.tollCost
+            data["trafficLightCount"] = params.trafficLightCount
+            data["isArriveWayPoint"] = params.isArriveWayPoint
+            data["chargeLength"] = params.chargeLength
+            data["startIndex"] = params.startIndex
+            data["endIndex"] = params.endIndex
+            data["coords"] = params.coords.map { v-> toJson(v) }
+            data["links "] = params.links.map { v-> toJson(v) }
+            data["iconType"] = params.iconType
+            return data
+        }
+
+        @RequiresApi(Build.VERSION_CODES.N)
+        fun toJson(params: HashMap<Int, AMapNaviPath>): HashMap<Int, Any> {
+            val data = HashMap<Int, Any>()
+            params.forEach { (key, value) ->
+                val v = HashMap<String, Any>()
+                v["allLength"] = value.allLength
+                v["allTime"] = value.allTime
+                v["stepsCount"] = value.stepsCount
+                v["tollCost"] = value.tollCost
+                v["routeType"] = value.routeType
+                v["pathid"] = value.pathid
+                v["mainRoadInfo"] = value.mainRoadInfo
+                v["labelId"] = value.labelId
+                v["wayPointIndex"] = value.wayPointIndex
+                v["cityAdcodeList"] = value.cityAdcodeList
+                v["allTime"] = value.allTime
+                val trafficStatuses = arrayListOf<Map<String, Any>>()
+                value.trafficStatuses
+                    .forEach { i ->
+                        val tra = HashMap<String, Any>()
+                        tra["linkIndex"] = i.linkIndex
+                        tra["status"] = i.status
+                        tra["linkIndex"] = i.trafficFineStatus
+                        tra["length"] = i.length
+                        trafficStatuses.add(tra)
+                    }
+                v["trafficStatuses"] = trafficStatuses
+                v["steps"] = value.steps.map { i -> toJson(i) }
+                v["startPoint"] = toJson(value.startPoint)
+                v["endPoint"] = toJson(value.endPoint)
+                v["carToFootPoint"] = toJson(value.carToFootPoint)
+                v["lightList"] = value.lightList.map { i -> toJson(i) }
+                v["wayPoint"] = value.wayPoint.map { i -> toJson(i) }
+                v["allCameras"] = value.allCameras.map { i -> toJson(i) }
+
+                data[key] = v
+            }
+
             return data
         }
 
@@ -41,6 +154,18 @@ class Convert {
             return data
         }
 
+        fun toArrayNaviLatLng(params: List<Map<String, Any>>): MutableList<NaviLatLng> {
+            val data: MutableList<NaviLatLng> = ArrayList()
+            for (i in params) {
+                data.add(toNaviLatLng(i))
+            }
+            return data
+        }
+
+        fun toNaviLatLng(params: Map<String, Any>): NaviLatLng {
+            return NaviLatLng(params["latitude"] as Double, params["longitude"] as Double)
+        }
+
         fun initParams(params: Map<String, Any>, map: AMap, context: Context) {
 
             /// 地图显示位置
@@ -52,12 +177,12 @@ class Convert {
                 val bearing = (cameraPosition["bearing"] as Double?)!!
                 val duration = cameraPosition["duration"] as Int?
                 val mCameraUpdate = CameraUpdateFactory.newCameraPosition(
-                        CameraPosition(
-                                LatLng(
-                                        latLng["latitude"] as Double,
-                                        latLng["longitude"] as Double
-                                ), zoom.toFloat(), tilt.toFloat(), bearing.toFloat()
-                        )
+                    CameraPosition(
+                        LatLng(
+                            latLng["latitude"] as Double,
+                            latLng["longitude"] as Double
+                        ), zoom.toFloat(), tilt.toFloat(), bearing.toFloat()
+                    )
                 )
                 if (duration == null) {
                     map.moveCamera(mCameraUpdate)
@@ -123,7 +248,7 @@ class Convert {
             /// 定位按钮
             if (params["myLocationButtonEnabled"] != null) {
                 map.uiSettings.isMyLocationButtonEnabled =
-                        params["myLocationButtonEnabled"] as Boolean
+                    params["myLocationButtonEnabled"] as Boolean
             }
             /// 定位按钮
             if (params["logoPosition"] != null) {
@@ -181,28 +306,28 @@ class Convert {
 
                 if (anchor != null) {
                     myLocationStyle.anchor(
-                            (anchor["u"] as Double).toFloat(),
-                            (anchor["v"] as Double).toFloat()
+                        (anchor["u"] as Double).toFloat(),
+                        (anchor["v"] as Double).toFloat()
                     )
                 }
 
                 if (strokeColor != null) {
                     myLocationStyle.strokeColor(
-                            Color.rgb(
-                                    strokeColor[0],
-                                    strokeColor[1],
-                                    strokeColor[2]
-                            )
+                        Color.rgb(
+                            strokeColor[0],
+                            strokeColor[1],
+                            strokeColor[2]
+                        )
                     )
                 }
 
                 if (radiusFillColor != null) {
                     myLocationStyle.radiusFillColor(
-                            Color.rgb(
-                                    radiusFillColor[0],
-                                    radiusFillColor[1],
-                                    radiusFillColor[2]
-                            )
+                        Color.rgb(
+                            radiusFillColor[0],
+                            radiusFillColor[1],
+                            radiusFillColor[2]
+                        )
                     )
                 }
 
@@ -247,17 +372,20 @@ class Convert {
                             val size = icon["size"] as Map<String, Any>
                             val imageView = ImageView(context)
                             val params =
-                                    ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
+                                ViewGroup.LayoutParams(
+                                    (size["width"] as Double).toInt(),
+                                    (size["height"] as Double).toInt()
+                                )
                             val assetManager: AssetManager = context.assets
                             imageView.setImageBitmap(
-                                    BitmapFactory.decodeStream(
-                                            assetManager.open(
-                                                    getFlutterAsset(
-                                                            icon["url"] as String,
-                                                            icon["package"] as String?
-                                                    )
-                                            )
+                                BitmapFactory.decodeStream(
+                                    assetManager.open(
+                                        getFlutterAsset(
+                                            icon["url"] as String,
+                                            icon["package"] as String?
+                                        )
                                     )
+                                )
                             )
                             imageView.layoutParams = params
                             val asset = BitmapDescriptorFactory.fromView(imageView)
