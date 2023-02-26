@@ -710,7 +710,7 @@ class AMapView(
     override fun onCalculateRouteSuccess(routeResult: AMapCalcRouteResult?) {
         // 获取路线数据对象
         val naviPaths = AMapNavi.getInstance(context).naviPaths
-        resultSkip?.success(     )
+        resultSkip?.success(Convert.toJson(naviPaths))
     }
 
     override fun notifyParallelRoad(p0: Int) {

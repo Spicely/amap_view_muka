@@ -17,6 +17,7 @@ import com.amap.api.maps.model.CameraPosition
 import com.amap.api.maps.model.LatLng
 import com.amap.api.maps.model.MyLocationStyle
 import com.amap.api.navi.model.*
+import com.autonavi.ae.route.RestrictionInfoDetail
 import io.flutter.FlutterInjector
 import java.util.ArrayList
 
@@ -61,6 +62,50 @@ class Convert {
             return data
         }
 
+        fun toJson(params: AMapRestrictionInfo): Any {
+            val data = HashMap<String, Any>()
+            data["cityCode"] = params.cityCode
+            data["restrictionTitle"] = params.restrictionTitle
+            data["tips"] = params.tips
+            data["titleType"] = params.titleType
+            data["infoDetailList"] = params.infoDetailList.map { i -> toJson(i) }
+            return data
+        }
+
+        fun toJson(params: RestrictionInfoDetail): Any {
+            val data = HashMap<String, Any>()
+            data["ruleid"] = params.ruleid
+            data["restrictionTitle"] = params.low
+            data["high"] = params.high
+            data["hitTime"] = params.hitTime
+            data["headX"] = params.headX
+            data["headY"] = params.headY
+            data["tailX"] = params.tailX
+            data["tailY"] = params.tailY
+            data["valid"] = params.valid
+            return data
+        }
+
+        fun toJson(params: AMapNaviRouteGuideGroup): HashMap<String, Any> {
+            val data = HashMap<String, Any>()
+            data["groupEnterCoord"] = toJson(params.groupEnterCoord)
+            data["groupName"] = params.groupName
+            data["groupLen"] = params.groupLen
+            data["groupTime"] = params.groupTime
+            data["trafficLightsCount"] = params.trafficLightsCount
+            data["groupIconType"] = params.groupIconType
+            data["segments"] = params.segments.map { i -> toJson(i) }
+            return data
+        }
+
+        fun toJson(params: AMapNaviRouteGuideSegment): HashMap<String, Any> {
+            val data = HashMap<String, Any>()
+            data["stepIconType"] =  params.stepIconType
+            data["description"] = params.description
+            data["isArriveWayPoint"] = params.isArriveWayPoint
+            return data
+        }
+
 
         fun toJson(location: AMapLocation): HashMap<String, Any> {
             val data = HashMap<String, Any>()
@@ -96,7 +141,41 @@ class Convert {
             return data
         }
 
-        @RequiresApi(Build.VERSION_CODES.N)
+        fun toJson(params: AMapTrafficIncidentInfo): HashMap<String, Any> {
+            val data = HashMap<String, Any>()
+            data["longitude"] = params.longitude
+            data["latitude"] = params.latitude
+            data["title"] = params.title
+            data["type"] = params.type
+            return data
+        }
+
+        fun toJson(params: AMapNaviLimitInfo): HashMap<String, Any> {
+            val data = HashMap<String, Any>()
+            data["pathId"] = params.pathId
+            data["type"] = params.type
+            data["longitude"] = params.longitude
+            data["latitude"] = params.latitude
+            data["currentRoadName"] = params.currentRoadName
+            return data
+        }
+
+        fun toJson(params: AMapNaviForbiddenInfo): HashMap<String, Any> {
+            val data = HashMap<String, Any>()
+            data["pathId"] = params.pathId
+            data["forbiddenType"] = params.forbiddenType
+            data["forbiddenTime"] = params.forbiddenTime
+            data["carType"] = params.carType
+            data["longitude"] = params.longitude
+            data["latitude"] = params.latitude
+            data["roadName"] = params.roadName
+            data["nextRoadName"] = params.nextRoadName
+            data["segIndex"] = params.segIndex
+            data["linkIndex"] = params.linkIndex
+            data["carTypeDesc"] = params.carTypeDesc
+            return data
+        }
+
         fun toJson(params: HashMap<Int, AMapNaviPath>): HashMap<Int, Any> {
             val data = HashMap<Int, Any>()
             params.forEach { (key, value) ->
@@ -130,6 +209,11 @@ class Convert {
                 v["lightList"] = value.lightList.map { i -> toJson(i) }
                 v["wayPoint"] = value.wayPoint.map { i -> toJson(i) }
                 v["allCameras"] = value.allCameras.map { i -> toJson(i) }
+                v["trafficStatuses"] = toJson(value.restrictionInfo)
+                v["naviGuideList"] = value.naviGuideList.map { i -> toJson(i) }
+                v["trafficIncidentInfo"] = value.trafficIncidentInfo.map { i -> toJson(i) }
+                v["limitInfos"] = value.limitInfos.map { i -> toJson(i) }
+                v["forbiddenInfos"] = value.forbiddenInfos.map { i -> toJson(i) }
 
                 data[key] = v
             }
