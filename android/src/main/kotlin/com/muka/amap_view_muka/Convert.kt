@@ -4,25 +4,25 @@ import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.os.Build
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.annotation.RequiresApi
 import com.amap.api.location.AMapLocation
 import com.amap.api.maps.AMap
 import com.amap.api.maps.AMapOptions
 import com.amap.api.maps.CameraUpdateFactory
-import com.amap.api.maps.model.BitmapDescriptorFactory
-import com.amap.api.maps.model.CameraPosition
+import com.amap.api.maps.model.*
 import com.amap.api.maps.model.LatLng
-import com.amap.api.maps.model.MyLocationStyle
 import com.amap.api.navi.model.*
 import com.autonavi.ae.route.RestrictionInfoDetail
 import io.flutter.FlutterInjector
-import java.util.ArrayList
+
 
 class Convert {
     companion object {
+        fun toNaviParams(params: Map<String, Any>) {
+
+        }
+
         fun toJson(params: LatLng): Any {
             val data = HashMap<String, Any>()
             data["latitude"] = params.latitude
@@ -187,8 +187,8 @@ class Convert {
                 v["routeType"] = value.routeType
                 v["pathid"] = value.pathid
                 v["mainRoadInfo"] = value.mainRoadInfo
-                v["labelId"] = value.labelId
-                v["wayPointIndex"] = value.wayPointIndex
+//                v["labelId"] = value.labelId
+//                v["wayPointIndex"] = value.wayPointIndex
                 v["cityAdcodeList"] = value.cityAdcodeList
                 v["allTime"] = value.allTime
                 val trafficStatuses = arrayListOf<Map<String, Any>>()
@@ -205,7 +205,7 @@ class Convert {
                 v["steps"] = value.steps.map { i -> toJson(i) }
                 v["startPoint"] = toJson(value.startPoint)
                 v["endPoint"] = toJson(value.endPoint)
-                v["carToFootPoint"] = toJson(value.carToFootPoint)
+//                v["carToFootPoint"] = toJson(value.carToFootPoint)
                 v["lightList"] = value.lightList.map { i -> toJson(i) }
                 v["wayPoint"] = value.wayPoint.map { i -> toJson(i) }
                 v["allCameras"] = value.allCameras.map { i -> toJson(i) }
@@ -248,6 +248,11 @@ class Convert {
 
         fun toNaviLatLng(params: Map<String, Any>): NaviLatLng {
             return NaviLatLng(params["latitude"] as Double, params["longitude"] as Double)
+        }
+
+        fun toLatLng(params: Map<*, *>?): LatLng? {
+            if(params == null) return  null
+            return LatLng(params["latitude"] as Double, params["longitude"] as Double)
         }
 
         fun initParams(params: Map<String, Any>, map: AMap, context: Context) {

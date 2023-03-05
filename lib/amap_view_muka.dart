@@ -15,6 +15,9 @@ export 'package:amap_core/amap_core.dart';
 part 'src/amap_view.dart';
 part 'src/amap_view_controller.dart';
 part 'src/amap_view_server.dart';
+part 'src/amap_navi_view/amap_navi_view.dart';
+part 'src/amap_navi_view/amap_navi_view_controller.dart';
+part 'src/amap_navi_view/amap_navi_view_event.dart';
 part 'src/class/path_planning_strategy.dart';
 
 /*** Marker */

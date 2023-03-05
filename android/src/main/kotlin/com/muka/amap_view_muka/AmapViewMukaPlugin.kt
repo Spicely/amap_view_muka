@@ -21,9 +21,12 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private var channel: MethodChannel? = null
 
     companion object {
-        const val TAG_FLUTTER_FRAGMENT = "plugins.muka.com/amap_navi_view_muka"
-        const val AMAP_MUKA_MARKER = "plugins.muka.com/amap_navi_view_muka_marker"
-        const val AMAP_MUKA_SERVER = "plugins.muka.com/amap_navi_view_muka_server"
+        const val TAG_FLUTTER_FRAGMENT = "plugins.muka.com/amap_view_muka"
+        const val AMAP_MUKA_MARKER = "plugins.muka.com/amap_view_muka_marker"
+        const val AMAP_MUKA_SERVER = "plugins.muka.com/amap_view_muka_server"
+        const val AMAP_MUKA_NAVI = "plugins.muka.com/amap_navi_view_muka"
+        const val AMAP_MUKA_NAVI_CONTROLLER = "plugins.muka.com/amap_navi_view_muka_controller"
+        const val AMAP_MUKA_NAVI_EVENT = "plugins.muka.com/amap_view_muka_event"
     }
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -39,6 +42,10 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         flutterPluginBinding.platformViewRegistry.registerViewFactory(
             TAG_FLUTTER_FRAGMENT,
             AmapViewFactory(activity, flutterPluginBinding)
+        )
+        flutterPluginBinding.platformViewRegistry.registerViewFactory(
+            AMAP_MUKA_NAVI,
+            AmapNaviViewFactory(activity, flutterPluginBinding)
         )
 
         channel =

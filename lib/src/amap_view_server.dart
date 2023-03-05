@@ -31,7 +31,7 @@ enum AMapLocationAccuracy {
 }
 
 class AMapViewServer {
-  static MethodChannel _channel = MethodChannel('plugins.muka.com/amap_navi_view_muka_server');
+  static MethodChannel _channel = MethodChannel('plugins.muka.com/amap_view_muka_server');
 
   /// 设置Android和iOS的apikey，建议在weigdet初始化时设置<br>
   /// apiKey的申请请参考高德开放平台官网<br>

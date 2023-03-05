@@ -38,21 +38,21 @@ import java.util.*
 
 
 class AmapViewFactory(
-        private val activity: Activity,
-        private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
+    private val activity: Activity,
+    private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context?, viewId: Int, args: Any?): PlatformView {
         // 申请权限
         ActivityCompat.requestPermissions(
-                activity,
-                arrayOf(
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_PHONE_STATE
-                ),
-                321
+            activity,
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.READ_PHONE_STATE
+            ),
+            321
         )
         val params = args as Map<String, Any>
         return AMapView(context!!, viewId, flutterPluginBinding, params)
@@ -60,20 +60,20 @@ class AmapViewFactory(
 }
 
 class AMapView(
-        private val context: Context,
-        private val id: Int,
-        private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding,
-        private val params: Map<String, Any>
+    private val context: Context,
+    private val id: Int,
+    private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding,
+    private val params: Map<String, Any>
 ) : PlatformView,
-        MethodChannel.MethodCallHandler,
-        AMap.InfoWindowAdapter,
-        AMap.OnMarkerClickListener,
-        AMap.OnMapClickListener,
-        AMap.OnCameraChangeListener,
-        AMap.OnMyLocationChangeListener,
-        AMap.OnMapScreenShotListener,
+    MethodChannel.MethodCallHandler,
+    AMap.InfoWindowAdapter,
+    AMap.OnMarkerClickListener,
+    AMap.OnMapClickListener,
+    AMap.OnCameraChangeListener,
+    AMap.OnMyLocationChangeListener,
+    AMap.OnMapScreenShotListener,
     AMapNaviListener,
-        AMap.OnMarkerDragListener {
+    AMap.OnMarkerDragListener {
     private val mapView: AMapNaviView = AMapNaviView(context)
 
     private var map: AMap = mapView.map
@@ -82,7 +82,7 @@ class AMapView(
 
     private var markerController: MarkerController
 
-    private var resultSkip : MethodChannel.Result? = null
+    private var resultSkip: MethodChannel.Result? = null
 
     private var cropOpts: Map<String, Any>? = null
 
@@ -94,7 +94,7 @@ class AMapView(
 
         // marker控制器
         methodChannel =
-                MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
+            MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
         methodChannel.setMethodCallHandler(this)
 
         markerController = MarkerController(methodChannel, map)
@@ -156,28 +156,28 @@ class AMapView(
 
                 if (anchor != null) {
                     myLocationStyle.anchor(
-                            (anchor["u"] as Double).toFloat(),
-                            (anchor["v"] as Double).toFloat()
+                        (anchor["u"] as Double).toFloat(),
+                        (anchor["v"] as Double).toFloat()
                     )
                 }
 
                 if (strokeColor != null) {
                     myLocationStyle.strokeColor(
-                            Color.rgb(
-                                    strokeColor[0],
-                                    strokeColor[1],
-                                    strokeColor[2]
-                            )
+                        Color.rgb(
+                            strokeColor[0],
+                            strokeColor[1],
+                            strokeColor[2]
+                        )
                     )
                 }
 
                 if (radiusFillColor != null) {
                     myLocationStyle.radiusFillColor(
-                            Color.rgb(
-                                    radiusFillColor[0],
-                                    radiusFillColor[1],
-                                    radiusFillColor[2]
-                            )
+                        Color.rgb(
+                            radiusFillColor[0],
+                            radiusFillColor[1],
+                            radiusFillColor[2]
+                        )
                     )
                 }
 
@@ -220,17 +220,20 @@ class AMapView(
                             val size = icon["size"] as Map<String, Any>
                             val imageView = ImageView(context)
                             val params =
-                                    ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
+                                ViewGroup.LayoutParams(
+                                    (size["width"] as Double).toInt(),
+                                    (size["height"] as Double).toInt()
+                                )
                             val assetManager: AssetManager = context.assets
                             imageView.setImageBitmap(
-                                    BitmapFactory.decodeStream(
-                                            assetManager.open(
-                                                    Convert.getFlutterAsset(
-                                                            icon["url"] as String,
-                                                            icon["package"] as String?
-                                                    )
-                                            )
+                                BitmapFactory.decodeStream(
+                                    assetManager.open(
+                                        Convert.getFlutterAsset(
+                                            icon["url"] as String,
+                                            icon["package"] as String?
+                                        )
                                     )
+                                )
                             )
                             imageView.layoutParams = params
                             val asset = BitmapDescriptorFactory.fromView(imageView)
@@ -240,7 +243,10 @@ class AMapView(
                             val size = icon["size"] as Map<String, Any>
                             val imageView = ImageView(context)
                             val params =
-                                    ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
+                                ViewGroup.LayoutParams(
+                                    (size["width"] as Double).toInt(),
+                                    (size["height"] as Double).toInt()
+                                )
                             val data = icon["data"] as ByteArray
                             print(data)
                             val length = data.size
@@ -309,10 +315,10 @@ class AMapView(
             "openOfflineMap" -> {
                 /// 打开离线地图
                 flutterPluginBinding.applicationContext.startActivity(
-                        Intent(
-                                context,
-                                OfflineMapActivity::class.java
-                        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    Intent(
+                        context,
+                        OfflineMapActivity::class.java
+                    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 )
                 result.success(true)
             }
@@ -323,9 +329,9 @@ class AMapView(
                 val texturePath = opts["texturePath"] as String?
                 val packageName = opts["package"] as String?
                 val options = CustomMapStyleOptions()
-                        .setEnable(true)
-                        .setStyleDataPath(Convert.getFlutterAsset(dataPath, packageName))
-                        .setStyleExtraPath(Convert.getFlutterAsset(extraPath, packageName))
+                    .setEnable(true)
+                    .setStyleDataPath(Convert.getFlutterAsset(dataPath, packageName))
+                    .setStyleExtraPath(Convert.getFlutterAsset(extraPath, packageName))
                 if (texturePath != null) {
                     options.styleTexturePath = Convert.getFlutterAsset(texturePath, packageName)
                 }
@@ -338,8 +344,8 @@ class AMapView(
                 val texturePath = opts["texturePath"] as String?
                 val packageName = opts["package"] as String?
                 val options = CustomMapStyleOptions()
-                        .setEnable(true)
-                        .setStyleId(styleId)
+                    .setEnable(true)
+                    .setStyleId(styleId)
                 if (texturePath != null) {
                     options.styleTexturePath = Convert.getFlutterAsset(texturePath, packageName)
                 }
@@ -446,12 +452,12 @@ class AMapView(
                 val bearing = (cameraPosition["bearing"] as Double?)!!
                 val duration = cameraPosition["duration"] as Int?
                 val mCameraUpdate = CameraUpdateFactory.newCameraPosition(
-                        CameraPosition(
-                                LatLng(
-                                        latLng["latitude"] as Double,
-                                        latLng["longitude"] as Double
-                                ), zoom.toFloat(), tilt.toFloat(), bearing.toFloat()
-                        )
+                    CameraPosition(
+                        LatLng(
+                            latLng["latitude"] as Double,
+                            latLng["longitude"] as Double
+                        ), zoom.toFloat(), tilt.toFloat(), bearing.toFloat()
+                    )
                 )
                 if (duration == null) {
                     map.moveCamera(mCameraUpdate)
@@ -464,13 +470,13 @@ class AMapView(
                 val southwestLatLng = (opts["southwestLatLng"] as Map<*, *>?)!!
                 val northeastLatLng = (opts["northeastLatLng"] as Map<*, *>?)!!
                 val latLngBounds = LatLngBounds(
-                        LatLng(
-                                southwestLatLng["latitude"] as Double,
-                                southwestLatLng["longitude"] as Double
-                        ), LatLng(
+                    LatLng(
+                        southwestLatLng["latitude"] as Double,
+                        southwestLatLng["longitude"] as Double
+                    ), LatLng(
                         northeastLatLng["latitude"] as Double,
                         northeastLatLng["longitude"] as Double
-                )
+                    )
                 )
                 map.setMapStatusLimits(latLngBounds)
                 result.success(true)
@@ -480,12 +486,14 @@ class AMapView(
                 // 获取导航Manager
                 val mAMapNavi = AMapNavi.getInstance(context)
                 // 起点信息
-                val startList: MutableList<NaviLatLng> = Convert.toArrayNaviLatLng(opts["start"] as List<Map<String, Any>>)
+                val startList: MutableList<NaviLatLng> =
+                    Convert.toArrayNaviLatLng(opts["start"] as List<Map<String, Any>>)
                 // 终点信息
-                val endList: MutableList<NaviLatLng> = Convert.toArrayNaviLatLng(opts["end"] as List<Map<String, Any>>)
+                val endList: MutableList<NaviLatLng> =
+                    Convert.toArrayNaviLatLng(opts["end"] as List<Map<String, Any>>)
                 var waysList: List<NaviLatLng>? = null
-                if(opts["ways"]!=null) {
-                     waysList =  Convert.toArrayNaviLatLng(opts["ways"] as List<Map<String, Any>>)
+                if (opts["ways"] != null) {
+                    waysList = Convert.toArrayNaviLatLng(opts["ways"] as List<Map<String, Any>>)
                 }
                 // 经纬度算路
                 mAMapNavi.calculateDriveRoute(
@@ -503,7 +511,6 @@ class AMapView(
             }
         }
     }
-
 
 
     /// marker点击处理
@@ -550,11 +557,21 @@ class AMapView(
         }
         try {
             Log.d("ssa", cropOpts.toString());
-            val newImag = Bitmap.createBitmap(bitmap, (cropOpts?.get("x") as Double).toInt(), (cropOpts?.get("y") as Double).toInt(), (cropOpts?.get("width") as Double).toInt(), (cropOpts?.get("height") as Double).toInt())
+            val newImag = Bitmap.createBitmap(
+                bitmap,
+                (cropOpts?.get("x") as Double).toInt(),
+                (cropOpts?.get("y") as Double).toInt(),
+                (cropOpts?.get("width") as Double).toInt(),
+                (cropOpts?.get("height") as Double).toInt()
+            )
             val path =
-                    context.getExternalFilesDir(null).toString() + "/map_" + sdf.format(Date()) + ".png"
+                context.getExternalFilesDir(null).toString() + "/map_" + sdf.format(Date()) + ".png"
             val fos = FileOutputStream(path)
-            newImag.compress(Bitmap.CompressFormat.PNG, (cropOpts?.get("compressionQuality") as Double * 100).toInt(), fos)
+            newImag.compress(
+                Bitmap.CompressFormat.PNG,
+                (cropOpts?.get("compressionQuality") as Double * 100).toInt(),
+                fos
+            )
             try {
                 fos.flush()
             } catch (e: IOException) {
@@ -706,6 +723,7 @@ class AMapView(
     override fun onCalculateRouteSuccess(p0: IntArray?) {
         TODO("Not yet implemented")
     }
+
     /// 路线规划成功
     override fun onCalculateRouteSuccess(routeResult: AMapCalcRouteResult?) {
         // 获取路线数据对象
