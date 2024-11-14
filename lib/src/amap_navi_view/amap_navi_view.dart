@@ -1,8 +1,8 @@
-part of amap_view_muka;
+part of '../../amap_view_muka.dart';
 
 const _naviViewType = 'plugins.muka.com/amap_navi_view_muka';
 
-typedef void AMapNaviViewOnCreated(AMapNaviViewController controller);
+typedef AMapNaviViewOnCreated = void Function(AMapNaviViewController controller);
 
 class AmapNaviPath {
   final int allTime;
@@ -48,7 +48,7 @@ enum AmapNaviCalculateType {
   cycle,
 
   /// 电动车
-  ele_bike
+  electric
 }
 
 class AmapNaviLocationInfo {
@@ -108,14 +108,14 @@ class AMapNaviView extends StatefulWidget {
   final AmapNaviEventCallback? onListen;
 
   const AMapNaviView({
-    Key? key,
+    super.key,
     this.onCreated,
     required this.params,
     this.onListen,
-  }) : super(key: key);
+  });
 
   @override
-  _AMapNaviViewState createState() => _AMapNaviViewState();
+  State<AMapNaviView> createState() => _AMapNaviViewState();
 }
 
 class _AMapNaviViewState extends State<AMapNaviView> {
@@ -125,9 +125,9 @@ class _AMapNaviViewState extends State<AMapNaviView> {
 
   @override
   Widget build(BuildContext context) {
-    final gestureRecognizers = <Factory<OneSequenceGestureRecognizer>>[
+    final gestureRecognizers = <Factory<OneSequenceGestureRecognizer>>{
       Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer()),
-    ].toSet();
+    };
 
     if (Platform.isAndroid) {
       return AndroidView(

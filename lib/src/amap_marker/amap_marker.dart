@@ -1,12 +1,12 @@
-part of amap_view_muka;
+part of '../../amap_view_muka.dart';
 
-typedef void AMapMarkerOnTap();
+typedef AMapMarkerOnTap = void Function();
 
-typedef void AMapMarkerOnDragStart(LatLng latLng);
+typedef AMapMarkerOnDragStart = void Function(LatLng latLng);
 
-typedef void AMapMarkerOnDragMove(LatLng latLng);
+typedef AMapMarkerOnDragMove = void Function(LatLng latLng);
 
-typedef void AMapMarkerOnDragEnd(LatLng latLng);
+typedef AMapMarkerOnDragEnd = void Function(LatLng latLng);
 
 abstract class AMapMarker {
   /// 作为唯一索引

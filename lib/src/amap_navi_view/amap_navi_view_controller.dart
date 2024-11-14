@@ -1,4 +1,4 @@
-part of amap_view_muka;
+part of '../../amap_view_muka.dart';
 
 const _naviTag = 'plugins.muka.com/amap_view_muka_controller';
 
