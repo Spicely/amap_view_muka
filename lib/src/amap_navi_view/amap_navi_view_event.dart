@@ -1,16 +1,16 @@
-part of amap_view_muka;
+part of '../../amap_view_muka.dart';
 
 const _naviEventTag = 'plugins.muka.com/amap_view_muka_event';
 
-typedef void AMapNaviViewEventCallBack(dynamic data);
+typedef AMapNaviViewEventCallBack = void Function(dynamic data);
 
 class AMapNaviViewEvent {
-  late EventChannel _channel;
+  late final EventChannel _channel;
 
-  late AMapNaviViewEventCallBack _callBack;
+  late final AMapNaviViewEventCallBack _callBack;
 
   AMapNaviViewEvent._(this._channel, this._callBack) {
-    _channel.receiveBroadcastStream()..listen(_callBack);
+    _channel.receiveBroadcastStream().listen(_callBack);
   }
 
   static Future<AMapNaviViewEvent> init(int id, AMapNaviViewEventCallBack callBack) async {

@@ -12,6 +12,8 @@ import com.amap.api.maps.AMapOptions
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.model.*
 import com.amap.api.maps.model.LatLng
+import com.amap.api.navi.AMapNaviViewOptions
+import com.amap.api.navi.enums.MapStyle
 import com.amap.api.navi.model.*
 import com.autonavi.ae.route.RestrictionInfoDetail
 import io.flutter.FlutterInjector
@@ -100,7 +102,7 @@ class Convert {
 
         fun toJson(params: AMapNaviRouteGuideSegment): HashMap<String, Any> {
             val data = HashMap<String, Any>()
-            data["stepIconType"] =  params.stepIconType
+            data["stepIconType"] = params.stepIconType
             data["description"] = params.description
             data["isArriveWayPoint"] = params.isArriveWayPoint
             return data
@@ -135,8 +137,8 @@ class Convert {
             data["chargeLength"] = params.chargeLength
             data["startIndex"] = params.startIndex
             data["endIndex"] = params.endIndex
-            data["coords"] = params.coords.map { v-> toJson(v) }
-            data["links "] = params.links.map { v-> toJson(v) }
+            data["coords"] = params.coords.map { v -> toJson(v) }
+            data["links "] = params.links.map { v -> toJson(v) }
             data["iconType"] = params.iconType
             return data
         }
@@ -246,21 +248,21 @@ class Convert {
             return data
         }
 
-        fun toNaviLatLng(params: Map<String, Any>): NaviLatLng {
+        fun toNaviLatLng(params: Map<*, *>): NaviLatLng {
             return NaviLatLng(params["latitude"] as Double, params["longitude"] as Double)
         }
 
         fun toLatLng(params: Map<*, *>?): LatLng? {
-            if(params == null) return  null
+            if (params == null) return null
             return LatLng(params["latitude"] as Double, params["longitude"] as Double)
         }
 
-        fun initParams(params: Map<String, Any>, map: AMap, context: Context) {
+        fun initParams(params: Map<*, *>, map: AMap, context: Context) {
 
             /// 地图显示位置
             if (params["cameraPosition"] != null) {
-                val cameraPosition = (params["cameraPosition"] as Map<String, Any>?)!!
-                val latLng = (cameraPosition["latLng"] as Map<String, Any>?)!!
+                val cameraPosition = (params["cameraPosition"] as Map<*, *>?)!!
+                val latLng = (cameraPosition["latLng"] as Map<*, *>?)!!
                 val zoom = (cameraPosition["zoom"] as Double?)!!
                 val tilt = (cameraPosition["tilt"] as Double?)!!
                 val bearing = (cameraPosition["bearing"] as Double?)!!
@@ -293,15 +295,19 @@ class Convert {
                     0 -> {
                         map.mapType = AMap.MAP_TYPE_NAVI
                     }
+
                     1 -> {
                         map.mapType = AMap.MAP_TYPE_NIGHT
                     }
+
                     3 -> {
                         map.mapType = AMap.MAP_TYPE_SATELLITE
                     }
+
                     4 -> {
                         map.mapType = AMap.MAP_TYPE_BUS
                     }
+
                     else -> {
                         map.mapType = AMap.MAP_TYPE_NORMAL
                     }
@@ -313,6 +319,7 @@ class Convert {
                     1 -> {
                         map.setMapLanguage(AMap.ENGLISH)
                     }
+
                     else -> {
                         map.setMapLanguage(AMap.CHINESE)
                     }
@@ -345,15 +352,19 @@ class Convert {
                     1 -> {
                         map.uiSettings.logoPosition = AMapOptions.LOGO_MARGIN_BOTTOM
                     }
+
                     2 -> {
                         map.uiSettings.logoPosition = AMapOptions.LOGO_MARGIN_RIGHT
                     }
+
                     3 -> {
                         map.uiSettings.logoPosition = AMapOptions.LOGO_POSITION_BOTTOM_CENTER
                     }
+
                     4 -> {
                         map.uiSettings.logoPosition = AMapOptions.LOGO_POSITION_BOTTOM_RIGHT
                     }
+
                     else -> {
                         map.uiSettings.logoPosition = AMapOptions.LOGO_POSITION_BOTTOM_LEFT
                     }
@@ -428,24 +439,31 @@ class Convert {
                     1 -> {
                         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATE)
                     }
+
                     2 -> {
                         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW)
                     }
+
                     3 -> {
                         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_MAP_ROTATE)
                     }
+
                     4 -> {
                         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE)
                     }
+
                     5 -> {
                         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER)
                     }
+
                     6 -> {
                         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER)
                     }
+
                     7 -> {
                         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_MAP_ROTATE_NO_CENTER)
                     }
+
                     else -> {
                         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_SHOW)
                     }
@@ -480,6 +498,7 @@ class Convert {
                             val asset = BitmapDescriptorFactory.fromView(imageView)
                             myLocationStyle.myLocationIcon(asset)
                         }
+
                         "marker#web" -> {
 
                         }
@@ -488,6 +507,40 @@ class Convert {
                 map.myLocationStyle = myLocationStyle
                 map.isMyLocationEnabled = true
             }
+        }
+
+        fun toAMapNaviViewOptions(arguments: Map<*, *>): AMapNaviViewOptions {
+            val options = AMapNaviViewOptions()
+            options.isAutoDrawRoute = arguments["isAutoDrawRoute"] as Boolean
+            options.setModeCrossDisplayShow(arguments["isModelCrossDisplayShow"] as Boolean)
+            options.isRealCrossDisplayShow = arguments["isRealCrossDisplayShow"] as Boolean
+            options.isLaneInfoShow = arguments["isLaneInfoShow"] as Boolean
+            options.isCompassEnabled = arguments["isCompassEnabled"] as Boolean
+            options.isTrafficBarEnabled = arguments["isTrafficBarEnabled"] as Boolean
+            options.isTrafficLayerEnabled = arguments["isTrafficLayerEnabled"] as Boolean
+            options.isRouteListButtonShow = arguments["isRouteListButtonShow"] as Boolean
+            options.isNaviArrowVisible = arguments["isNaviArrowVisible"] as Boolean
+            options.isScreenAlwaysBright = arguments["isScreenAlwaysBright"] as Boolean
+            options.isTrafficInfoUpdateEnabled = arguments["isTrafficInfoUpdateEnabled"] as Boolean
+            options.isCameraInfoUpdateEnabled = arguments["isCameraInfoUpdateEnabled"] as Boolean
+            options.isSettingMenuEnabled = arguments["isSettingMenuEnabled"] as Boolean
+            options.isTrafficLine = arguments["isTrafficLine"] as Boolean
+            options.isLayoutVisible = arguments["isLayoutVisible"] as Boolean
+            options.isAutoChangeZoom = arguments["isAutoChangeZoom"] as Boolean
+            options.isSensorEnable = arguments["isSensorEnable"] as Boolean
+            options.isCameraBubbleShow = arguments["isCameraBubbleShow"] as Boolean
+            options.isAutoLockCar = arguments["isAutoLockCar"] as Boolean
+            options.isAutoDisplayOverview = arguments["isAutoDisplayOverview"] as Boolean
+            options.isAfterRouteAutoGray = arguments["isAfterRouteAutoGray"] as Boolean
+            options.isDrawBackUpOverlay = arguments["isDrawBackUpOverlay"] as Boolean
+            options.isSecondActionVisible = arguments["isSecondActionVisible"] as Boolean
+            options.isNaviNight = arguments["isNaviNight"] as Boolean
+            options.isAutoNaviViewNightMode = arguments["isAutoNaviViewNightMode"] as Boolean
+            options.setMapStyle(
+                MapStyle.getEnum(arguments["mapStyle"] as Int),
+                arguments["mapStylePath"] as String
+            )
+            return options
         }
     }
 }

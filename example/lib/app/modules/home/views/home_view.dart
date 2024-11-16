@@ -3,35 +3,42 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import '../../../routes/app_pages.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('HomeView'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Column(
+        appBar: AppBar(
+          title: const Text('HomeView'),
+          centerTitle: true,
+        ),
+        body: Stack(
           children: [
-            // Obx(
-            //   () => controller.headedBitmap == null ? Container() : Image.memory(controller.headedBitmap.value!),
-            // ),
-            // Image.memory(Uint8List.fromList(controller.value)),
-            ElevatedButton(
-              child: const Text('导航'),
-              onPressed: () async {
-                Location loc = await AMapViewServer.fetch();
-                Get.toNamed(Routes.NAVI, arguments: loc);
+            AMapNaviView(
+              initParams: AmapNaviParams(aMapNaviViewOptions: AMapNaviViewOptions()..isAutoDrawRoute = false),
+              onCreated: (AMapNaviViewController aMapNaviViewController) {
+                controller.aMapNaviViewController = aMapNaviViewController;
               },
             ),
+            // AMapView(),
+            // Positioned(
+            //   bottom: 220,
+            //   left: 20,
+            //   right: 20,
+            //   child: ElevatedButton(
+            //     onPressed: () {
+            //       AMapNaviViewOptions options = AMapNaviViewOptions();
+            //       options.isLayoutVisible = true;
+
+            //       controller.aMapNaviViewController.setAMapNaviViewOptions(options);
+            //     },
+            //     child: const Text('样式设置'),
+            //   ),
+            // ),
           ],
-        ),
-      ),
-    );
+        ));
   }
 }

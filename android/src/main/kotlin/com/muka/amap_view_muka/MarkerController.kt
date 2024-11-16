@@ -65,7 +65,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
         if (icon != null) {
             when (icon["type"]) {
                 "marker#asset" -> {
-                    val size = icon["size"] as Map<String, Any>
+                    val size = icon["size"] as Map<*, *>
                     val imageView = ImageView(context)
                     val params = ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
                     val assetManager: AssetManager = context.assets
@@ -80,7 +80,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
                     marker.setIcon(asset)
                 }
                 "marker#byteArray" -> {
-                    val size = icon["size"] as Map<String, Any>
+                    val size = icon["size"] as Map<*, *>
                     val imageView = ImageView(context)
                     val params =
                             ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())

@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import com.amap.api.maps.AMap
 import com.amap.api.maps.AMapOptions
 import com.amap.api.maps.CameraUpdateFactory
+import com.amap.api.maps.TextureMapView
 import com.amap.api.maps.model.*
 import com.amap.api.maps.offlinemap.OfflineMapActivity
 import com.amap.api.navi.AMapNavi
@@ -41,7 +42,7 @@ class AmapViewFactory(
     private val activity: Activity,
     private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
-    override fun create(context: Context?, viewId: Int, args: Any?): PlatformView {
+    override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         // 申请权限
         ActivityCompat.requestPermissions(
             activity,
@@ -54,8 +55,8 @@ class AmapViewFactory(
             ),
             321
         )
-        val params = args as Map<String, Any>
-        return AMapView(context!!, viewId, flutterPluginBinding, params)
+        val params = args as Map<*, *>
+        return AMapView(context, viewId, flutterPluginBinding, params)
     }
 }
 
@@ -63,7 +64,7 @@ class AMapView(
     private val context: Context,
     private val id: Int,
     private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding,
-    private val params: Map<String, Any>
+    private val params: Map<*, *>
 ) : PlatformView,
     MethodChannel.MethodCallHandler,
     AMap.InfoWindowAdapter,
@@ -74,9 +75,9 @@ class AMapView(
     AMap.OnMapScreenShotListener,
     AMapNaviListener,
     AMap.OnMarkerDragListener {
-    private val mapView: AMapNaviView = AMapNaviView(context)
+    private val mapView: TextureMapView = TextureMapView(context)
 
-    private var map: AMap = mapView.map
+    private var map: AMap
 
     private val methodChannel: MethodChannel
 
@@ -88,22 +89,20 @@ class AMapView(
 
     init {
         mapView.onCreate(null)
-//        map.setOnMapLoadedListener(this)
-//
-////        registrarActivityHashCode = registrar.activity().hashCode()
 
         // marker控制器
-        methodChannel =
-            MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
+        methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
         methodChannel.setMethodCallHandler(this)
+
+        map = mapView.map
 
         markerController = MarkerController(methodChannel, map)
 
-        Convert.initParams(params, map, context)
-
-        (params["markers"] as List<*>?)?.forEach {
-            markerController.addMarker(it as Map<String, Any>, context)
-        }
+//        Convert.initParams(params, map, context)
+//
+//        (params["markers"] as List<*>?)?.forEach {
+//            markerController.addMarker(it as Map<String, Any>, context)
+//        }
 
         // 地图点击事件监听
         map.setOnMapClickListener(this)
@@ -115,6 +114,9 @@ class AMapView(
         map.setOnMarkerDragListener(this)
         /// 定位蓝点
         map.setOnMyLocationChangeListener(this)
+
+        val myLocationStyle = MyLocationStyle()
+        myLocationStyle.myLocationType( MyLocationStyle.LOCATION_TYPE_MAP_ROTATE)
 
 
 //

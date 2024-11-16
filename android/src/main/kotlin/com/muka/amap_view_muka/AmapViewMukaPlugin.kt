@@ -2,9 +2,11 @@ package com.muka.amap_view_muka
 
 import android.app.Activity
 import android.text.TextUtils
+import android.util.Log
 import com.amap.api.location.AMapLocationClient
 import com.amap.api.location.AMapLocationClientOption
 import com.amap.api.maps.MapsInitializer
+import com.amap.api.navi.AMapNavi
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -21,12 +23,12 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private var channel: MethodChannel? = null
 
     companion object {
-        const val TAG_FLUTTER_FRAGMENT = "plugins.muka.com/amap_view_muka"
+        const val AMAP_MUKA = "plugins.muka.com/amap_view_muka"
         const val AMAP_MUKA_MARKER = "plugins.muka.com/amap_view_muka_marker"
         const val AMAP_MUKA_SERVER = "plugins.muka.com/amap_view_muka_server"
         const val AMAP_MUKA_NAVI = "plugins.muka.com/amap_navi_view_muka"
         const val AMAP_MUKA_NAVI_CONTROLLER = "plugins.muka.com/amap_navi_view_muka_controller"
-        const val AMAP_MUKA_NAVI_EVENT = "plugins.muka.com/amap_view_muka_event"
+        const val AMAP_MUKA_NAVI_EVENT = "plugins.muka.com/amap_navi_view_muka_event"
     }
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -39,17 +41,10 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activity = binding.activity
-        flutterPluginBinding.platformViewRegistry.registerViewFactory(
-            TAG_FLUTTER_FRAGMENT,
-            AmapViewFactory(activity, flutterPluginBinding)
-        )
-        flutterPluginBinding.platformViewRegistry.registerViewFactory(
-            AMAP_MUKA_NAVI,
-            AmapNaviViewFactory(activity, flutterPluginBinding)
-        )
 
-        channel =
-            MethodChannel(flutterPluginBinding.binaryMessenger, AMAP_MUKA_SERVER)
+        flutterPluginBinding.platformViewRegistry.registerViewFactory(AMAP_MUKA, AmapViewFactory(activity, flutterPluginBinding))
+        flutterPluginBinding.platformViewRegistry.registerViewFactory(AMAP_MUKA_NAVI, AMapNaviViewFactory(activity, flutterPluginBinding))
+        channel = MethodChannel(flutterPluginBinding.binaryMessenger, AMAP_MUKA_SERVER)
         channel!!.setMethodCallHandler(this)
     }
 
@@ -59,17 +54,20 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
                 setApiKey(call.arguments as Map<*, *>)
                 result.success(null)
             }
+
             "updatePrivacyShow" -> {
                 val hasContains: Boolean = call.argument("hasContains")!!
                 val hasShow: Boolean = call.argument("hasShow")!!
                 MapsInitializer.updatePrivacyShow(activity, hasContains, hasShow)
                 result.success(null)
             }
+
             "updatePrivacyAgree" -> {
                 val hasAgree: Boolean = call.argument("hasAgree")!!
                 MapsInitializer.updatePrivacyAgree(activity, hasAgree)
                 result.success(null)
             }
+
             "fetch" -> {
                 var mode: Any? = call.argument("mode")
                 var locationClient = AMapLocationClient(flutterPluginBinding.applicationContext)
@@ -96,6 +94,7 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
                 }
                 locationClient.startLocation()
             }
+
             else -> {
                 result.notImplemented()
             }
@@ -118,10 +117,10 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
      */
     private fun setApiKey(apiKeyMap: Map<*, *>?) {
         if (null != apiKeyMap) {
-            if (apiKeyMap.containsKey("android")
-                && !TextUtils.isEmpty(apiKeyMap["android"] as String?)
+            if (apiKeyMap.containsKey("android") && !TextUtils.isEmpty(apiKeyMap["android"] as String?)
             ) {
-                MapsInitializer.setApiKey(apiKeyMap["android"] as String?)
+                AMapNavi.setApiKey(activity.applicationContext, apiKeyMap["android"] as String)
+//                MapsInitializer.setApiKey(apiKeyMap["android"] as String?)
             }
         }
     }

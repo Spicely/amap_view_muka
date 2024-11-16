@@ -1,19 +1,17 @@
 part of '../../amap_view_muka.dart';
 
-const _naviTag = 'plugins.muka.com/amap_view_muka_controller';
+const _naviTag = 'plugins.muka.com/amap_navi_view_muka_controller';
 
 class AMapNaviViewController {
-  late MethodChannel _channel;
+  late MethodChannel channel;
 
-  late _AMapNaviViewState _mapState;
-
-  AMapNaviViewController._(this._channel, this._mapState) {
-    _channel.setMethodCallHandler(_handleMethodCall);
+  AMapNaviViewController._(this.channel) {
+    channel.setMethodCallHandler(_handleMethodCall);
   }
 
-  static Future<AMapNaviViewController> init(int id, _AMapNaviViewState state) async {
-    MethodChannel channel = MethodChannel('${_naviTag}_$id');
-    return AMapNaviViewController._(channel, state);
+  static Future<AMapNaviViewController> init(int id) async {
+    MethodChannel methodChannel = MethodChannel('${_naviTag}_$id');
+    return AMapNaviViewController._(methodChannel);
   }
 
   Future<void> _handleMethodCall(MethodCall call) async {
@@ -24,5 +22,9 @@ class AMapNaviViewController {
       default:
         throw MissingPluginException();
     }
+  }
+
+  Future<void> setAMapNaviViewOptions(AMapNaviViewOptions options) async {
+    await channel.invokeMethod('setAMapNaviViewOptions', options.toJson());
   }
 }

@@ -85,43 +85,27 @@ class AmapNaviStartToEnd {
 }
 
 class AmapNaviParams {
-  /// 路径规划类型
-  final AmapNaviCalculateType calculateType;
+  final AMapNaviViewOptions? aMapNaviViewOptions;
 
-  /// 起终信息
-  final AmapNaviStartToEnd startToEnd;
+  AmapNaviParams({this.aMapNaviViewOptions});
 
-  AmapNaviParams({
-    required this.calculateType,
-    required this.startToEnd,
-  });
-
-  Map<String, dynamic> toJson() => {'calculateType': calculateType.index, 'startToEnd': startToEnd.toJson()};
+  Map<String, dynamic> toJson() => {'aMapNaviViewOptions': aMapNaviViewOptions?.toJson()};
 }
 
-class AMapNaviView extends StatefulWidget {
+class AMapNaviView extends StatelessWidget {
   /// 地图初始化完成
   final AMapNaviViewOnCreated? onCreated;
 
-  final AmapNaviParams params;
+  final AmapNaviParams? initParams;
 
   final AmapNaviEventCallback? onListen;
 
   const AMapNaviView({
     super.key,
     this.onCreated,
-    required this.params,
+    this.initParams,
     this.onListen,
   });
-
-  @override
-  State<AMapNaviView> createState() => _AMapNaviViewState();
-}
-
-class _AMapNaviViewState extends State<AMapNaviView> {
-  late AMapNaviViewController _controller;
-
-  late AMapNaviViewEvent _event;
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +118,7 @@ class _AMapNaviViewState extends State<AMapNaviView> {
         viewType: _naviViewType,
         gestureRecognizers: gestureRecognizers,
         onPlatformViewCreated: onPlatformViewCreated,
-        creationParams: widget.params.toJson(),
+        creationParams: initParams?.toJson(),
         creationParamsCodec: const StandardMessageCodec(),
         layoutDirection: TextDirection.ltr,
         // layoutDirection: widget.layoutDirection,
@@ -145,7 +129,7 @@ class _AMapNaviViewState extends State<AMapNaviView> {
         viewType: _naviViewType,
         gestureRecognizers: gestureRecognizers,
         onPlatformViewCreated: onPlatformViewCreated,
-        creationParams: widget.params.toJson(),
+        creationParams: initParams?.toJson(),
         creationParamsCodec: const StandardMessageCodec(),
         // layoutDirection: widget.layoutDirection,
         // hitTestBehavior: widget.hitTestBehavior,
@@ -154,19 +138,19 @@ class _AMapNaviViewState extends State<AMapNaviView> {
   }
 
   void onPlatformViewCreated(int id) async {
-    _controller = await AMapNaviViewController.init(id, this);
-    _event = await AMapNaviViewEvent.init(id, (data) {
-      print('======================');
-      print(data);
-      switch (data['type']) {
-        case 'calculateRouteFailure':
-          widget.onListen?.onCalculateRouteFailure?.call(data['data']);
-          break;
-        case 'onCalculateRouteSuccess':
-          widget.onListen?.onCalculateRouteSuccess?.call((data['data'] as List<dynamic>).map((e) => AmapNaviPath.fromJson(e)).toList());
-          break;
-      }
-    });
-    widget.onCreated?.call(_controller);
+    AMapNaviViewController controller = await AMapNaviViewController.init(id);
+    // _event = await AMapNaviViewEvent.init(id, (data) {
+    //   print('======================');
+    //   print(data);
+    //   switch (data['type']) {
+    //     case 'calculateRouteFailure':
+    //       widget.onListen?.onCalculateRouteFailure?.call(data['data']);
+    //       break;
+    //     case 'onCalculateRouteSuccess':
+    //       widget.onListen?.onCalculateRouteSuccess?.call((data['data'] as List<dynamic>).map((e) => AmapNaviPath.fromJson(e)).toList());
+    //       break;
+    //   }
+    // });
+    onCreated?.call(controller);
   }
 }

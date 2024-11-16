@@ -1,7 +1,6 @@
 library amap_view_muka;
 
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:amap_core/amap_core.dart';
@@ -12,9 +11,15 @@ import 'package:flutter/services.dart';
 
 export 'package:amap_core/amap_core.dart';
 
-part 'src/amap_view.dart';
+part 'src/enum.dart';
+part 'src/class/amap_navi_view_options.dart';
+part 'src/class/route_overlay_options.dart';
+part 'src/class/rect.dart';
+
+part 'src/amap_view/amap_view.dart';
 part 'src/amap_view_controller.dart';
-part 'src/amap_view_server.dart';
+part 'src/amap_view/amap_view_server.dart';
+
 part 'src/amap_navi_view/amap_navi_view.dart';
 part 'src/amap_navi_view/amap_navi_view_controller.dart';
 part 'src/amap_navi_view/amap_navi_view_event.dart';

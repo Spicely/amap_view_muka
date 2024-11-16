@@ -14,13 +14,7 @@ class NaviView extends GetView<NaviController> {
         onListen: AmapNaviEventCallback(
           onCalculateRouteSuccess: (data) => print(data),
         ),
-        params: AmapNaviParams(
-          calculateType: AmapNaviCalculateType.drive,
-          startToEnd: AmapNaviStartToEnd(
-            start: AmapNaviLocationInfo(address: '', latLng: Get.arguments),
-            end: AmapNaviLocationInfo(address: '', latLng: LatLng(30.555189, 104.274015)),
-          ),
-        ),
+        initParams: AmapNaviParams(),
         onCreated: (AMapNaviViewController c) {
           controller.aMapNaviViewController = c;
         },

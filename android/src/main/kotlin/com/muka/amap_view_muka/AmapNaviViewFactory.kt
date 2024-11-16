@@ -9,25 +9,28 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
+import com.amap.api.maps.model.MyLocationStyle
 import com.amap.api.navi.*
 import com.amap.api.navi.AMapNaviView
+import com.amap.api.navi.enums.MapStyle
 import com.amap.api.navi.enums.PathPlanningStrategy
 import com.amap.api.navi.enums.TravelStrategy
 import com.amap.api.navi.model.*
 import com.amap.api.navi.view.RouteOverLay
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.EventChannel
+import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
 
-class AmapNaviViewFactory(
+class AMapNaviViewFactory(
     private val activity: Activity,
     private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
-    override fun create(context: Context?, viewId: Int, args: Any?): PlatformView {
+    override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         // 申请权限
         ActivityCompat.requestPermissions(
             activity, arrayOf(
@@ -38,8 +41,8 @@ class AmapNaviViewFactory(
                 Manifest.permission.READ_PHONE_STATE
             ), 321
         )
-        val params = args as Map<*, *>
-        return AMapNaviView(context!!, viewId, flutterPluginBinding, params)
+        val params = args as Map<*, *>?
+        return AMapNaviView(context, viewId, flutterPluginBinding, params)
     }
 }
 
@@ -48,13 +51,13 @@ class AMapNaviView(
     private val context: Context,
     private val id: Int,
     private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding,
-    private val params: Map<*, *>
-) : PlatformView, AMapNaviListener, AMapNaviViewListener, EventChannel.StreamHandler {
-    private val mapView: AMapNaviView = AMapNaviView(context)
+    private val params: Map<*, *>?
+) : PlatformView, AMapNaviListener, AMapNaviViewListener, EventChannel.StreamHandler, MethodChannel.MethodCallHandler {
 
-    private var mAMapNavi: AMapNavi
 
-    private var map: AMap = mapView.map
+    private var aMapNaviView: AMapNaviView
+
+    private var aMap: AMap
 
     private val methodChannel: MethodChannel
 
@@ -72,43 +75,64 @@ class AMapNaviView(
     private val routeOverlays: SparseArray<RouteOverLay> = SparseArray<RouteOverLay>()
 
     init {
-        mapView.onCreate(null)
+        if (params != null && params["aMapNaviViewOptions"] != null) {
+            Log.e("params", ": ${params.toMap().toString()}")
+            val options = Convert.toAMapNaviViewOptions(params["aMapNaviViewOptions"] as Map<*, *>)
+            aMapNaviView = AMapNaviView(context, options)
+        } else {
+            aMapNaviView = AMapNaviView(context)
+        }
 
+
+        aMapNaviView.onCreate(null)
+        aMap = aMapNaviView.map
         // marker控制器
-        methodChannel = MethodChannel(
-            flutterPluginBinding.binaryMessenger,
-            "${AmapViewMukaPlugin.AMAP_MUKA_NAVI_CONTROLLER}_$id"
-        )
-        eventChannel = EventChannel(
-            flutterPluginBinding.binaryMessenger,
-            AmapViewMukaPlugin.AMAP_MUKA_NAVI_EVENT
-        )
-        mapView.setAMapNaviViewListener(this)
-        mAMapNavi = AMapNavi.getInstance(context)
-        mAMapNavi.setUseInnerVoice(true, true)
-        mAMapNavi.addAMapNaviListener(this)
-//        initParams(params)
+        methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "${AmapViewMukaPlugin.AMAP_MUKA_NAVI_CONTROLLER}_$id")
+        eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "${AmapViewMukaPlugin.AMAP_MUKA_NAVI_EVENT}_$id")
+        aMapNaviView.setAMapNaviViewListener(this)
+        methodChannel.setMethodCallHandler(this)
 
+        AmapNaviParams().setNeedCalculateRouteWhenPresent(false)
+
+        Log.e("params", ": ${params?.toMap().toString()}")
+
+
+        /// 定位当前位置
+//        if (params!=null && params["showMyLocation"] != null && params["showMyLocation"] as Boolean) {
+
+
+        val myLocationStyle = MyLocationStyle()
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE)
+        aMap.myLocationStyle = myLocationStyle
+        aMapNaviView.setShowDriveCongestion(false)
+
+
+//        }
     }
 
 
     override fun getView(): View {
-        return mapView
+        return aMapNaviView
     }
 
 
     override fun dispose() {
-        mAMapNavi.removeAMapNaviListener(this)
+        aMapNaviView.setAMapNaviViewListener(null)
+        methodChannel.setMethodCallHandler(null)
         AMapNavi.destroy()
 
     }
-//
-//    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-//        val opts = call.arguments as Map<String, Any>
-//        when (call.method) {
-//
-//        }
-//    }
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        val args = call.arguments as Map<*, *>
+        when (call.method) {
+            "setAMapNaviViewOptions" -> {
+                val options = Convert.toAMapNaviViewOptions(args)
+                aMapNaviView.viewOptions = options
+                result.success(null)
+            }
+        }
+    }
 
 
     override fun onInitNaviFailure() {
@@ -116,36 +140,37 @@ class AMapNaviView(
     }
 
     override fun onInitNaviSuccess() {
+
         // 起点信息
-        var startLatLng =
-            Convert.toLatLng(((params["startToEnd"] as Map<*, *>)["start"] as Map<*, *>)["latLng"] as Map<*, *>?)
-        val start = NaviPoi(
-            ((params["startToEnd"] as Map<*, *>)["start"] as Map<*, *>)["address"] as String,
-            startLatLng,
-            ""
-        )
-        // 终点信息
-        var endLatLng =
-            Convert.toLatLng(((params["startToEnd"] as Map<*, *>)["end"] as Map<*, *>)["latLng"] as Map<*, *>?)
-        val end = NaviPoi(
-            ((params["startToEnd"] as Map<*, *>)["end"] as Map<*, *>)["address"] as String,
-            endLatLng,
-            ""
-        )
-        val carInfo = AMapCarInfo()
-        when (params["calculateType"] as Int) {
-            // 驾车/货车路线规划
-            0 -> {
-                carInfo.carType = "0"
-                mAMapNavi.setCarInfo(carInfo);
-                mAMapNavi.calculateDriveRoute(
-                    start,
-                    end,
-                    null,
-                    PathPlanningStrategy.DRIVING_MULTIPLE_ROUTES_DEFAULT
-                )
-            }
-            // 骑行
+//        var startLatLng =
+//            Convert.toLatLng(((params["startToEnd"] as Map<*, *>)["start"] as Map<*, *>)["latLng"] as Map<*, *>?)
+//        val start = NaviPoi(
+//            ((params["startToEnd"] as Map<*, *>)["start"] as Map<*, *>)["address"] as String,
+//            startLatLng,
+//            ""
+//        )
+//        // 终点信息
+//        var endLatLng =
+//            Convert.toLatLng(((params["startToEnd"] as Map<*, *>)["end"] as Map<*, *>)["latLng"] as Map<*, *>?)
+//        val end = NaviPoi(
+//            ((params["startToEnd"] as Map<*, *>)["end"] as Map<*, *>)["address"] as String,
+//            endLatLng,
+//            ""
+//        )
+//        val carInfo = AMapCarInfo()
+//        when (params["calculateType"] as Int) {
+//            // 驾车/货车路线规划
+//            0 -> {
+//                carInfo.carType = "0"
+//                mAMapNavi.setCarInfo(carInfo);
+//                mAMapNavi.calculateDriveRoute(
+//                    start,
+//                    end,
+//                    null,
+//                    PathPlanningStrategy.DRIVING_MULTIPLE_ROUTES_DEFAULT
+//                )
+//            }
+        // 骑行
 //            1 -> {
 //                mAMapNavi.independentCalculateRoute(
 //                    start,
@@ -182,11 +207,11 @@ class AMapNaviView(
 //                    this
 //                )
 //            }
-            // 电动车
-            4 -> {
-                mAMapNavi.calculateEleBikeRoute(start, end, TravelStrategy.MULTIPLE);
-            }
-        }
+        // 电动车
+//            4 -> {
+//                mAMapNavi.calculateEleBikeRoute(start, end, TravelStrategy.MULTIPLE);
+//            }
+//        }
     }
 
     override fun onStartNavi(p0: Int) {
@@ -298,30 +323,30 @@ class AMapNaviView(
 
     /// 路线规划成功
     override fun onCalculateRouteSuccess(routeResult: AMapCalcRouteResult?) {
-        if (routeResult != null) {
-            // 获取路线数据对象
-            val data: MutableMap<String, Any> = mutableMapOf()
-            var infos: MutableList<MutableMap<String, Any>> = mutableListOf()
-            data["type"] = "onCalculateRouteSuccess"
-            data["data"] = infos
-
-            routeOverlays.clear()
-
-            val routeIds: IntArray = routeResult.routeid
-            val paths = mAMapNavi.naviPaths
-            for (i in routeIds.indices) {
-                val path = paths[routeIds[i]]
-                if (path != null) {
-                    val info: MutableMap<String, Any> = mutableMapOf()
-                    info["allTime"] = path.allTime
-                    info["allLength"] = path.allLength
-                    info["allCameras"] =  path.allCameras.size
-                    infos.add(info)
-                    drawRoutes(routeIds[i], path)
-                }
-            }
-            eventSink?.success(data)
-        }
+//        if (routeResult != null) {
+//            // 获取路线数据对象
+//            val data: MutableMap<String, Any> = mutableMapOf()
+//            var infos: MutableList<MutableMap<String, Any>> = mutableListOf()
+//            data["type"] = "onCalculateRouteSuccess"
+//            data["data"] = infos
+//
+//            routeOverlays.clear()
+//
+//            val routeIds: IntArray = routeResult.routeid
+//            val paths = mAMapNavi.naviPaths
+//            for (i in routeIds.indices) {
+//                val path = paths[routeIds[i]]
+//                if (path != null) {
+//                    val info: MutableMap<String, Any> = mutableMapOf()
+//                    info["allTime"] = path.allTime
+//                    info["allLength"] = path.allLength
+//                    info["allCameras"] =  path.allCameras.size
+//                    infos.add(info)
+//                    drawRoutes(routeIds[i], path)
+//                }
+//            }
+//            eventSink?.success(data)
+//        }
 //        mAMapNavi.startNavi(NaviType.GPS)
     }
 
@@ -412,12 +437,10 @@ class AMapNaviView(
     }
 
     private fun drawRoutes(routeId: Int, path: AMapNaviPath) {
-        map.moveCamera(CameraUpdateFactory.changeTilt(0f))
-        val routeOverLay = RouteOverLay(map, path, context)
-        routeOverLay.isTrafficLine = false
-        routeOverLay.addToMap()
-        routeOverlays.put(routeId, routeOverLay)
+//        map.moveCamera(CameraUpdateFactory.changeTilt(0f))
+//        val routeOverLay = RouteOverLay(map, path, context)
+//        routeOverLay.isTrafficLine = false
+//        routeOverLay.addToMap()
+//        routeOverlays.put(routeId, routeOverLay)
     }
-
-
 }
