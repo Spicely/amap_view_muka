@@ -84,14 +84,6 @@ class AmapNaviStartToEnd {
   Map<String, dynamic> toJson() => {'start': start.toJson(), 'end': end.toJson(), 'waysPoiIds': waysPoiIds?.map((e) => e.toJson())};
 }
 
-class AmapNaviParams {
-  final AMapNaviViewOptions? aMapNaviViewOptions;
-
-  AmapNaviParams({this.aMapNaviViewOptions});
-
-  Map<String, dynamic> toJson() => {'aMapNaviViewOptions': aMapNaviViewOptions?.toJson()};
-}
-
 class AMapNaviView extends StatelessWidget {
   /// 地图初始化完成
   final AMapNaviViewOnCreated? onCreated;

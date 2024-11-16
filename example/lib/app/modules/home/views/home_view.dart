@@ -18,7 +18,10 @@ class HomeView extends GetView<HomeController> {
         body: Stack(
           children: [
             AMapNaviView(
-              initParams: AmapNaviParams(aMapNaviViewOptions: AMapNaviViewOptions()..isAutoDrawRoute = false),
+              initParams: const AmapNaviParams(
+                viewOptions: AMapNaviViewOptions(isLayoutVisible: false),
+                aMap: AMap(isMyLocationEnabled: true, uiSettings: UiSettings()),
+              ),
               onCreated: (AMapNaviViewController aMapNaviViewController) {
                 controller.aMapNaviViewController = aMapNaviViewController;
               },
@@ -33,7 +36,7 @@ class HomeView extends GetView<HomeController> {
             //       AMapNaviViewOptions options = AMapNaviViewOptions();
             //       options.isLayoutVisible = true;
 
-            //       controller.aMapNaviViewController.setAMapNaviViewOptions(options);
+            //       controller.aMapNaviViewController.viewOptions = options;
             //     },
             //     child: const Text('样式设置'),
             //   ),

@@ -1,4 +1,4 @@
-part of '../../amap_view_muka.dart';
+part of '../amap_view_muka.dart';
 
 // /// 仅Android可用
 // enum AMapLocationMode {

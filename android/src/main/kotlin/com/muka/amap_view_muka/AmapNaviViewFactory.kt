@@ -9,6 +9,8 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
+import com.amap.api.maps.LocationSource
+import com.amap.api.maps.model.CustomMapStyleOptions
 import com.amap.api.maps.model.MyLocationStyle
 import com.amap.api.navi.*
 import com.amap.api.navi.AMapNaviView
@@ -57,6 +59,8 @@ class AMapNaviView(
 
     private var aMapNaviView: AMapNaviView
 
+    private var aMapNavi: AMapNavi
+
     private var aMap: AMap
 
     private val methodChannel: MethodChannel
@@ -75,24 +79,30 @@ class AMapNaviView(
     private val routeOverlays: SparseArray<RouteOverLay> = SparseArray<RouteOverLay>()
 
     init {
-        if (params != null && params["aMapNaviViewOptions"] != null) {
-            Log.e("params", ": ${params.toMap().toString()}")
-            val options = Convert.toAMapNaviViewOptions(params["aMapNaviViewOptions"] as Map<*, *>)
+        if (params != null && params["viewOptions"] != null) {
+            val options = Convert.toAMapNaviViewOptions(params["viewOptions"] as Map<*, *>)
             aMapNaviView = AMapNaviView(context, options)
         } else {
             aMapNaviView = AMapNaviView(context)
         }
-
-
         aMapNaviView.onCreate(null)
         aMap = aMapNaviView.map
+        aMapNavi = AMapNavi.getInstance(context)
+
+        Convert.initParams(params,aMapNaviView, context)
+
         // marker控制器
         methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "${AmapViewMukaPlugin.AMAP_MUKA_NAVI_CONTROLLER}_$id")
         eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "${AmapViewMukaPlugin.AMAP_MUKA_NAVI_EVENT}_$id")
         aMapNaviView.setAMapNaviViewListener(this)
+        aMapNavi.addAMapNaviListener(this)
         methodChannel.setMethodCallHandler(this)
 
-        AmapNaviParams().setNeedCalculateRouteWhenPresent(false)
+
+        val myLocationStyle = MyLocationStyle()
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE)
+        myLocationStyle.showMyLocation(true)
+        aMapNavi.stopNavi()
 
         Log.e("params", ": ${params?.toMap().toString()}")
 
@@ -101,10 +111,6 @@ class AMapNaviView(
 //        if (params!=null && params["showMyLocation"] != null && params["showMyLocation"] as Boolean) {
 
 
-        val myLocationStyle = MyLocationStyle()
-        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE)
-        aMap.myLocationStyle = myLocationStyle
-        aMapNaviView.setShowDriveCongestion(false)
 
 
 //        }
@@ -119,8 +125,9 @@ class AMapNaviView(
     override fun dispose() {
         aMapNaviView.setAMapNaviViewListener(null)
         methodChannel.setMethodCallHandler(null)
+        aMapNaviView.onDestroy()
+        aMapNavi.stopNavi()
         AMapNavi.destroy()
-
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -140,6 +147,8 @@ class AMapNaviView(
     }
 
     override fun onInitNaviSuccess() {
+        Log.e("调试信息", "初始化完成");
+        Log.e("调试信息", "计算导航路线");
 
         // 起点信息
 //        var startLatLng =
@@ -219,11 +228,12 @@ class AMapNaviView(
     }
 
     override fun onTrafficStatusUpdate() {
-
     }
 
-    override fun onLocationChange(p0: AMapNaviLocation?) {
+    override fun onLocationChange(loc: AMapNaviLocation?) {
+//        aMapNaviView.map.setLocationSource(LocationSource())
 
+//        Log.d("onLocationChange", loc.lo)
     }
 
     override fun onGetNavigationText(p0: Int, p1: String?) {
@@ -435,6 +445,8 @@ class AMapNaviView(
         eventChannel = null
         eventSink = null
     }
+
+
 
     private fun drawRoutes(routeId: Int, path: AMapNaviPath) {
 //        map.moveCamera(CameraUpdateFactory.changeTilt(0f))

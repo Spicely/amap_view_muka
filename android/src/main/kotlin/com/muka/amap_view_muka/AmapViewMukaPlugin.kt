@@ -2,7 +2,6 @@ package com.muka.amap_view_muka
 
 import android.app.Activity
 import android.text.TextUtils
-import android.util.Log
 import com.amap.api.location.AMapLocationClient
 import com.amap.api.location.AMapLocationClientOption
 import com.amap.api.maps.MapsInitializer
@@ -23,7 +22,6 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private var channel: MethodChannel? = null
 
     companion object {
-        const val AMAP_MUKA = "plugins.muka.com/amap_view_muka"
         const val AMAP_MUKA_MARKER = "plugins.muka.com/amap_view_muka_marker"
         const val AMAP_MUKA_SERVER = "plugins.muka.com/amap_view_muka_server"
         const val AMAP_MUKA_NAVI = "plugins.muka.com/amap_navi_view_muka"
@@ -42,7 +40,6 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activity = binding.activity
 
-        flutterPluginBinding.platformViewRegistry.registerViewFactory(AMAP_MUKA, AmapViewFactory(activity, flutterPluginBinding))
         flutterPluginBinding.platformViewRegistry.registerViewFactory(AMAP_MUKA_NAVI, AMapNaviViewFactory(activity, flutterPluginBinding))
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, AMAP_MUKA_SERVER)
         channel!!.setMethodCallHandler(this)
@@ -119,8 +116,7 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         if (null != apiKeyMap) {
             if (apiKeyMap.containsKey("android") && !TextUtils.isEmpty(apiKeyMap["android"] as String?)
             ) {
-                AMapNavi.setApiKey(activity.applicationContext, apiKeyMap["android"] as String)
-//                MapsInitializer.setApiKey(apiKeyMap["android"] as String?)
+                AMapNavi.setApiKey(activity.applicationContext, apiKeyMap["android"] as String?)
             }
         }
     }
