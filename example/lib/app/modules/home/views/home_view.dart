@@ -11,37 +11,38 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('HomeView'),
-          centerTitle: true,
-        ),
-        body: Stack(
-          children: [
-            AMapNaviView(
-              initParams: const AmapNaviParams(
-                viewOptions: AMapNaviViewOptions(isLayoutVisible: false),
-                aMap: AMap(isMyLocationEnabled: true, uiSettings: UiSettings()),
-              ),
-              onCreated: (AMapNaviViewController aMapNaviViewController) {
-                controller.aMapNaviViewController = aMapNaviViewController;
-              },
+      appBar: AppBar(
+        title: const Text('HomeView'),
+        centerTitle: true,
+      ),
+      body: Stack(
+        children: [
+          AMapNaviView(
+            initParams: const AmapNaviParams(
+              viewOptions: AMapNaviViewOptions(isLayoutVisible: false),
+              aMap: AMap(isMyLocationEnabled: true, uiSettings: UiSettings()),
             ),
-            // AMapView(),
-            // Positioned(
-            //   bottom: 220,
-            //   left: 20,
-            //   right: 20,
-            //   child: ElevatedButton(
-            //     onPressed: () {
-            //       AMapNaviViewOptions options = AMapNaviViewOptions();
-            //       options.isLayoutVisible = true;
-
-            //       controller.aMapNaviViewController.viewOptions = options;
-            //     },
-            //     child: const Text('样式设置'),
-            //   ),
-            // ),
-          ],
-        ));
+            onCreated: (AMapNaviViewController aMapNaviViewController) {
+              controller.aMapNaviViewController = aMapNaviViewController;
+            },
+          ),
+          // AMapView(),
+          Positioned(
+            bottom: 220,
+            left: 20,
+            right: 20,
+            child: ElevatedButton(
+              onPressed: () async {
+                List<AMapPoi> pois = await AMapViewServer.searchKeyword('广场', city: '成都', page: 1, pageSize: 10);
+                for (var v in pois) {
+                  print(v.toJson());
+                }
+              },
+              child: const Text('样式设置'),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

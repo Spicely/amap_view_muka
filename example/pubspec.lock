@@ -4,10 +4,9 @@ packages:
   amap_core:
     dependency: transitive
     description:
-      name: amap_core
-      sha256: a2a91ac2251551b0a7952ff5fa6eadefaa94a4465c32000a050bd2a313f21bc4
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../amap_core"
+      relative: true
+    source: path
     version: "1.0.4"
   amap_view_muka:
     dependency: "direct main"

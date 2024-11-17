@@ -1,7 +1,7 @@
 name: amap_view_muka
 description: "A new Flutter plugin project."
 version: 0.0.1
-homepage:
+homepage: https://github.com/Spicely/amap_view_muka
 
 environment:
   sdk: ^3.5.4
@@ -11,7 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
-  amap_core: ^1.0.3
+  amap_core: 
+    path: ../amap_core
 
 dev_dependencies:
   flutter_test:

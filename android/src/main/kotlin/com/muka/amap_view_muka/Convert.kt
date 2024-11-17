@@ -1,24 +1,31 @@
 package com.muka.amap_view_muka
 
 import android.content.Context
-import android.content.res.AssetManager
-import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.view.ViewGroup
-import android.widget.ImageView
 import com.amap.api.location.AMapLocation
 import com.amap.api.maps.AMap
-import com.amap.api.maps.AMapOptions
-import com.amap.api.maps.CameraUpdate
 import com.amap.api.maps.CameraUpdateFactory
-import com.amap.api.maps.model.*
+import com.amap.api.maps.model.CameraPosition
 import com.amap.api.maps.model.LatLng
+import com.amap.api.maps.model.MyLocationStyle
 import com.amap.api.navi.AMapNaviView
 import com.amap.api.navi.AMapNaviViewOptions
 import com.amap.api.navi.enums.MapStyle
-import com.amap.api.navi.model.*
+import com.amap.api.navi.model.AMapNaviCameraInfo
+import com.amap.api.navi.model.AMapNaviForbiddenInfo
+import com.amap.api.navi.model.AMapNaviLimitInfo
+import com.amap.api.navi.model.AMapNaviLink
+import com.amap.api.navi.model.AMapNaviRouteGuideSegment
+import com.amap.api.navi.model.AMapNaviPath
+import com.amap.api.navi.model.AMapNaviRouteGuideGroup
+import com.amap.api.navi.model.AMapNaviStep
+import com.amap.api.navi.model.AMapRestrictionInfo
+import com.amap.api.navi.model.AMapTrafficIncidentInfo
+import com.amap.api.navi.model.NaviLatLng
+import com.amap.api.services.core.LatLonPoint
+import com.amap.api.services.poisearch.PoiResultV2
 import com.autonavi.ae.route.RestrictionInfoDetail
 import io.flutter.FlutterInjector
+import com.amap.api.services.poisearch.IndoorDataV2
 
 
 class Convert {
@@ -259,7 +266,47 @@ class Convert {
             return LatLng(params["latitude"] as Double, params["longitude"] as Double)
         }
 
-        private fun setAMap(params: Map<*, *>?, aMap: AMap) {
+        fun toArr(result: PoiResultV2): Any {
+            val pis = mutableListOf<Any>()
+            result.pois.forEachIndexed { _, it ->
+                run {
+                    val data = HashMap<String, Any?>()
+                    data["id"] = it.poiId
+                    data["name"] = it.title
+                    data["typeDes"] = it.typeDes
+                    data["typeCode"] = it.typeCode
+                    data["address"] = it.snippet
+                    data["province"] = it.provinceName
+                    data["provinceCode"] = it.provinceCode
+                    data["city"] = it.cityName
+                    data["cityCode"] = it.cityCode
+                    data["adCode"] = it.adCode
+                    data["indoorData"] = if (it.indoorData == null) null else toMap(it.indoorData)
+                    data["latLng"] = if (it.latLonPoint == null) null else toMap(it.latLonPoint)
+                    data["district"] = it.adName
+                    pis.add(data)
+                }
+            }
+            return pis
+        }
+        fun toArr(result: MutableList<com.amap.api.services.help.Tip>): Any {
+            val arr = mutableListOf<Any>()
+            result.forEachIndexed { _, it ->
+                run {
+                    val data = HashMap<String, Any?>()
+                    data["id"] = it.poiID
+                    data["name"] = it.name
+                    data["adCode"] = it.adcode
+                    data["address"] = it.address
+                    data["typeCode"] = it.typeCode
+                    data["latLng"] = if (it.point == null) null else toMap(it.point)
+                    data["district"] = it.district
+                    arr.add(data)
+                }
+            }
+            return arr
+        }
+        fun setAMap(params: Map<*, *>?, aMap: AMap) {
             if (params == null) return
             val myLocationStyle = params["myLocationStyle"] as Map<*, *>
             val uiSettings = params["uiSettings"] as Map<*, *>
@@ -520,6 +567,22 @@ class Convert {
 //                map.myLocationStyle = myLocationStyle
 //                map.isMyLocationEnabled = true
 //            }
+        }
+
+        private fun toMap(data: IndoorDataV2): MutableMap<String, Any?> {
+            val map: MutableMap<String, Any?> = java.util.HashMap()
+            map["floor"] = data.floor
+            map["floorName"] = data.floorName
+            map["id"] = data.poiId
+            map["description"] = null
+            return map
+        }
+
+        private fun toMap(point: LatLonPoint): MutableMap<String, Any> {
+            val pointMap: MutableMap<String, Any> = java.util.HashMap()
+            pointMap["latitude"] = point.latitude
+            pointMap["longitude"] = point.longitude
+            return pointMap
         }
 
         fun toAMapNaviViewOptions(arguments: Map<*, *>): AMapNaviViewOptions {

@@ -9,7 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AMapViewServer.updatePrivacyAgree(true);
   await AMapViewServer.updatePrivacyShow(true, true);
-  await AMapViewServer.setApiKey("6e630e675873f2a548f55ba99ee8c571", "56250708b9588800db63161534716f8c");
+  await AMapViewServer.setApiKey("d0c22c82dcc475502cd816ed5e68ce9b", "56250708b9588800db63161534716f8c");
   runApp(
     GetMaterialApp(
       title: "Application",

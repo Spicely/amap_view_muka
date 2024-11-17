@@ -5,10 +5,6 @@ const _naviTag = 'plugins.muka.com/amap_navi_view_muka_controller';
 class AMapNaviViewController {
   late MethodChannel channel;
 
-  AMapNaviViewOptions _viewOptions = AMapNaviViewOptions();
-
-  AMap _aMap = AMap();
-
   AMapNaviViewController._(this.channel) {
     channel.setMethodCallHandler(_handleMethodCall);
   }
@@ -28,19 +24,13 @@ class AMapNaviViewController {
     }
   }
 
-  AMapNaviViewOptions get viewOptions => _viewOptions;
-
-  set viewOptions(AMapNaviViewOptions options) {
-    _viewOptions = options;
-    channel.invokeMethod('setAMapNaviViewOptions', options.toJson());
+  Future<void> setViewOptions(AMapNaviViewOptions options) async {
+    await channel.invokeMethod('setAMapNaviViewOptions', options.toJson());
     return;
   }
 
-  set aMap(AMap aMap) {
-    _aMap = aMap;
-    channel.invokeMethod('setAMap', aMap.toJson());
+  Future<void> setAMap(AMap aMap) async {
+    await channel.invokeMethod('setAMap', aMap.toJson());
     return;
   }
-
-  AMap get aMap => _aMap;
 }

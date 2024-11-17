@@ -138,6 +138,10 @@ class AMapNaviView(
                 aMapNaviView.viewOptions = options
                 result.success(null)
             }
+            "setAMap" -> {
+                Convert.setAMap(args, aMapNaviView.map)
+                result.success(null)
+            }
         }
     }
 
