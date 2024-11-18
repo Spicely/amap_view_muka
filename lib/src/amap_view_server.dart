@@ -76,7 +76,7 @@ class AMapViewServer {
   }) async {
     assert(page >= 1 && page <= 100, 'page must be between 1 and 100');
     assert(pageSize >= 1 && pageSize <= 25, 'pageSize must be between 1 and 25');
-    final res = await _channel.invokeMethod('searchKeyword', {
+    String res = await _channel.invokeMethod('searchKeyword', {
       'keyword': keyword,
       'city': city,
       'types': types,
@@ -85,7 +85,7 @@ class AMapViewServer {
       'cityLimit': cityLimit,
     });
 
-    return PoiResult.fromJson(Map<String, dynamic>.from(res));
+    return PoiResult.fromJson(jsonDecode(res));
   }
 
   /// 周边搜索poi

@@ -2,6 +2,7 @@ package com.muka.amap_view_muka
 
 import android.app.Activity
 import android.text.TextUtils
+import android.util.Log
 import com.amap.api.location.AMapLocationClient
 import com.amap.api.location.AMapLocationClientOption
 import com.amap.api.maps.MapsInitializer
@@ -10,9 +11,9 @@ import com.amap.api.services.core.LatLonPoint
 import com.amap.api.services.core.PoiItemV2
 import com.amap.api.services.help.Inputtips
 import com.amap.api.services.help.InputtipsQuery
-import com.amap.api.services.help.Tip
 import com.amap.api.services.poisearch.PoiResultV2
 import com.amap.api.services.poisearch.PoiSearchV2
+import com.google.gson.Gson
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -160,9 +161,9 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         poiSearch.setOnPoiSearchListener(object : PoiSearchV2.OnPoiSearchListener {
             override fun onPoiSearched(res: PoiResultV2, rCode: Int) {
                 if (rCode != 1000) {
-                    result.success(HashMap<String, Any>())
+                    result.success("{}")
                 } else {
-                    result.success(Convert.toJson(res))
+                    result.success(Gson().toJson(Convert.toJson(res)))
                 }
             }
 

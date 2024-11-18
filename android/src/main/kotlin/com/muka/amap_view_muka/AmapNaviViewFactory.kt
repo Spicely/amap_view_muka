@@ -7,17 +7,24 @@ import android.util.Log
 import android.util.SparseArray
 import android.view.View
 import androidx.core.app.ActivityCompat
-import com.amap.api.maps.AMap
-import com.amap.api.maps.CameraUpdateFactory
-import com.amap.api.maps.LocationSource
-import com.amap.api.maps.model.CustomMapStyleOptions
 import com.amap.api.maps.model.MyLocationStyle
-import com.amap.api.navi.*
+import com.amap.api.navi.AMapNavi
+import com.amap.api.navi.AMapNaviListener
 import com.amap.api.navi.AMapNaviView
-import com.amap.api.navi.enums.MapStyle
-import com.amap.api.navi.enums.PathPlanningStrategy
-import com.amap.api.navi.enums.TravelStrategy
-import com.amap.api.navi.model.*
+import com.amap.api.navi.AMapNaviViewListener
+import com.amap.api.navi.model.AMapCalcRouteResult
+import com.amap.api.navi.model.AMapLaneInfo
+import com.amap.api.navi.model.AMapModelCross
+import com.amap.api.navi.model.AMapNaviCameraInfo
+import com.amap.api.navi.model.AMapNaviCross
+import com.amap.api.navi.model.AMapNaviLocation
+import com.amap.api.navi.model.AMapNaviPath
+import com.amap.api.navi.model.AMapNaviRouteNotifyData
+import com.amap.api.navi.model.AMapNaviTrafficFacilityInfo
+import com.amap.api.navi.model.AMapServiceAreaInfo
+import com.amap.api.navi.model.AimLessModeCongestionInfo
+import com.amap.api.navi.model.AimLessModeStat
+import com.amap.api.navi.model.NaviInfo
 import com.amap.api.navi.view.RouteOverLay
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.EventChannel
@@ -61,8 +68,6 @@ class AMapNaviView(
 
     private var aMapNavi: AMapNavi
 
-    private var aMap: AMap
-
     private val methodChannel: MethodChannel
 
     private var eventSink: EventChannel.EventSink? = null
@@ -86,10 +91,7 @@ class AMapNaviView(
             aMapNaviView = AMapNaviView(context)
         }
         aMapNaviView.onCreate(null)
-        aMap = aMapNaviView.map
         aMapNavi = AMapNavi.getInstance(context)
-
-        Convert.initParams(params,aMapNaviView, context)
 
         // marker控制器
         methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "${AmapViewMukaPlugin.AMAP_MUKA_NAVI_CONTROLLER}_$id")
@@ -98,19 +100,15 @@ class AMapNaviView(
         aMapNavi.addAMapNaviListener(this)
         methodChannel.setMethodCallHandler(this)
 
-
-        val myLocationStyle = MyLocationStyle()
-        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE)
-        myLocationStyle.showMyLocation(true)
-        aMapNavi.stopNavi()
+//        val myLocationStyle = MyLocationStyle()
+//        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE)
+//        myLocationStyle.showMyLocation(true)
 
         Log.e("params", ": ${params?.toMap().toString()}")
 
 
         /// 定位当前位置
 //        if (params!=null && params["showMyLocation"] != null && params["showMyLocation"] as Boolean) {
-
-
 
 
 //        }
@@ -138,6 +136,7 @@ class AMapNaviView(
                 aMapNaviView.viewOptions = options
                 result.success(null)
             }
+
             "setAMap" -> {
                 Convert.setAMap(args, aMapNaviView.map)
                 result.success(null)
@@ -151,6 +150,9 @@ class AMapNaviView(
     }
 
     override fun onInitNaviSuccess() {
+        if (params != null) {
+            Convert.initParams(params, aMapNaviView, context)
+        }
         Log.e("调试信息", "初始化完成");
         Log.e("调试信息", "计算导航路线");
 
@@ -449,7 +451,6 @@ class AMapNaviView(
         eventChannel = null
         eventSink = null
     }
-
 
 
     private fun drawRoutes(routeId: Int, path: AMapNaviPath) {
