@@ -160,9 +160,9 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         poiSearch.setOnPoiSearchListener(object : PoiSearchV2.OnPoiSearchListener {
             override fun onPoiSearched(res: PoiResultV2, rCode: Int) {
                 if (rCode != 1000) {
-                    result.success(mutableListOf<Any>())
+                    result.success(HashMap<String, Any>())
                 } else {
-                    result.success(Convert.toArr(res))
+                    result.success(Convert.toJson(res))
                 }
             }
 
@@ -192,9 +192,9 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         poiSearch.setOnPoiSearchListener(object : PoiSearchV2.OnPoiSearchListener {
             override fun onPoiSearched(res: PoiResultV2, rCode: Int) {
                 if (rCode != 1000) {
-                    result.success(mutableListOf<Any>())
+                    result.success(HashMap<String, Any>())
                 } else {
-                    result.success(Convert.toArr(res))
+                    result.success(Convert.toJson(res))
                 }
             }
 
@@ -219,20 +219,17 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         query.cityLimit = cityLimit
 
         val inputTips = Inputtips(activity.applicationContext, query)
-        inputTips.setInputtipsListener(object : Inputtips.InputtipsListener {
-            override fun onGetInputtips(res: MutableList<Tip>?, rCode: Int) {
-                if (rCode != 1000) {
+        inputTips.setInputtipsListener { res, rCode ->
+            if (rCode != 1000) {
+                result.success(emptyArray<Any>())
+            } else {
+                if (res == null) {
                     result.success(emptyArray<Any>())
                 } else {
-                    if(res == null) {
-                        result.success(emptyArray<Any>())
-                    } else {
-                       result.success(Convert.toArr(res))
-                    }
+                    result.success(Convert.toArrTip(res))
                 }
             }
-
-        })
+        }
         inputTips.requestInputtipsAsyn()
     }
 

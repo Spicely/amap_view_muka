@@ -66,7 +66,7 @@ class AMapViewServer {
   /// [page] 当前页数, 范围1-100, [default = 1]
   ///
   /// [cityLimit] 强制城市限制功能 [default = true]，例如：在上海搜索天安门，如果cityLimit为false，将不返回北京的天安门相关的POI
-  static Future<List<AMapPoi>> searchKeyword(
+  static Future<PoiResult> searchKeyword(
     String keyword, {
     String city = '',
     String types = '',
@@ -76,7 +76,7 @@ class AMapViewServer {
   }) async {
     assert(page >= 1 && page <= 100, 'page must be between 1 and 100');
     assert(pageSize >= 1 && pageSize <= 25, 'pageSize must be between 1 and 25');
-    final List? dataList = await _channel.invokeMethod('searchKeyword', {
+    final res = await _channel.invokeMethod('searchKeyword', {
       'keyword': keyword,
       'city': city,
       'types': types,
@@ -85,7 +85,7 @@ class AMapViewServer {
       'cityLimit': cityLimit,
     });
 
-    return dataList?.map((e) => AMapPoi.fromJson(e)).toList() ?? [];
+    return PoiResult.fromJson(Map<String, dynamic>.from(res));
   }
 
   /// 周边搜索poi
@@ -127,10 +127,6 @@ class AMapViewServer {
   /// [city] 城市名称
   ///
   /// [latLng] 如果设置，在此location附近优先返回搜索关键词信息
-  ///
-  /// [pageSize] 每页记录数, 范围1-25, [default = 20]
-  ///
-  /// [page] 当前页数, 范围1-100, [default = 1]
   ///
   /// [cityLimit] 强制城市限制功能 [default = false]，例如：在上海搜索天安门，如果cityLimit为true，将不返回北京的天安门相关的POI
   static Future<List<AMapTip>> fetchInputTips(String keyword, {String city = '', LatLng? latLng, bool cityLimit = false}) async {

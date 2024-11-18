@@ -33,10 +33,8 @@ class HomeView extends GetView<HomeController> {
             right: 20,
             child: ElevatedButton(
               onPressed: () async {
-                List<AMapPoi> pois = await AMapViewServer.searchKeyword('广场', city: '成都', page: 1, pageSize: 10);
-                for (var v in pois) {
-                  print(v.toJson());
-                }
+                PoiResult pois = await AMapViewServer.searchKeyword('广场', city: '成都', page: 1, pageSize: 10);
+                print(pois.toJson());
               },
               child: const Text('样式设置'),
             ),

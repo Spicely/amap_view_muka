@@ -22,10 +22,17 @@ import com.amap.api.navi.model.AMapRestrictionInfo
 import com.amap.api.navi.model.AMapTrafficIncidentInfo
 import com.amap.api.navi.model.NaviLatLng
 import com.amap.api.services.core.LatLonPoint
+import com.amap.api.services.core.PoiItemV2
+import com.amap.api.services.help.Tip
+import com.amap.api.services.poisearch.Business
 import com.amap.api.services.poisearch.PoiResultV2
 import com.autonavi.ae.route.RestrictionInfoDetail
-import io.flutter.FlutterInjector
 import com.amap.api.services.poisearch.IndoorDataV2
+import com.amap.api.services.poisearch.Photo
+import com.amap.api.services.poisearch.PoiNavi
+import com.amap.api.services.poisearch.PoiSearchV2
+import com.amap.api.services.poisearch.SubPoiItemV2
+import io.flutter.FlutterInjector
 
 
 class Convert {
@@ -203,15 +210,14 @@ class Convert {
                 v["cityAdcodeList"] = value.cityAdcodeList
                 v["allTime"] = value.allTime
                 val trafficStatuses = arrayListOf<Map<String, Any>>()
-                value.trafficStatuses
-                    .forEach { i ->
-                        val tra = HashMap<String, Any>()
-                        tra["linkIndex"] = i.linkIndex
-                        tra["status"] = i.status
-                        tra["linkIndex"] = i.trafficFineStatus
-                        tra["length"] = i.length
-                        trafficStatuses.add(tra)
-                    }
+                value.trafficStatuses.forEach { i ->
+                    val tra = HashMap<String, Any>()
+                    tra["linkIndex"] = i.linkIndex
+                    tra["status"] = i.status
+                    tra["linkIndex"] = i.trafficFineStatus
+                    tra["length"] = i.length
+                    trafficStatuses.add(tra)
+                }
                 v["trafficStatuses"] = trafficStatuses
                 v["steps"] = value.steps.map { i -> toJson(i) }
                 v["startPoint"] = toJson(value.startPoint)
@@ -232,12 +238,96 @@ class Convert {
             return data
         }
 
-        fun getFlutterAsset(url: String, packageName: String?): String {
-            if (packageName != null) {
-                return FlutterInjector.instance().flutterLoader()
-                    .getLookupKeyForAsset(url, packageName)
-            }
-            return FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(url)
+        fun toJson(params: LatLonPoint?): HashMap<String, Any>? {
+            if (params == null) return null
+            val v = HashMap<String, Any>()
+            v["latitude"] = params.latitude
+            v["longitude"] = params.longitude
+            return v;
+        }
+
+        fun toJson(params: PoiSearchV2.SearchBound?): Any? {
+            if (params == null) return null
+            val v = HashMap<String, Any?>()
+            v["range"] = params.range
+            v["shape"] = params.shape
+            v["center"] = toJson(params.center)
+            v["lowerLeft"] = toJson(params.lowerLeft)
+            v["upperRight"] = toJson(params.upperRight)
+            v["isDistanceSort"] = params.isDistanceSort
+            v["polyGonList"] = toArrLatLon(params.polyGonList)
+            return v;
+        }
+
+        fun toJson(params: Business): HashMap<String, Any> {
+            val v = HashMap<String, Any>()
+            v["businessArea"] = params.businessArea
+            v["tag"] = params.tag
+            v["tel"] = params.tel
+            v["cost"] = params.cost
+            v["alias"] = params.alias
+            v["cpid"] = params.cpid
+            v["parkingType"] = params.parkingType
+            v["opentimeToday"] = params.opentimeToday
+            v["opentimeWeek"] = params.opentimeWeek
+            return v;
+        }
+
+        fun toJson(params: PoiNavi): HashMap<String, Any?> {
+            val v = HashMap<String, Any?>()
+            v["exit"] = toJson(params.exit)
+            v["enter"] = toJson(params.enter)
+            v["gridCode"] = params.gridCode
+            v["naviPoiID"] = params.naviPoiID
+            return v;
+        }
+
+        fun toJson(params: PoiItemV2): HashMap<String, Any?> {
+            val v = HashMap<String, Any?>()
+            v["poiId"] = params.poiId
+            v["title"] = params.title
+            v["typeDes"] = params.typeDes
+            v["typeCode"] = params.typeCode
+            v["snippet"] = params.snippet
+            v["provinceName"] = params.provinceName
+            v["provinceCode"] = params.provinceCode
+            v["cityName"] = params.cityName
+            v["cityCode"] = params.cityCode
+            v["adCode"] = params.adCode
+            v["indoorData"] = toJson(params.indoorData)
+            v["latLonPoint"] = toJson(params.latLonPoint)
+            v["adName"] = params.adName
+            v["business"] = toJson(params.business)
+            v["poiNavi"] = toJson(params.poiNavi)
+            v["photos"] = toArrPhoto(params.photos)
+            v["subPois"] = toArrSubPoiItem(params.subPois)
+            return v;
+        }
+
+        fun toJson(result: SubPoiItemV2): HashMap<String, Any?> {
+            val data = HashMap<String, Any?>()
+            data["poiId"] = result.poiId
+            data["title"] = result.title
+            data["typeCode"] = result.typeCode
+            data["snippet"] = result.snippet
+            data["latLonPoint"] = toJson(result.latLonPoint)
+            data["subTypeDes"] = result.subTypeDes
+            return data
+        }
+
+        fun toJson(result: PoiResultV2): HashMap<String, Any?> {
+            val data = HashMap<String, Any?>()
+            data["bound"] = toJson(result.bound)
+            data["pois"] = toArrPoiItem(result.pois)
+            data["count"] = result.count
+            return data
+        }
+
+        fun toJson(result: Photo): HashMap<String, Any> {
+            val data = HashMap<String, Any>()
+            data["url"] = result.url
+            data["title"] = result.title
+            return data
         }
 
         fun toJson(position: CameraPosition): Any {
@@ -247,6 +337,64 @@ class Convert {
             data["tilt"] = position.tilt
             data["bearing"] = position.bearing
             return data
+        }
+
+        private fun toArrSubPoiItem(result: MutableList<SubPoiItemV2>): Any {
+            val arr = mutableListOf<Any>()
+            result.forEachIndexed { _, it ->
+                arr.add(toJson(it))
+            }
+            return arr;
+        }
+
+        private fun toArrPhoto(result: MutableList<Photo>): Any {
+            val arr = mutableListOf<Any>()
+            result.forEach { it ->
+                arr.add(toJson(it))
+            }
+            return arr;
+        }
+
+        private fun toArrLatLon(result: MutableList<LatLonPoint>): Any {
+            val arr = mutableListOf<Any?>()
+            result.forEach { it ->
+                arr.add(toJson(it))
+            }
+            return arr;
+        }
+
+        private fun toArrPoiItem(result: MutableList<PoiItemV2>): Any {
+            val arr = mutableListOf<Any>()
+            result.forEachIndexed { _, it ->
+                arr.add(toJson(it))
+            }
+            return arr;
+        }
+
+        fun toArrTip(result: MutableList<Tip>): Any {
+            val arr = mutableListOf<Any>()
+            result.forEachIndexed { _, it ->
+                run {
+                    val data = HashMap<String, Any?>()
+                    data["id"] = it.poiID
+                    data["name"] = it.name
+                    data["adCode"] = it.adcode
+                    data["address"] = it.address
+                    data["typeCode"] = it.typeCode
+                    data["latLng"] = if (it.point == null) null else toJson(it.point)
+                    data["district"] = it.district
+                    arr.add(data)
+                }
+            }
+            return arr
+        }
+
+        fun getFlutterAsset(url: String, packageName: String?): String {
+            if (packageName != null) {
+                return FlutterInjector.instance().flutterLoader()
+                    .getLookupKeyForAsset(url, packageName)
+            }
+            return FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(url)
         }
 
         fun toArrayNaviLatLng(params: List<Map<String, Any>>): MutableList<NaviLatLng> {
@@ -261,57 +409,18 @@ class Convert {
             return NaviLatLng(params["latitude"] as Double, params["longitude"] as Double)
         }
 
-        fun toLatLng(params: Map<*, *>?): LatLng? {
-            if (params == null) return null
+        fun toLatLng(params: Map<*, *>): LatLng {
             return LatLng(params["latitude"] as Double, params["longitude"] as Double)
         }
 
-        fun toArr(result: PoiResultV2): Any {
-            val pis = mutableListOf<Any>()
-            result.pois.forEachIndexed { _, it ->
-                run {
-                    val data = HashMap<String, Any?>()
-                    data["id"] = it.poiId
-                    data["name"] = it.title
-                    data["typeDes"] = it.typeDes
-                    data["typeCode"] = it.typeCode
-                    data["address"] = it.snippet
-                    data["province"] = it.provinceName
-                    data["provinceCode"] = it.provinceCode
-                    data["city"] = it.cityName
-                    data["cityCode"] = it.cityCode
-                    data["adCode"] = it.adCode
-                    data["indoorData"] = if (it.indoorData == null) null else toMap(it.indoorData)
-                    data["latLng"] = if (it.latLonPoint == null) null else toMap(it.latLonPoint)
-                    data["district"] = it.adName
-                    pis.add(data)
-                }
-            }
-            return pis
-        }
-        fun toArr(result: MutableList<com.amap.api.services.help.Tip>): Any {
-            val arr = mutableListOf<Any>()
-            result.forEachIndexed { _, it ->
-                run {
-                    val data = HashMap<String, Any?>()
-                    data["id"] = it.poiID
-                    data["name"] = it.name
-                    data["adCode"] = it.adcode
-                    data["address"] = it.address
-                    data["typeCode"] = it.typeCode
-                    data["latLng"] = if (it.point == null) null else toMap(it.point)
-                    data["district"] = it.district
-                    arr.add(data)
-                }
-            }
-            return arr
-        }
+
         fun setAMap(params: Map<*, *>?, aMap: AMap) {
             if (params == null) return
             val myLocationStyle = params["myLocationStyle"] as Map<*, *>
             val uiSettings = params["uiSettings"] as Map<*, *>
             aMap.isMyLocationEnabled = params["isMyLocationEnabled"] as Boolean
-            aMap.myLocationStyle = MyLocationStyle().myLocationType(myLocationStyle["myLocationType"] as Int)
+            aMap.myLocationStyle =
+                MyLocationStyle().myLocationType(myLocationStyle["myLocationType"] as Int)
             aMap.uiSettings.zoomPosition = uiSettings["zoomPosition"] as Int
             aMap.moveCamera(CameraUpdateFactory.zoomTo((params["zoom"] as Double).toFloat()))
         }
@@ -569,7 +678,7 @@ class Convert {
 //            }
         }
 
-        private fun toMap(data: IndoorDataV2): MutableMap<String, Any?> {
+        fun toJson(data: IndoorDataV2): MutableMap<String, Any?> {
             val map: MutableMap<String, Any?> = java.util.HashMap()
             map["floor"] = data.floor
             map["floorName"] = data.floorName
@@ -578,12 +687,6 @@ class Convert {
             return map
         }
 
-        private fun toMap(point: LatLonPoint): MutableMap<String, Any> {
-            val pointMap: MutableMap<String, Any> = java.util.HashMap()
-            pointMap["latitude"] = point.latitude
-            pointMap["longitude"] = point.longitude
-            return pointMap
-        }
 
         fun toAMapNaviViewOptions(arguments: Map<*, *>): AMapNaviViewOptions {
             val options = AMapNaviViewOptions()
@@ -606,7 +709,9 @@ class Convert {
             options.isAfterRouteAutoGray = arguments["isAfterRouteAutoGray"] as Boolean
             options.isDrawBackUpOverlay = arguments["isDrawBackUpOverlay"] as Boolean
             options.isSecondActionVisible = arguments["isSecondActionVisible"] as Boolean
-            options.setMapStyle(MapStyle.getEnum(arguments["mapStyle"] as Int), arguments["mapStylePath"] as String)
+            options.setMapStyle(
+                MapStyle.getEnum(arguments["mapStyle"] as Int), arguments["mapStylePath"] as String
+            )
             return options
         }
     }
