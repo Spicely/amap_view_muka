@@ -1,6 +1,7 @@
 package com.muka.amap_view_muka
 
 import android.content.Context
+import android.util.Log
 import com.amap.api.location.AMapLocation
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
@@ -349,40 +350,40 @@ class Convert {
             return data
         }
 
-        private fun toArrSubPoiItem(result: MutableList<SubPoiItemV2>): Any {
-            val arr = mutableListOf<Any>()
+        private fun toArrSubPoiItem(result: MutableList<SubPoiItemV2>): MutableList<HashMap<String, Any>> {
+            val arr: MutableList<HashMap<String, Any>> = ArrayList()
             result.forEachIndexed { _, it ->
                 arr.add(toJson(it))
             }
             return arr;
         }
 
-        private fun toArrPhoto(result: MutableList<Photo>): Any {
-            val arr = mutableListOf<Any>()
+        private fun toArrPhoto(result: MutableList<Photo>): MutableList<HashMap<String, Any>> {
+            val arr: MutableList<HashMap<String, Any>> = ArrayList()
             result.forEach { it ->
                 arr.add(toJson(it))
             }
             return arr;
         }
 
-        private fun toArrLatLon(result: MutableList<LatLonPoint>): Any {
-            val arr = mutableListOf<Any>()
+        private fun toArrLatLon(result: MutableList<LatLonPoint>): MutableList<HashMap<String, Any>> {
+            val arr: MutableList<HashMap<String, Any>> = ArrayList()
             result.forEach { it ->
                 arr.add(toJson(it))
             }
             return arr;
         }
 
-        private fun toArrPoiItem(result: MutableList<PoiItemV2>): Any {
-            val arr = mutableListOf<Any>()
+        private fun toArrPoiItem(result: MutableList<PoiItemV2>): MutableList<HashMap<String, Any>> {
+            val arr: MutableList<HashMap<String, Any>> = ArrayList()
             result.forEachIndexed { _, it ->
                 arr.add(toJson(it))
             }
             return arr;
         }
 
-        fun toArrTip(result: MutableList<Tip>): Any {
-            val arr = mutableListOf<Any>()
+        fun toArrTip(result: MutableList<Tip>): MutableList<HashMap<String, Any>> {
+            val arr: MutableList<HashMap<String, Any>> = ArrayList()
             result.forEachIndexed { _, it ->
                 run {
                     val data = HashMap<String, Any>()
@@ -436,8 +437,9 @@ class Convert {
             aMap.moveCamera(CameraUpdateFactory.zoomTo((params["zoom"] as Double).toFloat()))
         }
 
-        fun initParams(params: Map<*, *>, aMapNaviView: AMapNaviView, context: Context) {
-            setAMap(params["aMap"] as Map<*, *>, aMapNaviView.map)
+        fun initParams(params: Map<*, *>, mAMapNaviView: AMapNaviView, context: Context) {
+            Log.e("initParams", "initParams: ${params}", )
+            setAMap(params["aMap"] as Map<*, *>, mAMapNaviView.map)
 //            /// 地图显示位置
 //            if (params["cameraPosition"] != null) {
 //                val cameraPosition = (params["cameraPosition"] as Map<*, *>?)!!

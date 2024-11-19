@@ -88,14 +88,14 @@ class AMapNaviView extends StatelessWidget {
   /// 地图初始化完成
   final AMapNaviViewOnCreated? onCreated;
 
-  final AmapNaviParams? initParams;
+  final AmapNaviParams initParams;
 
   final AmapNaviEventCallback? onListen;
 
   const AMapNaviView({
     super.key,
     this.onCreated,
-    this.initParams,
+    this.initParams = const AmapNaviParams(),
     this.onListen,
   });
 
@@ -110,18 +110,18 @@ class AMapNaviView extends StatelessWidget {
         viewType: _naviViewType,
         gestureRecognizers: gestureRecognizers,
         onPlatformViewCreated: onPlatformViewCreated,
-        creationParams: initParams?.toJson(),
+        creationParams: initParams.toJson(),
         creationParamsCodec: const StandardMessageCodec(),
         layoutDirection: TextDirection.ltr,
         // layoutDirection: widget.layoutDirection,
-        // hitTestBehavior: widget.hitTestBehavior,
+        hitTestBehavior: PlatformViewHitTestBehavior.opaque,
       );
     } else {
       return UiKitView(
         viewType: _naviViewType,
         gestureRecognizers: gestureRecognizers,
         onPlatformViewCreated: onPlatformViewCreated,
-        creationParams: initParams?.toJson(),
+        creationParams: initParams.toJson(),
         creationParamsCodec: const StandardMessageCodec(),
         // layoutDirection: widget.layoutDirection,
         // hitTestBehavior: widget.hitTestBehavior,

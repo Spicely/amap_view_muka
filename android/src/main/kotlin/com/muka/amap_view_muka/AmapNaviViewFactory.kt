@@ -3,6 +3,7 @@ package com.muka.amap_view_muka
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import android.util.SparseArray
 import android.view.View
@@ -50,7 +51,7 @@ class AMapNaviViewFactory(
                 Manifest.permission.READ_PHONE_STATE
             ), 321
         )
-        val params = args as Map<*, *>?
+        val params = args as Map<*, *>
         return AMapNaviView(context, viewId, flutterPluginBinding, params)
     }
 }
@@ -60,13 +61,13 @@ class AMapNaviView(
     private val context: Context,
     private val id: Int,
     private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding,
-    private val params: Map<*, *>?
+    private val params: Map<*, *>
 ) : PlatformView, AMapNaviListener, AMapNaviViewListener, EventChannel.StreamHandler, MethodChannel.MethodCallHandler {
 
 
-    private var aMapNaviView: AMapNaviView
+    private var mAMapNaviView: AMapNaviView = AMapNaviView(context, Convert.toAMapNaviViewOptions(params["viewOptions"] as Map<*, *>))
 
-    private var aMapNavi: AMapNavi
+    private var mAMapNavi: AMapNavi
 
     private val methodChannel: MethodChannel
 
@@ -84,27 +85,21 @@ class AMapNaviView(
     private val routeOverlays: SparseArray<RouteOverLay> = SparseArray<RouteOverLay>()
 
     init {
-        if (params != null && params["viewOptions"] != null) {
-            val options = Convert.toAMapNaviViewOptions(params["viewOptions"] as Map<*, *>)
-            aMapNaviView = AMapNaviView(context, options)
-        } else {
-            aMapNaviView = AMapNaviView(context)
-        }
-        aMapNaviView.onCreate(null)
-        aMapNavi = AMapNavi.getInstance(context)
+        mAMapNaviView.onCreate(null)
+        mAMapNavi = AMapNavi.getInstance(context)
 
         // marker控制器
         methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "${AmapViewMukaPlugin.AMAP_MUKA_NAVI_CONTROLLER}_$id")
         eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "${AmapViewMukaPlugin.AMAP_MUKA_NAVI_EVENT}_$id")
-        aMapNaviView.setAMapNaviViewListener(this)
-        aMapNavi.addAMapNaviListener(this)
+        mAMapNaviView.setAMapNaviViewListener(this)
+        mAMapNavi.addAMapNaviListener(this)
         methodChannel.setMethodCallHandler(this)
 
 //        val myLocationStyle = MyLocationStyle()
 //        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE)
 //        myLocationStyle.showMyLocation(true)
 
-        Log.e("params", ": ${params?.toMap().toString()}")
+        Log.e("params", ": ${params.toMap().toString()}")
 
 
         /// 定位当前位置
@@ -116,15 +111,15 @@ class AMapNaviView(
 
 
     override fun getView(): View {
-        return aMapNaviView
+        return mAMapNaviView
     }
 
 
     override fun dispose() {
-        aMapNaviView.setAMapNaviViewListener(null)
+        mAMapNaviView.setAMapNaviViewListener(null)
         methodChannel.setMethodCallHandler(null)
-        aMapNaviView.onDestroy()
-        aMapNavi.stopNavi()
+        mAMapNaviView.onDestroy()
+        mAMapNavi.stopNavi()
         AMapNavi.destroy()
     }
 
@@ -133,12 +128,12 @@ class AMapNaviView(
         when (call.method) {
             "setAMapNaviViewOptions" -> {
                 val options = Convert.toAMapNaviViewOptions(args)
-                aMapNaviView.viewOptions = options
+                mAMapNaviView.viewOptions = options
                 result.success(null)
             }
 
             "setAMap" -> {
-                Convert.setAMap(args, aMapNaviView.map)
+                Convert.setAMap(args, mAMapNaviView.map)
                 result.success(null)
             }
         }
@@ -151,7 +146,7 @@ class AMapNaviView(
 
     override fun onInitNaviSuccess() {
         if (params != null) {
-            Convert.initParams(params, aMapNaviView, context)
+            Convert.initParams(params, mAMapNaviView, context)
         }
         Log.e("调试信息", "初始化完成");
         Log.e("调试信息", "计算导航路线");
@@ -257,6 +252,7 @@ class AMapNaviView(
     override fun onArriveDestination() {
 
     }
+
 
     override fun onCalculateRouteFailure(p0: Int) {
         Log.d("onCalculateRouteFailure", "路径规划失败")
