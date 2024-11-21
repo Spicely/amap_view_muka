@@ -10,15 +10,7 @@ class NaviView extends GetView<NaviController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AMapNaviView(
-        onListen: AmapNaviEventCallback(
-          onCalculateRouteSuccess: (data) => print(data),
-        ),
-        initParams: AmapNaviParams(),
-        onCreated: (AMapNaviViewController c) {
-          controller.aMapNaviViewController = c;
-        },
-      ),
+      body: AMapNaviView(),
     );
   }
 }

@@ -8,7 +8,6 @@ import android.util.Log
 import android.util.SparseArray
 import android.view.View
 import androidx.core.app.ActivityCompat
-import com.amap.api.maps.model.MyLocationStyle
 import com.amap.api.navi.AMapNavi
 import com.amap.api.navi.AMapNaviListener
 import com.amap.api.navi.AMapNaviView
@@ -26,7 +25,9 @@ import com.amap.api.navi.model.AMapServiceAreaInfo
 import com.amap.api.navi.model.AimLessModeCongestionInfo
 import com.amap.api.navi.model.AimLessModeStat
 import com.amap.api.navi.model.NaviInfo
+import com.amap.api.navi.model.NaviLatLng
 import com.amap.api.navi.view.RouteOverLay
+import com.google.gson.Gson
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
@@ -37,18 +38,13 @@ import io.flutter.plugin.platform.PlatformViewFactory
 
 
 class AMapNaviViewFactory(
-    private val activity: Activity,
-    private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
+    private val activity: Activity, private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         // 申请权限
         ActivityCompat.requestPermissions(
             activity, arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.READ_PHONE_STATE
+                Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE
             ), 321
         )
         val params = args as Map<*, *>
@@ -58,10 +54,7 @@ class AMapNaviViewFactory(
 
 
 class AMapNaviView(
-    private val context: Context,
-    private val id: Int,
-    private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding,
-    private val params: Map<*, *>
+    private val context: Context, private val id: Int, private val flutterPluginBinding: FlutterPlugin.FlutterPluginBinding, private val params: Map<*, *>
 ) : PlatformView, AMapNaviListener, AMapNaviViewListener, EventChannel.StreamHandler, MethodChannel.MethodCallHandler {
 
 
@@ -69,11 +62,12 @@ class AMapNaviView(
 
     private var mAMapNavi: AMapNavi
 
-    private val methodChannel: MethodChannel
+    // marker控制器
+    private val methodChannel: MethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "${AmapViewMukaPlugin.AMAP_MUKA_NAVI_CONTROLLER}_$id")
 
     private var eventSink: EventChannel.EventSink? = null
 
-    private var eventChannel: EventChannel? = null
+    private var eventChannel: EventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "${AmapViewMukaPlugin.AMAP_MUKA_NAVI_EVENT}_$id")
 
     private var resultSkip: MethodChannel.Result? = null
 
@@ -88,18 +82,14 @@ class AMapNaviView(
         mAMapNaviView.onCreate(null)
         mAMapNavi = AMapNavi.getInstance(context)
 
-        // marker控制器
-        methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "${AmapViewMukaPlugin.AMAP_MUKA_NAVI_CONTROLLER}_$id")
-        eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, "${AmapViewMukaPlugin.AMAP_MUKA_NAVI_EVENT}_$id")
         mAMapNaviView.setAMapNaviViewListener(this)
+        mAMapNavi.setUseInnerVoice(true, true)
         mAMapNavi.addAMapNaviListener(this)
         methodChannel.setMethodCallHandler(this)
 
 //        val myLocationStyle = MyLocationStyle()
 //        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE)
 //        myLocationStyle.showMyLocation(true)
-
-        Log.e("params", ": ${params.toMap().toString()}")
 
 
         /// 定位当前位置
@@ -136,126 +126,85 @@ class AMapNaviView(
                 Convert.setAMap(args, mAMapNaviView.map)
                 result.success(null)
             }
+
+            "calculateDriveRoute" -> {
+                calculateDriveRoute(args)
+                result.success(null)
+            }
+
+            "strategyConvert" -> {
+                result.success(strategyConvert(args))
+            }
+
+            else -> {
+                result.notImplemented()
+            }
         }
+    }
+
+    private fun strategyConvert(params: Map<*, *>): Int {
+        val avoidCongestion = params["avoidCongestion"] as Boolean
+        val avoidHighway = params["avoidHighway"] as Boolean
+        val avoidCost = params["avoidCost"] as Boolean
+        val prioritiseHighway = params["prioritiseHighway"] as Boolean
+        val multipleRoute = params["multipleRoute"] as Boolean
+        return mAMapNavi.strategyConvert(avoidCongestion, avoidHighway, avoidCost, prioritiseHighway, multipleRoute)
+    }
+
+    /// 计算驾车路径
+    private fun calculateDriveRoute(params: Map<*, *>) {
+        val startList = Convert.toArrayNaviLatLng(params["start"] as List<Map<String, Any>>)
+        val wayList = Convert.toArrayNaviLatLng(params["way"] as List<Map<String, Any>>)
+        val endList = Convert.toArrayNaviLatLng(params["end"] as List<Map<String, Any>>)
+        val flag = params["strategy"] as Int
+        mAMapNavi.calculateDriveRoute(startList, wayList, endList, flag)
     }
 
 
     override fun onInitNaviFailure() {
-        Log.d("onInitNaviFailure", "error")
+        methodChannel.invokeMethod("onInitNaviFailure", null)
     }
 
     override fun onInitNaviSuccess() {
-        if (params != null) {
-            Convert.initParams(params, mAMapNaviView, context)
-        }
-        Log.e("调试信息", "初始化完成");
-        Log.e("调试信息", "计算导航路线");
-
-        // 起点信息
-//        var startLatLng =
-//            Convert.toLatLng(((params["startToEnd"] as Map<*, *>)["start"] as Map<*, *>)["latLng"] as Map<*, *>?)
-//        val start = NaviPoi(
-//            ((params["startToEnd"] as Map<*, *>)["start"] as Map<*, *>)["address"] as String,
-//            startLatLng,
-//            ""
-//        )
-//        // 终点信息
-//        var endLatLng =
-//            Convert.toLatLng(((params["startToEnd"] as Map<*, *>)["end"] as Map<*, *>)["latLng"] as Map<*, *>?)
-//        val end = NaviPoi(
-//            ((params["startToEnd"] as Map<*, *>)["end"] as Map<*, *>)["address"] as String,
-//            endLatLng,
-//            ""
-//        )
-//        val carInfo = AMapCarInfo()
-//        when (params["calculateType"] as Int) {
-//            // 驾车/货车路线规划
-//            0 -> {
-//                carInfo.carType = "0"
-//                mAMapNavi.setCarInfo(carInfo);
-//                mAMapNavi.calculateDriveRoute(
-//                    start,
-//                    end,
-//                    null,
-//                    PathPlanningStrategy.DRIVING_MULTIPLE_ROUTES_DEFAULT
-//                )
-//            }
-        // 骑行
-//            1 -> {
-//                mAMapNavi.independentCalculateRoute(
-//                    start,
-//                    end,
-//                    null,
-//                    PathPlanningStrategy.DRIVING_MULTIPLE_ROUTES_DEFAULT,
-//                    2,
-//                    this
-//                )
-//            }
-//            // 骑行
-//            2 -> {
-//                mAMapNavi.independentCalculateRoute(
-//                    start,
-//                    end,
-//                    null,
-//                    PathPlanningStrategy.DRIVING_MULTIPLE_ROUTES_DEFAULT,
-//                    3,
-//                    this
-//                )
-//            }
-//            // 摩托车
-//            3 -> {
-//                carInfo.carNumber = "京C123456" //设置车牌号
-//                carInfo.carType = "11" //设置车辆类型,11代表摩托车
-//                carInfo.motorcycleCC = 100 //设置摩托车排量
-//                mAMapNavi.setCarInfo(carInfo);
-//                mAMapNavi.independentCalculateRoute(
-//                    start,
-//                    end,
-//                    null,
-//                    PathPlanningStrategy.DRIVING_MULTIPLE_ROUTES_DEFAULT,
-//                    1,
-//                    this
-//                )
-//            }
-        // 电动车
-//            4 -> {
-//                mAMapNavi.calculateEleBikeRoute(start, end, TravelStrategy.MULTIPLE);
-//            }
-//        }
+        Convert.initParams(params, mAMapNaviView, context)
+        methodChannel.invokeMethod("onInitNaviSuccess", null)
     }
 
-    override fun onStartNavi(p0: Int) {
-
+    override fun onStartNavi(type: Int) {
+        methodChannel.invokeMethod("onStartNavi", type)
     }
 
     override fun onTrafficStatusUpdate() {
+        methodChannel.invokeMethod("onTrafficStatusUpdate", null)
     }
 
-    override fun onLocationChange(loc: AMapNaviLocation?) {
-//        aMapNaviView.map.setLocationSource(LocationSource())
-
-//        Log.d("onLocationChange", loc.lo)
+    override fun onLocationChange(location: AMapNaviLocation?) {
+        methodChannel.invokeMethod("onLocationChange", if (location != null) Gson().toJson(Convert.toJson(location)) else "{}")
     }
 
-    override fun onGetNavigationText(p0: Int, p1: String?) {
-
+    override fun onGetNavigationText(type: Int, text: String?) {
+        val hashMap = HashMap<String, Any?>()
+        hashMap["type"] = type
+        hashMap["text"] = text
+        methodChannel.invokeMethod("onGetNavigationText", hashMap)
     }
 
-    override fun onGetNavigationText(p0: String?) {
+    @Deprecated("Deprecated in Java")
+    override fun onGetNavigationText(text: String?) {
 
     }
 
     override fun onEndEmulatorNavi() {
-
+        methodChannel.invokeMethod("onEndEmulatorNavi", null)
     }
 
     override fun onArriveDestination() {
-
+        methodChannel.invokeMethod("onArriveDestination", null)
     }
 
 
+    @Deprecated("Deprecated in Java")
     override fun onCalculateRouteFailure(p0: Int) {
-        Log.d("onCalculateRouteFailure", "路径规划失败")
     }
 
     override fun onCalculateRouteFailure(p0: AMapCalcRouteResult?) {
@@ -266,32 +215,30 @@ class AMapNaviView(
     }
 
     override fun onReCalculateRouteForYaw() {
-
+        methodChannel.invokeMethod("onReCalculateRouteForYaw", null)
     }
 
     override fun onReCalculateRouteForTrafficJam() {
-
+        methodChannel.invokeMethod("onReCalculateRouteForTrafficJam", null)
     }
 
-    override fun onArrivedWayPoint(p0: Int) {
-
+    override fun onArrivedWayPoint(wayID: Int) {
+        methodChannel.invokeMethod("onArrivedWayPoint", wayID)
     }
 
-    override fun onGpsOpenStatus(p0: Boolean) {
-
+    override fun onGpsOpenStatus(enabled: Boolean) {
+        methodChannel.invokeMethod("onGpsOpenStatus", enabled)
     }
 
-    override fun onNaviInfoUpdate(p0: NaviInfo?) {
-
+    override fun onNaviInfoUpdate(naviInfo: NaviInfo?) {
+        methodChannel.invokeMethod("onNaviInfoUpdate", naviInfo?.toString())
     }
 
     override fun updateCameraInfo(p0: Array<out AMapNaviCameraInfo>?) {
 
     }
 
-    override fun updateIntervalCameraInfo(
-        p0: AMapNaviCameraInfo?, p1: AMapNaviCameraInfo?, p2: Int
-    ) {
+    override fun updateIntervalCameraInfo(p0: AMapNaviCameraInfo?, p1: AMapNaviCameraInfo?, p2: Int) {
 
     }
 
@@ -444,7 +391,7 @@ class AMapNaviView(
 
     override fun onCancel(arguments: Any?) {
         eventChannel?.setStreamHandler(null);
-        eventChannel = null
+
         eventSink = null
     }
 

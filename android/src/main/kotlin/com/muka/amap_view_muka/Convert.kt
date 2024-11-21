@@ -15,6 +15,7 @@ import com.amap.api.navi.model.AMapNaviCameraInfo
 import com.amap.api.navi.model.AMapNaviForbiddenInfo
 import com.amap.api.navi.model.AMapNaviLimitInfo
 import com.amap.api.navi.model.AMapNaviLink
+import com.amap.api.navi.model.AMapNaviLocation
 import com.amap.api.navi.model.AMapNaviPath
 import com.amap.api.navi.model.AMapNaviRouteGuideGroup
 import com.amap.api.navi.model.AMapNaviRouteGuideSegment
@@ -350,6 +351,23 @@ class Convert {
             return data
         }
 
+        fun toJson(args: AMapNaviLocation): HashMap<String, Any> {
+            val data = HashMap<String, Any>()
+            data["time"] = args.time
+            data["speed"] = args.speed
+            data["accuracy"] = args.accuracy
+            data["bearing"] = args.bearing
+            data["coord"] = toJson(args.coord)
+            data["altitude"] = args.altitude
+            data["curLinkIndex"] = args.curLinkIndex
+            data["curPointIndex"] = args.curPointIndex
+            data["curStepIndex"] = args.curStepIndex
+            data["isMatchNaviPath"] = args.isMatchNaviPath
+            data["locationType"] = args.locationType
+            data["roadBearing"] = args.roadBearing
+            return data
+        }
+
         private fun toArrSubPoiItem(result: MutableList<SubPoiItemV2>): MutableList<HashMap<String, Any>> {
             val arr: MutableList<HashMap<String, Any>> = ArrayList()
             result.forEachIndexed { _, it ->
@@ -422,6 +440,7 @@ class Convert {
             return NaviLatLng(params["latitude"] as Double, params["longitude"] as Double)
         }
 
+
         fun toLatLng(params: Map<*, *>): LatLng {
             return LatLng(params["latitude"] as Double, params["longitude"] as Double)
         }
@@ -438,7 +457,6 @@ class Convert {
         }
 
         fun initParams(params: Map<*, *>, mAMapNaviView: AMapNaviView, context: Context) {
-            Log.e("initParams", "initParams: ${params}", )
             setAMap(params["aMap"] as Map<*, *>, mAMapNaviView.map)
 //            /// 地图显示位置
 //            if (params["cameraPosition"] != null) {

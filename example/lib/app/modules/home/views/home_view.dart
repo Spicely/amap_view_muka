@@ -18,13 +18,11 @@ class HomeView extends GetView<HomeController> {
       body: Stack(
         children: [
           AMapNaviView(
+            controller: controller.aMapNaviViewController,
             initParams: const AmapNaviParams(
               viewOptions: AMapNaviViewOptions(isLayoutVisible: false),
               aMap: AMap(isMyLocationEnabled: true, uiSettings: UiSettings()),
             ),
-            onCreated: (AMapNaviViewController aMapNaviViewController) {
-              controller.aMapNaviViewController = aMapNaviViewController;
-            },
           ),
           // AMapView(),
           Positioned(

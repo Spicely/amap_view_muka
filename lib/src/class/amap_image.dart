@@ -1,4 +1,4 @@
-part of amap_view_muka;
+part of '../../amap_view_muka.dart';
 
 class AMapImageSize {
   final double height;

@@ -37,11 +37,14 @@ class CameraPosition {
     double? bearing,
     int? duration,
   }) {
-    return CameraPosition(latLng ?? this.latLng, zoom ?? this.zoom, tilt ?? this.tilt, bearing ?? this.bearing,
-        duration: duration ?? this.duration);
+    return CameraPosition(latLng ?? this.latLng, zoom ?? this.zoom, tilt ?? this.tilt, bearing ?? this.bearing, duration: duration ?? this.duration);
   }
 
-  factory CameraPosition.fromJson(Map<dynamic, dynamic> json) =>
-      CameraPosition(LatLng.fromJson(Map<String, dynamic>.from(json['latLng'])), json['zoom'], json['tilt'], json['bearing'],
-          duration: json['duration']);
+  factory CameraPosition.fromJson(Map<dynamic, dynamic> json) => CameraPosition(
+        LatLng.fromJson(Map<String, dynamic>.from(json['latLng'])),
+        json['zoom'],
+        json['tilt'],
+        json['bearing'],
+        duration: json['duration'],
+      );
 }

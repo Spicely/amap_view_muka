@@ -51,52 +51,48 @@ enum AmapNaviCalculateType {
   electric
 }
 
-class AmapNaviLocationInfo {
-  /// 位置信息
-  final String address;
+// class AmapNaviLocationInfo {
+//   /// 位置信息
+//   final String address;
 
-  final LatLng? latLng;
+//   final LatLng? latLng;
 
-  AmapNaviLocationInfo({
-    required this.address,
-    this.latLng,
-  });
+//   AmapNaviLocationInfo({
+//     required this.address,
+//     this.latLng,
+//   });
 
-  Map<String, dynamic> toJson() => {'address': address, 'latLng': latLng?.toJson()};
-}
+//   Map<String, dynamic> toJson() => {'address': address, 'latLng': latLng?.toJson()};
+// }
 
-class AmapNaviStartToEnd {
-  /// 开始位置
-  final AmapNaviLocationInfo start;
+// class AmapNaviStartToEnd {
+//   /// 开始位置
+//   final AmapNaviLocationInfo start;
 
-  /// 结束位置
-  final AmapNaviLocationInfo end;
+//   /// 结束位置
+//   final AmapNaviLocationInfo end;
 
-  /// 途径位置
-  final List<AmapNaviLocationInfo>? waysPoiIds;
+//   /// 途径位置
+//   final List<AmapNaviLocationInfo>? waysPoiIds;
 
-  AmapNaviStartToEnd({
-    required this.start,
-    required this.end,
-    this.waysPoiIds,
-  });
+//   AmapNaviStartToEnd({
+//     required this.start,
+//     required this.end,
+//     this.waysPoiIds,
+//   });
 
-  Map<String, dynamic> toJson() => {'start': start.toJson(), 'end': end.toJson(), 'waysPoiIds': waysPoiIds?.map((e) => e.toJson())};
-}
+//   Map<String, dynamic> toJson() => {'start': start.toJson(), 'end': end.toJson(), 'waysPoiIds': waysPoiIds?.map((e) => e.toJson())};
+// }
 
 class AMapNaviView extends StatelessWidget {
-  /// 地图初始化完成
-  final AMapNaviViewOnCreated? onCreated;
-
   final AmapNaviParams initParams;
 
-  final AmapNaviEventCallback? onListen;
+  final AMapNaviViewController? controller;
 
   const AMapNaviView({
     super.key,
-    this.onCreated,
     this.initParams = const AmapNaviParams(),
-    this.onListen,
+    this.controller,
   });
 
   @override
@@ -130,7 +126,7 @@ class AMapNaviView extends StatelessWidget {
   }
 
   void onPlatformViewCreated(int id) async {
-    AMapNaviViewController controller = await AMapNaviViewController.init(id);
+    controller?._init(id);
     // _event = await AMapNaviViewEvent.init(id, (data) {
     //   print('======================');
     //   print(data);
@@ -143,6 +139,6 @@ class AMapNaviView extends StatelessWidget {
     //       break;
     //   }
     // });
-    onCreated?.call(controller);
+    // controller?.call(controller);
   }
 }

@@ -1,4 +1,4 @@
-part of '../amap_view_muka.dart';
+part of '../../amap_view_muka.dart';
 
 enum AMapNaviType {
   /// 导航地图
