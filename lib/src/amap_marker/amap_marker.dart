@@ -2,11 +2,11 @@ part of '../../amap_view_muka.dart';
 
 typedef AMapMarkerOnTap = void Function();
 
-typedef AMapMarkerOnDragStart = void Function(LatLng latLng);
+typedef AMapMarkerOnDragStart = void Function(LatLonPoint latLng);
 
-typedef AMapMarkerOnDragMove = void Function(LatLng latLng);
+typedef AMapMarkerOnDragMove = void Function(LatLonPoint latLng);
 
-typedef AMapMarkerOnDragEnd = void Function(LatLng latLng);
+typedef AMapMarkerOnDragEnd = void Function(LatLonPoint latLng);
 
 abstract class AMapMarker {
   /// 作为唯一索引
@@ -17,7 +17,7 @@ abstract class AMapMarker {
   /// 在地图上标记位置的经纬度值
   ///
   /// [必填参数]
-  final LatLng position;
+  final LatLonPoint position;
 
   /// 点标记是否可拖拽
   final bool draggable;
@@ -73,7 +73,7 @@ abstract class AMapMarker {
   String get type => '';
 
   dynamic copyWith({
-    LatLng? position,
+    LatLonPoint? position,
 
     /// 点标记是否可拖拽
     bool? draggable,

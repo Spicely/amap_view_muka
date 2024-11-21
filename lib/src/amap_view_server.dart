@@ -76,7 +76,7 @@ class AMapViewServer {
   }) async {
     assert(page >= 1 && page <= 100, 'page must be between 1 and 100');
     assert(pageSize >= 1 && pageSize <= 25, 'pageSize must be between 1 and 25');
-    String res = await _channel.invokeMethod('searchKeyword', {
+    dynamic res = await _channel.invokeMapMethod<String, dynamic>('searchKeyword', {
       'keyword': keyword,
       'city': city,
       'types': types,
@@ -85,7 +85,7 @@ class AMapViewServer {
       'cityLimit': cityLimit,
     });
 
-    return PoiResult.fromJson(jsonDecode(res));
+    return PoiResult.fromJson(res);
   }
 
   /// 周边搜索poi
@@ -103,7 +103,7 @@ class AMapViewServer {
   /// [pageSize] 每页记录数, 范围1-25, [default = 20]
   ///
   /// [page] 当前页数, 范围1-100, [default = 1]
-  static Future<List<AMapPoi>> searchAround(LatLng center, {String keyword = '', String city = '', String types = '', int pageSize = 20, int page = 1, int radius = 1500}) async {
+  static Future<List<AMapPoi>> searchAround(LatLonPoint center, {String keyword = '', String city = '', String types = '', int pageSize = 20, int page = 1, int radius = 1500}) async {
     assert(page >= 1 && page <= 100, 'page must be between 1 and 100');
     assert(pageSize >= 1 && pageSize <= 25, 'pageSize must be between 1 and 25');
     assert(radius >= 0 && radius <= 50000, 'radius must be between 0 and 50000');
@@ -129,7 +129,7 @@ class AMapViewServer {
   /// [latLng] 如果设置，在此location附近优先返回搜索关键词信息
   ///
   /// [cityLimit] 强制城市限制功能 [default = false]，例如：在上海搜索天安门，如果cityLimit为true，将不返回北京的天安门相关的POI
-  static Future<List<AMapTip>> fetchInputTips(String keyword, {String city = '', LatLng? latLng, bool cityLimit = false}) async {
+  static Future<List<AMapTip>> fetchInputTips(String keyword, {String city = '', LatLonPoint? latLng, bool cityLimit = false}) async {
     final List? dataList = await _channel.invokeMethod('fetchInputTips', {
       'keyword': keyword,
       'city': city,
@@ -138,5 +138,22 @@ class AMapViewServer {
       'cityLimit': cityLimit,
     });
     return dataList?.map((e) => AMapTip.fromJson(e)).toList() ?? [];
+  }
+
+  /// 单次定位
+  ///
+  /// androidMode 定位方式 [ 仅适用android ]
+  ///
+  /// iosAccuracy 精确度 [ 仅适用ios ]
+
+  static Future<AMapLocation> fetch({
+    AMapLocationMode androidMode = AMapLocationMode.hight_accuracy,
+    AMapLocationAccuracy iosAccuracy = AMapLocationAccuracy.three_kilometers,
+  }) async {
+    dynamic location = await _channel.invokeMapMethod<String, dynamic>('fetch', {
+      'mode': androidMode.index,
+      'accuracy': iosAccuracy.index,
+    });
+    return AMapLocation.fromJson(location);
   }
 }

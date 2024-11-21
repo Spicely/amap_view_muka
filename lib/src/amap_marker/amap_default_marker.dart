@@ -12,7 +12,7 @@ class AMapDefaultMarker implements AMapMarker {
   final String id;
 
   /// 在地图上标记位置的经纬度值。必填参数
-  final LatLng position;
+  final LatLonPoint position;
 
   /// 点标记的标题
   final String? title;
@@ -91,7 +91,7 @@ class AMapDefaultMarker implements AMapMarker {
 
   @override
   AMapDefaultMarker copyWith({
-    LatLng? position,
+    LatLonPoint? position,
 
     /// 点标记是否可拖拽
     bool? draggable,
@@ -144,7 +144,7 @@ class AMapDefaultMarker implements AMapMarker {
 
   factory AMapDefaultMarker.fromJson(Map<String, dynamic> json) => AMapDefaultMarker(
         id: json['id'] as String,
-        position: LatLng.fromJson(json['position'] as Map<String, dynamic>),
+        position: LatLonPoint.fromJson(json['position'] as Map<String, dynamic>),
         title: json['title'],
         snippet: json['snippet'] as String?,
         anchor: json['anchor'] as String?,

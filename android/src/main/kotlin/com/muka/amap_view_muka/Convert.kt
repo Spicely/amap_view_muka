@@ -11,6 +11,7 @@ import com.amap.api.maps.model.MyLocationStyle
 import com.amap.api.navi.AMapNaviView
 import com.amap.api.navi.AMapNaviViewOptions
 import com.amap.api.navi.enums.MapStyle
+import com.amap.api.navi.model.AMapCalcRouteResult
 import com.amap.api.navi.model.AMapNaviCameraInfo
 import com.amap.api.navi.model.AMapNaviForbiddenInfo
 import com.amap.api.navi.model.AMapNaviLimitInfo
@@ -35,6 +36,7 @@ import com.amap.api.services.poisearch.PoiSearchV2
 import com.amap.api.services.poisearch.SubPoiItemV2
 import com.autonavi.ae.route.RestrictionInfoDetail
 import io.flutter.FlutterInjector
+import org.json.JSONObject
 
 
 class Convert {
@@ -54,6 +56,13 @@ class Convert {
             val data = HashMap<String, Any>()
             data["latitude"] = params.latitude
             data["longitude"] = params.longitude
+            return data
+        }
+
+        fun toJson(params: AMapCalcRouteResult): Any {
+            val data = HashMap<String, Any>()
+            data["routeid"] = params.routeid
+            data["errorCode"] = params.errorCode
             return data
         }
 
@@ -127,7 +136,7 @@ class Convert {
         }
 
 
-        fun toJson(location: AMapLocation): Any {
+        fun toJson(location: AMapLocation): HashMap<String, Any> {
             val data = HashMap<String, Any>()
             data["latitude"] = location.latitude
             data["longitude"] = location.longitude
@@ -351,8 +360,8 @@ class Convert {
             return data
         }
 
-        fun toJson(args: AMapNaviLocation): HashMap<String, Any> {
-            val data = HashMap<String, Any>()
+        fun toJson(args: AMapNaviLocation): Any {
+            val data: MutableMap<String, Any?> = mutableMapOf()
             data["time"] = args.time
             data["speed"] = args.speed
             data["accuracy"] = args.accuracy

@@ -39,51 +39,68 @@ class AMapNaviViewController {
   }
 
   Future<void> _handleMethodCall(MethodCall call) async {
-    switch (call.method) {
-      case 'marker#onTap':
-        break;
-      case ListenerMethod.onInitNaviFailure:
-        _onAMapNaviEvent((listener) => listener.onInitNaviFailure());
-        break;
-      case ListenerMethod.onInitNaviSuccess:
-        _onAMapNaviEvent((listener) => listener.onInitNaviSuccess());
-        break;
-      case ListenerMethod.onStartNavi:
-        _onAMapNaviEvent((listener) => listener.onStartNavi(call.arguments));
-        break;
-      case ListenerMethod.onTrafficStatusUpdate:
-        _onAMapNaviEvent((listener) => listener.onTrafficStatusUpdate());
-        break;
-      case ListenerMethod.onLocationChange:
-        _onAMapNaviEvent((listener) => listener.onLocationChange(AMapNaviLocation.fromJson(jsonDecode(call.arguments))));
-        break;
-      case ListenerMethod.onGetNavigationText:
-        _onAMapNaviEvent((listener) => listener.onGetNavigationText(call.arguments['type'], call.arguments['text']));
-        break;
-      case ListenerMethod.onEndEmulatorNavi:
-        _onAMapNaviEvent((listener) => listener.onEndEmulatorNavi());
-        break;
-      case ListenerMethod.onArriveDestination:
-        _onAMapNaviEvent((listener) => listener.onArriveDestination());
-        break;
-      case ListenerMethod.onReCalculateRouteForYaw:
-        _onAMapNaviEvent((listener) => listener.onReCalculateRouteForYaw());
-        break;
-      case ListenerMethod.onReCalculateRouteForTrafficJam:
-        _onAMapNaviEvent((listener) => listener.onReCalculateRouteForTrafficJam());
-        break;
-      case ListenerMethod.onArrivedWayPoint:
-        _onAMapNaviEvent((listener) => listener.onArrivedWayPoint(call.arguments));
-        break;
-      case ListenerMethod.onGpsOpenStatus:
-        _onAMapNaviEvent((listener) => listener.onGpsOpenStatus(call.arguments));
-        break;
-      case ListenerMethod.onNaviInfoUpdate:
-        _onAMapNaviEvent((listener) => listener.onNaviInfoUpdate(NaviInfo.fromJson(jsonDecode(call.arguments))));
-        break;
+    try {
+      switch (call.method) {
+        case 'marker#onTap':
+          break;
+        case ListenerMethod.onInitNaviFailure:
+          _onAMapNaviEvent((listener) => listener.onInitNaviFailure());
+          break;
+        case ListenerMethod.onInitNaviSuccess:
+          _onAMapNaviEvent((listener) => listener.onInitNaviSuccess());
+          break;
+        case ListenerMethod.onStartNavi:
+          _onAMapNaviEvent((listener) => listener.onStartNavi(call.arguments));
+          break;
+        case ListenerMethod.onTrafficStatusUpdate:
+          _onAMapNaviEvent((listener) => listener.onTrafficStatusUpdate());
+          break;
+        case ListenerMethod.onLocationChange:
+          _onAMapNaviEvent((listener) => listener.onLocationChange(AMapNaviLocation.fromJson(jsonDecode(call.arguments))));
+          break;
+        case ListenerMethod.onGetNavigationText:
+          final args = (call.arguments as Map).cast<String, dynamic>();
+          _onAMapNaviEvent((listener) => listener.onGetNavigationText(args['type'], args['text']));
+          break;
+        case ListenerMethod.onEndEmulatorNavi:
+          _onAMapNaviEvent((listener) => listener.onEndEmulatorNavi());
+          break;
+        case ListenerMethod.onArriveDestination:
+          _onAMapNaviEvent((listener) => listener.onArriveDestination());
+          break;
+        case ListenerMethod.onReCalculateRouteForYaw:
+          _onAMapNaviEvent((listener) => listener.onReCalculateRouteForYaw());
+          break;
+        case ListenerMethod.onReCalculateRouteForTrafficJam:
+          _onAMapNaviEvent((listener) => listener.onReCalculateRouteForTrafficJam());
+          break;
+        case ListenerMethod.onArrivedWayPoint:
+          _onAMapNaviEvent((listener) => listener.onArrivedWayPoint(call.arguments));
+          break;
+        case ListenerMethod.onGpsOpenStatus:
+          _onAMapNaviEvent((listener) => listener.onGpsOpenStatus(call.arguments));
+          break;
+        case ListenerMethod.onNaviInfoUpdate:
+          // _onAMapNaviEvent((listener) => listener.onNaviInfoUpdate(NaviInfo.fromJson(jsonDecode(call.arguments))));
+          break;
+        case ListenerMethod.onCalculateRouteSuccess:
+          print(21321321);
+          final args = (call.arguments as Map<dynamic, dynamic>).cast<String, dynamic>();
+          print(21321321);
+          _onAMapNaviEvent((listener) => listener.onCalculateRouteSuccess(AMapCalcRouteResult.fromJson(args)));
+          break;
+        case ListenerMethod.onCalculateRouteFailure:
+          print(21321321);
+          final args = (call.arguments as Map<dynamic, dynamic>).cast<String, dynamic>();
+          print(21321321);
+          _onAMapNaviEvent((listener) => listener.onCalculateRouteFailure(AMapCalcRouteResult.fromJson(args)));
+          break;
 
-      default:
-        throw MissingPluginException();
+        default:
+          throw MissingPluginException();
+      }
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 
@@ -106,7 +123,7 @@ class AMapNaviViewController {
   /// [way] 途径点坐标
   ///
   /// [strategy] 策略 可调用strategyConvert方法进行策略转换
-  Future<void> calculateDriveRoute(List<LatLng> start, List<LatLng> way, List<LatLng> end, int strategy) async {
+  Future<void> calculateDriveRoute(List<LatLonPoint> start, List<LatLonPoint> way, List<LatLonPoint> end, int strategy) async {
     await channel.invokeMethod('calculateDriveRoute', {
       'start': start.map((e) => e.toJson()).toList(),
       'way': way.map((e) => e.toJson()).toList(),

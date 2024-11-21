@@ -1,7 +1,7 @@
-part of amap_view_muka;
+part of '../../amap_view_muka.dart';
 
 class CameraPosition {
-  final LatLng latLng;
+  final LatLonPoint latLng;
 
   /// 缩放等级
   final double zoom;
@@ -31,7 +31,7 @@ class CameraPosition {
         'duration': duration,
       };
   CameraPosition copyWith({
-    LatLng? latLng,
+    LatLonPoint? latLng,
     double? zoom,
     double? tilt,
     double? bearing,
@@ -41,7 +41,7 @@ class CameraPosition {
   }
 
   factory CameraPosition.fromJson(Map<dynamic, dynamic> json) => CameraPosition(
-        LatLng.fromJson(Map<String, dynamic>.from(json['latLng'])),
+        LatLonPoint.fromJson(Map<String, dynamic>.from(json['latLng'])),
         json['zoom'],
         json['tilt'],
         json['bearing'],

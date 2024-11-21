@@ -26,4 +26,8 @@ class ListenerMethod {
   static const String onGpsOpenStatus = 'onGpsOpenStatus';
 
   static const String onNaviInfoUpdate = 'onNaviInfoUpdate';
+
+  static const String onCalculateRouteSuccess = 'onCalculateRouteSuccess';
+
+  static const String onCalculateRouteFailure = 'onCalculateRouteFailure';
 }

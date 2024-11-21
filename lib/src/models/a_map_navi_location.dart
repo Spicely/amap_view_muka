@@ -8,7 +8,7 @@ class AMapNaviLocation {
   final double? speed;
   final int? time;
   final int? matchStatus;
-  final LatLng? coord;
+  final LatLonPoint? coord;
   final int? locationType;
   final int? curStepIndex;
   final int? curLinkIndex;
@@ -38,7 +38,7 @@ class AMapNaviLocation {
       speed: json['speed'],
       time: json['time'],
       matchStatus: json['matchStatus'],
-      coord: LatLng.fromJson(json['coord']),
+      coord: LatLonPoint.fromJson(json['coord']),
       locationType: json['locationType'],
       curStepIndex: json['curStepIndex'],
       curLinkIndex: json['curLinkIndex'],

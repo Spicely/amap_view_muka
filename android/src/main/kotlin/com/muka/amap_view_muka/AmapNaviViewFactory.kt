@@ -27,7 +27,6 @@ import com.amap.api.navi.model.AimLessModeStat
 import com.amap.api.navi.model.NaviInfo
 import com.amap.api.navi.model.NaviLatLng
 import com.amap.api.navi.view.RouteOverLay
-import com.google.gson.Gson
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
@@ -179,7 +178,8 @@ class AMapNaviView(
     }
 
     override fun onLocationChange(location: AMapNaviLocation?) {
-        methodChannel.invokeMethod("onLocationChange", if (location != null) Gson().toJson(Convert.toJson(location)) else "{}")
+
+        methodChannel.invokeMethod("onLocationChange", if (location != null) Convert.toJson(location) else null)
     }
 
     override fun onGetNavigationText(type: Int, text: String?) {
@@ -210,8 +210,9 @@ class AMapNaviView(
     override fun onCalculateRouteFailure(p0: AMapCalcRouteResult?) {
         val data: MutableMap<String, Any?> = mutableMapOf()
         data["type"] = "calculateRouteFailure"
-        data["data"] = p0.toString()
-        eventSink?.success(data)
+        data["data"] = 1
+        methodChannel.invokeMethod("onCalculateRouteFailure", null)
+
     }
 
     override fun onReCalculateRouteForYaw() {
@@ -281,32 +282,9 @@ class AMapNaviView(
     }
 
     /// 路线规划成功
-    override fun onCalculateRouteSuccess(routeResult: AMapCalcRouteResult?) {
-//        if (routeResult != null) {
-//            // 获取路线数据对象
-//            val data: MutableMap<String, Any> = mutableMapOf()
-//            var infos: MutableList<MutableMap<String, Any>> = mutableListOf()
-//            data["type"] = "onCalculateRouteSuccess"
-//            data["data"] = infos
-//
-//            routeOverlays.clear()
-//
-//            val routeIds: IntArray = routeResult.routeid
-//            val paths = mAMapNavi.naviPaths
-//            for (i in routeIds.indices) {
-//                val path = paths[routeIds[i]]
-//                if (path != null) {
-//                    val info: MutableMap<String, Any> = mutableMapOf()
-//                    info["allTime"] = path.allTime
-//                    info["allLength"] = path.allLength
-//                    info["allCameras"] =  path.allCameras.size
-//                    infos.add(info)
-//                    drawRoutes(routeIds[i], path)
-//                }
-//            }
-//            eventSink?.success(data)
-//        }
-//        mAMapNavi.startNavi(NaviType.GPS)
+    override fun onCalculateRouteSuccess(routeResult: AMapCalcRouteResult) {
+
+        methodChannel.invokeMethod("onCalculateRouteSuccess", Convert.toJson(routeResult))
     }
 
     override fun notifyParallelRoad(p0: Int) {

@@ -69,21 +69,24 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
                     val imageView = ImageView(context)
                     val params = ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
                     val assetManager: AssetManager = context.assets
-                    imageView.setImageBitmap(BitmapFactory.decodeStream(assetManager.open(
-                        FlutterInjector.instance().flutterLoader()
-                            .getLookupKeyForAsset(icon["url"] as String)
-                    )
-                    )
+                    imageView.setImageBitmap(
+                        BitmapFactory.decodeStream(
+                            assetManager.open(
+                                FlutterInjector.instance().flutterLoader()
+                                    .getLookupKeyForAsset(icon["url"] as String)
+                            )
+                        )
                     )
                     imageView.layoutParams = params
                     val asset = BitmapDescriptorFactory.fromView(imageView)
                     marker.setIcon(asset)
                 }
+
                 "marker#byteArray" -> {
                     val size = icon["size"] as Map<*, *>
                     val imageView = ImageView(context)
                     val params =
-                            ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
+                        ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
                     val data = icon["data"] as ByteArray
                     print(data)
                     val length = data.size
@@ -93,6 +96,7 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
                     val asset = BitmapDescriptorFactory.fromView(imageView)
                     marker.setIcon(asset)
                 }
+
                 "marker#web" -> {
 
                 }
@@ -137,18 +141,20 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
                 "marker#asset" -> {
                     val size = icon["size"] as Map<String, Any>
                     val imageView = ImageView(context)
-                    val params = ViewGroup.LayoutParams((size["width"] as Double).toInt(),( size["height"] as Double).toInt())
+                    val params = ViewGroup.LayoutParams((size["width"] as Double).toInt(), (size["height"] as Double).toInt())
                     val assetManager: AssetManager = context.assets
-                    imageView.setImageBitmap(BitmapFactory.decodeStream(assetManager.open(
-                        FlutterInjector.instance().flutterLoader()
-                            .getLookupKeyForAsset(icon["url"] as String)
-                    )
-                    )
+                    imageView.setImageBitmap(
+                        BitmapFactory.decodeStream(
+                            assetManager.open(
+                                FlutterInjector.instance().flutterLoader().getLookupKeyForAsset(icon["url"] as String)
+                            )
+                        )
                     )
                     imageView.layoutParams = params
                     val asset = BitmapDescriptorFactory.fromView(imageView)
                     marker.setIcon(asset)
                 }
+
                 "marker#web" -> {
 
                 }

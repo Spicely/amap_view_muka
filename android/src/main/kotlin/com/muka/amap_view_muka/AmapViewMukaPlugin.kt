@@ -13,7 +13,6 @@ import com.amap.api.services.help.Inputtips
 import com.amap.api.services.help.InputtipsQuery
 import com.amap.api.services.poisearch.PoiResultV2
 import com.amap.api.services.poisearch.PoiSearchV2
-import com.google.gson.Gson
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -80,9 +79,9 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             }
 
             "fetch" -> {
-                var mode: Any? = call.argument("mode")
-                var locationClient = AMapLocationClient(flutterPluginBinding.applicationContext)
-                var locationOption = AMapLocationClientOption()
+                val mode: Any? = call.argument("mode")
+                val locationClient = AMapLocationClient(flutterPluginBinding.applicationContext)
+                val locationOption = AMapLocationClientOption()
                 locationOption.locationMode = when (mode) {
                     1 -> AMapLocationClientOption.AMapLocationMode.Battery_Saving
                     2 -> AMapLocationClientOption.AMapLocationMode.Device_Sensors
@@ -95,7 +94,7 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                             result.success(Convert.toJson(it))
                         } else {
                             result.error(
-                                "AmapError",
+                                "AMapError",
                                 "onLocationChanged Error: ${it.errorInfo}",
                                 it.errorInfo
                             )
@@ -161,9 +160,9 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         poiSearch.setOnPoiSearchListener(object : PoiSearchV2.OnPoiSearchListener {
             override fun onPoiSearched(res: PoiResultV2, rCode: Int) {
                 if (rCode != 1000) {
-                    result.success("{}")
+                    result.error(rCode.toString(), "请求失败", null)
                 } else {
-                    result.success(Gson().toJson(Convert.toJson(res)))
+                    result.success(Convert.toJson(res))
                 }
             }
 
