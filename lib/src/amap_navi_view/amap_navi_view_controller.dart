@@ -5,6 +5,8 @@ const _naviTag = 'plugins.muka.com/amap_navi_view_muka_controller';
 class AMapNaviViewController {
   late MethodChannel channel;
 
+  late AMapNavi mAMapNavi;
+
   final ObserverList<AMapNaviListener> _aMapNaviListeners = ObserverList<AMapNaviListener>();
 
   List<AMapNaviListener> get aMapNaviListeners {
@@ -19,6 +21,8 @@ class AMapNaviViewController {
   void _init(int id) async {
     channel = MethodChannel('${_naviTag}_$id');
     channel.setMethodCallHandler(_handleMethodCall);
+
+    mAMapNavi = AMapNavi(channel);
   }
 
   void addAMapNaviListener(AMapNaviListener listener) {
@@ -59,8 +63,7 @@ class AMapNaviViewController {
           _onAMapNaviEvent((listener) => listener.onLocationChange(AMapNaviLocation.fromJson(jsonDecode(call.arguments))));
           break;
         case ListenerMethod.onGetNavigationText:
-          final args = (call.arguments as Map).cast<String, dynamic>();
-          _onAMapNaviEvent((listener) => listener.onGetNavigationText(args['type'], args['text']));
+          _onAMapNaviEvent((listener) => listener.onGetNavigationText(call.arguments['type'], call.arguments['text']));
           break;
         case ListenerMethod.onEndEmulatorNavi:
           _onAMapNaviEvent((listener) => listener.onEndEmulatorNavi());
@@ -84,16 +87,10 @@ class AMapNaviViewController {
           // _onAMapNaviEvent((listener) => listener.onNaviInfoUpdate(NaviInfo.fromJson(jsonDecode(call.arguments))));
           break;
         case ListenerMethod.onCalculateRouteSuccess:
-          print(21321321);
-          final args = (call.arguments as Map<dynamic, dynamic>).cast<String, dynamic>();
-          print(21321321);
-          _onAMapNaviEvent((listener) => listener.onCalculateRouteSuccess(AMapCalcRouteResult.fromJson(args)));
+          _onAMapNaviEvent((listener) => listener.onCalculateRouteSuccess(AMapCalcRouteResult.fromJson(jsonDecode(call.arguments))));
           break;
         case ListenerMethod.onCalculateRouteFailure:
-          print(21321321);
-          final args = (call.arguments as Map<dynamic, dynamic>).cast<String, dynamic>();
-          print(21321321);
-          _onAMapNaviEvent((listener) => listener.onCalculateRouteFailure(AMapCalcRouteResult.fromJson(args)));
+          _onAMapNaviEvent((listener) => listener.onCalculateRouteFailure(AMapCalcRouteResult.fromJson(jsonDecode(call.arguments))));
           break;
 
         default:
@@ -123,7 +120,7 @@ class AMapNaviViewController {
   /// [way] 途径点坐标
   ///
   /// [strategy] 策略 可调用strategyConvert方法进行策略转换
-  Future<void> calculateDriveRoute(List<LatLonPoint> start, List<LatLonPoint> way, List<LatLonPoint> end, int strategy) async {
+  Future<void> calculateDriveRoute(List<LatLonPoint> start, List<LatLonPoint> end, List<LatLonPoint> way, int strategy) async {
     await channel.invokeMethod('calculateDriveRoute', {
       'start': start.map((e) => e.toJson()).toList(),
       'way': way.map((e) => e.toJson()).toList(),

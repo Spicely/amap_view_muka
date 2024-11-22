@@ -1,12 +1,12 @@
 package com.muka.amap_view_muka
 
 import android.content.Context
-import android.util.Log
 import com.amap.api.location.AMapLocation
 import com.amap.api.maps.AMap
 import com.amap.api.maps.CameraUpdateFactory
 import com.amap.api.maps.model.CameraPosition
 import com.amap.api.maps.model.LatLng
+import com.amap.api.maps.model.LatLngBounds
 import com.amap.api.maps.model.MyLocationStyle
 import com.amap.api.navi.AMapNaviView
 import com.amap.api.navi.AMapNaviViewOptions
@@ -36,7 +36,6 @@ import com.amap.api.services.poisearch.PoiSearchV2
 import com.amap.api.services.poisearch.SubPoiItemV2
 import com.autonavi.ae.route.RestrictionInfoDetail
 import io.flutter.FlutterInjector
-import org.json.JSONObject
 
 
 class Convert {
@@ -45,10 +44,43 @@ class Convert {
 
         }
 
+        fun toAMapCalcRouteResult(params: Map<*, *>): AMapCalcRouteResult {
+            val aMapCalcRouteResult = AMapCalcRouteResult()
+            aMapCalcRouteResult.routeid = params["routeid"] as IntArray?
+            aMapCalcRouteResult.errorCode = params["errorCode"] as Int
+            aMapCalcRouteResult.errorDetail = params["errorDetail"] as String
+            aMapCalcRouteResult.errorDescription = params["errorDescription"] as String
+            aMapCalcRouteResult.calcRouteType = params["errorDescription"] as Int
+            return aMapCalcRouteResult
+        }
+
         fun toJson(params: LatLng): Any {
             val data = HashMap<String, Any>()
             data["latitude"] = params.latitude
             data["longitude"] = params.longitude
+            return data
+        }
+
+        fun toJson(params: LatLngBounds): Any {
+            val data = HashMap<String, Any>()
+            data["northeast"] = toJson(params.northeast)
+            data["southwest"] = toJson(params.southwest)
+            return data
+        }
+
+        fun toJson(params: AMapNaviPath): Any {
+            val data = HashMap<String, Any>()
+            data["tollCost"] = params.tollCost
+            data["trafficLightCount"] = params.trafficLightCount
+            data["allTime"] = params.allTime
+            data[""] = params.trafficStatuses
+            data["pathid"] = params.pathid
+            data["allCameras"] = params.allCameras.map { it -> toJson(it) }.toList()
+            data["allLength"] = params.allLength
+            data["boundsForPath"] = toJson(params.boundsForPath)
+            data["carToFootPoint"] = toJson(params.carToFootPoint)
+            data["centerForPath"] = toJson(params.centerForPath)
+            data[] = params.wayPoint
             return data
         }
 
@@ -59,10 +91,13 @@ class Convert {
             return data
         }
 
-        fun toJson(params: AMapCalcRouteResult): Any {
-            val data = HashMap<String, Any>()
+        fun toJson(params: AMapCalcRouteResult): HashMap<String, Any?> {
+            val data = HashMap<String, Any?>()
             data["routeid"] = params.routeid
             data["errorCode"] = params.errorCode
+            data["errorDetail"] = params.errorDetail
+            data["errorDescription"] = params.errorDescription
+            data["calcRouteType"] = params.calcRouteType
             return data
         }
 

@@ -3,8 +3,6 @@ package com.muka.amap_view_muka
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.os.Bundle
-import android.util.Log
 import android.util.SparseArray
 import android.view.View
 import androidx.core.app.ActivityCompat
@@ -18,15 +16,14 @@ import com.amap.api.navi.model.AMapModelCross
 import com.amap.api.navi.model.AMapNaviCameraInfo
 import com.amap.api.navi.model.AMapNaviCross
 import com.amap.api.navi.model.AMapNaviLocation
-import com.amap.api.navi.model.AMapNaviPath
 import com.amap.api.navi.model.AMapNaviRouteNotifyData
 import com.amap.api.navi.model.AMapNaviTrafficFacilityInfo
 import com.amap.api.navi.model.AMapServiceAreaInfo
 import com.amap.api.navi.model.AimLessModeCongestionInfo
 import com.amap.api.navi.model.AimLessModeStat
 import com.amap.api.navi.model.NaviInfo
-import com.amap.api.navi.model.NaviLatLng
 import com.amap.api.navi.view.RouteOverLay
+import com.google.gson.Gson
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
@@ -85,17 +82,6 @@ class AMapNaviView(
         mAMapNavi.setUseInnerVoice(true, true)
         mAMapNavi.addAMapNaviListener(this)
         methodChannel.setMethodCallHandler(this)
-
-//        val myLocationStyle = MyLocationStyle()
-//        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE)
-//        myLocationStyle.showMyLocation(true)
-
-
-        /// 定位当前位置
-//        if (params!=null && params["showMyLocation"] != null && params["showMyLocation"] as Boolean) {
-
-
-//        }
     }
 
 
@@ -135,6 +121,13 @@ class AMapNaviView(
                 result.success(strategyConvert(args))
             }
 
+            methond.getNaviPaths -> {
+                val data = HashMap<Int, Any>()
+                val naviPaths = mAMapNavi.naviPaths
+                naviPaths.map { naviPath -> data[naviPath.key] = Convert.toJson(naviPath.value) }
+                result.success(data)
+            }
+
             else -> {
                 result.notImplemented()
             }
@@ -156,7 +149,7 @@ class AMapNaviView(
         val wayList = Convert.toArrayNaviLatLng(params["way"] as List<Map<String, Any>>)
         val endList = Convert.toArrayNaviLatLng(params["end"] as List<Map<String, Any>>)
         val flag = params["strategy"] as Int
-        mAMapNavi.calculateDriveRoute(startList, wayList, endList, flag)
+        mAMapNavi.calculateDriveRoute(startList, endList, wayList, flag)
     }
 
 
@@ -177,9 +170,8 @@ class AMapNaviView(
         methodChannel.invokeMethod("onTrafficStatusUpdate", null)
     }
 
-    override fun onLocationChange(location: AMapNaviLocation?) {
-
-        methodChannel.invokeMethod("onLocationChange", if (location != null) Convert.toJson(location) else null)
+    override fun onLocationChange(location: AMapNaviLocation) {
+        methodChannel.invokeMethod("onLocationChange", Gson().toJson(Convert.toJson(location)))
     }
 
     override fun onGetNavigationText(type: Int, text: String?) {
@@ -207,12 +199,10 @@ class AMapNaviView(
     override fun onCalculateRouteFailure(p0: Int) {
     }
 
-    override fun onCalculateRouteFailure(p0: AMapCalcRouteResult?) {
-        val data: MutableMap<String, Any?> = mutableMapOf()
-        data["type"] = "calculateRouteFailure"
-        data["data"] = 1
-        methodChannel.invokeMethod("onCalculateRouteFailure", null)
-
+    override fun onCalculateRouteFailure(routeResult: AMapCalcRouteResult?) {
+        if (routeResult != null) {
+            methodChannel.invokeMethod("onCalculateRouteFailure", Gson().toJson(Convert.toJson(routeResult)))
+        }
     }
 
     override fun onReCalculateRouteForYaw() {
@@ -263,6 +253,7 @@ class AMapNaviView(
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun showLaneInfo(p0: Array<out AMapLaneInfo>?, p1: ByteArray?, p2: ByteArray?) {
 
     }
@@ -276,33 +267,37 @@ class AMapNaviView(
     }
 
 
+    @Deprecated("Deprecated in Java")
     override fun onCalculateRouteSuccess(p0: IntArray?) {
-        Log.d("onCalculateRouteSuccess", "okArray")
-//        mAMapNavi.startNavi(NaviType.GPS)
     }
 
     /// 路线规划成功
     override fun onCalculateRouteSuccess(routeResult: AMapCalcRouteResult) {
 
-        methodChannel.invokeMethod("onCalculateRouteSuccess", Convert.toJson(routeResult))
+        methodChannel.invokeMethod("onCalculateRouteSuccess", Gson().toJson(Convert.toJson(routeResult)))
     }
 
+    @Deprecated("Deprecated in Java")
     override fun notifyParallelRoad(p0: Int) {
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun OnUpdateTrafficFacility(p0: Array<out AMapNaviTrafficFacilityInfo>?) {
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun OnUpdateTrafficFacility(p0: AMapNaviTrafficFacilityInfo?) {
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun updateAimlessModeStatistics(p0: AimLessModeStat?) {
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun updateAimlessModeCongestionInfo(p0: AimLessModeCongestionInfo?) {
 
     }
@@ -335,10 +330,12 @@ class AMapNaviView(
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onNaviTurnClick() {
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onNextRoadClick() {
 
     }
@@ -347,6 +344,7 @@ class AMapNaviView(
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onLockMap(p0: Boolean) {
 
     }
@@ -374,7 +372,7 @@ class AMapNaviView(
     }
 
 
-    private fun drawRoutes(routeId: Int, path: AMapNaviPath) {
+    private fun drawRoutes(result: AMapCalcRouteResult) {
 //        map.moveCamera(CameraUpdateFactory.changeTilt(0f))
 //        val routeOverLay = RouteOverLay(map, path, context)
 //        routeOverLay.isTrafficLine = false

@@ -20,17 +20,21 @@ class HomeController extends GetxController with AMapNaviListener {
   void onInitNaviSuccess() async {
     int strategy = await aMapNaviViewController.strategyConvert(true, false, false, false, false);
     AMapLocation location = await AMapViewServer.fetch();
-    await aMapNaviViewController.calculateDriveRoute([location.latLng!], [], [LatLonPoint(116.29, 39.95)], strategy);
+    await aMapNaviViewController.calculateDriveRoute([location.latLng!], [LatLonPoint(39.95, 116.29)], [], strategy);
   }
 
   @override
   void onLocationChange(AMapNaviLocation? location) {
-    print('-==============================');
-    print(location?.toJson());
+    // print('-==============================');
+    // print(location?.toJson());
   }
 
   @override
-  void onCalculateRouteSuccess(AMapCalcRouteResult routeResult) {
-    print(2231312);
+  void onCalculateRouteSuccess(AMapCalcRouteResult routeResult) {}
+
+  @override
+  void onCalculateRouteFailure(AMapCalcRouteResult routeResult) {
+    print('-======222222222222222========================');
+    print(routeResult.toJson());
   }
 }
