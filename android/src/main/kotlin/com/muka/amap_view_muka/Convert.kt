@@ -80,7 +80,7 @@ class Convert {
             data["boundsForPath"] = toJson(params.boundsForPath)
             data["carToFootPoint"] = toJson(params.carToFootPoint)
             data["centerForPath"] = toJson(params.centerForPath)
-            data[] = params.wayPoint
+//            data[] = params.wayPoint
             return data
         }
 
