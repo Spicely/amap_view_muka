@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 part of '../amap_view_muka.dart';
 
 // /// 仅Android可用
@@ -73,19 +75,23 @@ class AMapViewServer {
     int pageSize = 20,
     int page = 1,
     bool cityLimit = true,
+    LatLonPoint? latLng,
+    bool isDistanceSort = true,
   }) async {
     assert(page >= 1 && page <= 100, 'page must be between 1 and 100');
     assert(pageSize >= 1 && pageSize <= 25, 'pageSize must be between 1 and 25');
-    dynamic res = await _channel.invokeMapMethod<String, dynamic>('searchKeyword', {
+    String? res = await _channel.invokeMethod<String>('searchKeyword', {
       'keyword': keyword,
       'city': city,
       'types': types,
       'pageSize': pageSize,
       'page': page,
       'cityLimit': cityLimit,
+      'location': latLng?.toJson(),
+      'isDistanceSort': isDistanceSort,
     });
 
-    return PoiResult.fromJson(res);
+    return PoiResult.fromJson(json.decode(res!));
   }
 
   /// 周边搜索poi
@@ -103,11 +109,19 @@ class AMapViewServer {
   /// [pageSize] 每页记录数, 范围1-25, [default = 20]
   ///
   /// [page] 当前页数, 范围1-100, [default = 1]
-  static Future<List<AMapPoi>> searchAround(LatLonPoint center, {String keyword = '', String city = '', String types = '', int pageSize = 20, int page = 1, int radius = 1500}) async {
+  static Future<PoiResult> searchAround(
+    LatLonPoint center, {
+    String keyword = '',
+    String city = '',
+    String types = '',
+    int pageSize = 20,
+    int page = 1,
+    int radius = 1500,
+  }) async {
     assert(page >= 1 && page <= 100, 'page must be between 1 and 100');
     assert(pageSize >= 1 && pageSize <= 25, 'pageSize must be between 1 and 25');
     assert(radius >= 0 && radius <= 50000, 'radius must be between 0 and 50000');
-    final List? dataList = await _channel.invokeMethod('searchAround', {
+    String? res = await _channel.invokeMethod<String>('searchAround', {
       'keyword': keyword,
       'city': city,
       'types': types,
@@ -117,7 +131,7 @@ class AMapViewServer {
       'latitude': center.latitude,
       'radius': radius,
     });
-    return dataList?.map((e) => AMapPoi.fromJson(e)).toList() ?? [];
+    return PoiResult.fromJson(json.decode(res!));
   }
 
   /// 输入内容自动提示
@@ -145,7 +159,6 @@ class AMapViewServer {
   /// androidMode 定位方式 [ 仅适用android ]
   ///
   /// iosAccuracy 精确度 [ 仅适用ios ]
-
   static Future<AMapLocation> fetch({
     AMapLocationMode androidMode = AMapLocationMode.hight_accuracy,
     AMapLocationAccuracy iosAccuracy = AMapLocationAccuracy.three_kilometers,
@@ -156,4 +169,20 @@ class AMapViewServer {
     });
     return AMapLocation.fromJson(location);
   }
+
+  /// 计算距离
+  static Future<double> calculateDistance(List<LatLonPoint> start, LatLonPoint end, [int type = DistanceSearch.TYPE_DRIVING_DISTANCE]) async {
+    return await _channel.invokeMethod(
+      'calculateDistance',
+      {'start': start.map((e) => e.toJson()).toList(), 'end': end.toJson(), 'type': type},
+    );
+  }
+}
+
+abstract class DistanceSearch {
+  static const int TYPE_DISTANCE = 0;
+
+  static const int TYPE_DRIVING_DISTANCE = 1;
+
+  static const int TYPE_WALK_DISTANCE = 3;
 }

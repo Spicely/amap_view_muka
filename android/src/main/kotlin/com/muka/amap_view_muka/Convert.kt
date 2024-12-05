@@ -34,6 +34,7 @@ import com.amap.api.services.poisearch.PoiNavi
 import com.amap.api.services.poisearch.PoiResultV2
 import com.amap.api.services.poisearch.PoiSearchV2
 import com.amap.api.services.poisearch.SubPoiItemV2
+import com.amap.api.services.route.DistanceResult
 import com.autonavi.ae.route.RestrictionInfoDetail
 import io.flutter.FlutterInjector
 
@@ -52,6 +53,12 @@ class Convert {
             aMapCalcRouteResult.errorDescription = params["errorDescription"] as String
             aMapCalcRouteResult.calcRouteType = params["errorDescription"] as Int
             return aMapCalcRouteResult
+        }
+
+        fun toDistance(params: DistanceResult): Float {
+            var distance = 0f;
+            params.distanceResults.forEach { i -> distance+= i.distance }
+            return distance
         }
 
         fun toJson(params: LatLng): Any {
@@ -355,6 +362,7 @@ class Convert {
             v["poiNavi"] = toJson(params.poiNavi)
             v["photos"] = toArrPhoto(params.photos)
             v["subPois"] = toArrSubPoiItem(params.subPois)
+            params.describeContents()
             return v;
         }
 
@@ -374,7 +382,11 @@ class Convert {
             if (result.bound != null) {
                 data["bound"] = toJson(result.bound)
             }
-            data["pois"] = toArrPoiItem(result.pois)
+            if (result.pois == null) {
+                data["pois"] = ArrayList<HashMap<String, Any>>()
+            } else {
+                data["pois"] = toArrPoiItem(result.pois)
+            }
             data["count"] = result.count
             return data
         }
@@ -428,8 +440,9 @@ class Convert {
             return arr;
         }
 
-        private fun toArrLatLon(result: MutableList<LatLonPoint>): MutableList<HashMap<String, Any>> {
+        private fun toArrLatLon(result: MutableList<LatLonPoint>?): MutableList<HashMap<String, Any>> {
             val arr: MutableList<HashMap<String, Any>> = ArrayList()
+            if (result == null) return arr;
             result.forEach { it ->
                 arr.add(toJson(it))
             }
@@ -487,6 +500,18 @@ class Convert {
 
         fun toLatLng(params: Map<*, *>): LatLng {
             return LatLng(params["latitude"] as Double, params["longitude"] as Double)
+        }
+
+        fun toArrayLatLonPoint(params: List<Map<String, Any>>): MutableList<LatLonPoint> {
+            val data: MutableList<LatLonPoint> = ArrayList()
+            for (i in params) {
+                data.add(toLatLonPoint(i))
+            }
+            return data
+        }
+
+        fun toLatLonPoint(params: Map<*, *>): LatLonPoint {
+            return LatLonPoint(params["latitude"] as Double, params["longitude"] as Double)
         }
 
 

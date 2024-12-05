@@ -13,6 +13,9 @@ import com.amap.api.services.help.Inputtips
 import com.amap.api.services.help.InputtipsQuery
 import com.amap.api.services.poisearch.PoiResultV2
 import com.amap.api.services.poisearch.PoiSearchV2
+import com.amap.api.services.route.DistanceResult
+import com.amap.api.services.route.DistanceSearch
+import com.google.gson.Gson
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -129,6 +132,14 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 }
             }
 
+            methond.calculateDistance -> {
+                try {
+                    calculateDistance(call.arguments as Map<*, *>, result)
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                }
+            }
+
             else -> {
                 result.notImplemented()
             }
@@ -144,6 +155,24 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     override fun onDetachedFromActivity() {
     }
 
+    private fun calculateDistance(params: Map<*, *>, result: Result) {
+        val start = Convert.toArrayLatLonPoint(params["start"] as List<Map<String, Any>>)
+        val end = Convert.toLatLonPoint(params["end"] as Map<*, *>)
+        val distanceSearch = DistanceSearch(activity.applicationContext)
+        val distanceQuery = DistanceSearch.DistanceQuery()
+        distanceQuery.type = params["type"] as Int
+        distanceQuery.origins = start
+        distanceQuery.destination = end
+        distanceSearch.setDistanceSearchListener { res, rCode ->
+            if (rCode != 1000) {
+                result.error(rCode.toString(), "请求失败", null)
+            } else {
+                result.success(Convert.toDistance(res))
+            }
+        }
+        distanceSearch.calculateRouteDistanceAsyn(distanceQuery)
+    }
+
 
     private fun searchKeyword(searchParams: Map<*, *>, result: Result) {
         val keyword = searchParams["keyword"] as String
@@ -153,16 +182,22 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         val types = searchParams["types"] as String
         val cityLimit = searchParams["cityLimit"] as Boolean
         val query = PoiSearchV2.Query(keyword, types, city)
+        val location = searchParams["location"] as Map<*, *>?
+        val isDistanceSort = searchParams["isDistanceSort"] as Boolean
         query.pageSize = pageSize
         query.pageNum = page
         query.cityLimit = cityLimit
+        query.isDistanceSort = isDistanceSort
+        if (location != null) {
+            query.location = LatLonPoint(location["latitude"] as Double, location["longitude"] as Double)
+        }
         val poiSearch = PoiSearchV2(activity.applicationContext, query)
         poiSearch.setOnPoiSearchListener(object : PoiSearchV2.OnPoiSearchListener {
             override fun onPoiSearched(res: PoiResultV2, rCode: Int) {
                 if (rCode != 1000) {
                     result.error(rCode.toString(), "请求失败", null)
                 } else {
-                    result.success(Convert.toJson(res))
+                    result.success(Gson().toJson(Convert.toJson(res)))
                 }
             }
 
@@ -194,7 +229,7 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 if (rCode != 1000) {
                     result.success(HashMap<String, Any>())
                 } else {
-                    result.success(Convert.toJson(res))
+                    result.success(Gson().toJson(Convert.toJson(res)))
                 }
             }
 
