@@ -8,10 +8,13 @@ import com.amap.api.location.AMapLocationClientOption
 import com.amap.api.maps.MapsInitializer
 import com.amap.api.navi.AMapNavi
 import com.amap.api.services.core.LatLonPoint
+import com.amap.api.services.core.PoiItem
 import com.amap.api.services.core.PoiItemV2
 import com.amap.api.services.help.Inputtips
 import com.amap.api.services.help.InputtipsQuery
+import com.amap.api.services.poisearch.PoiResult
 import com.amap.api.services.poisearch.PoiResultV2
+import com.amap.api.services.poisearch.PoiSearch
 import com.amap.api.services.poisearch.PoiSearchV2
 import com.amap.api.services.route.DistanceResult
 import com.amap.api.services.route.DistanceSearch
@@ -108,9 +111,17 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 locationClient.startLocation()
             }
 
-            "searchKeyword" -> {
+            methond.searchKeyword -> {
                 try {
                     searchKeyword(call.arguments as Map<*, *>, result)
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                }
+            }
+
+            methond.searchKeywordV2 -> {
+                try {
+                    searchKeywordV2(call.arguments as Map<*, *>, result)
                 } catch (e: Throwable) {
                     e.printStackTrace()
                 }
@@ -173,8 +184,42 @@ class AmapViewMukaPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         distanceSearch.calculateRouteDistanceAsyn(distanceQuery)
     }
 
-
     private fun searchKeyword(searchParams: Map<*, *>, result: Result) {
+        val keyword = searchParams["keyword"] as String
+        val city = searchParams["city"] as String
+        val pageSize = searchParams["pageSize"] as Int
+        val page = searchParams["page"] as Int
+        val types = searchParams["types"] as String
+        val cityLimit = searchParams["cityLimit"] as Boolean
+        val query = PoiSearch.Query(keyword, types, city)
+        val location = searchParams["location"] as Map<*, *>?
+        val isDistanceSort = searchParams["isDistanceSort"] as Boolean
+        query.pageSize = pageSize
+        query.pageNum = page
+        query.cityLimit = cityLimit
+        query.isDistanceSort = isDistanceSort
+
+        if (location != null) {
+            query.location = LatLonPoint(location["latitude"] as Double, location["longitude"] as Double)
+        }
+        val poiSearch = PoiSearch(activity.applicationContext, query)
+        poiSearch.setOnPoiSearchListener(object : PoiSearch.OnPoiSearchListener {
+            override fun onPoiSearched(res: PoiResult, rCode: Int) {
+                if (rCode != 1000) {
+                    result.error(rCode.toString(), "请求失败", null)
+                } else {
+                    result.success(Gson().toJson(Convert.toJson(res)))
+                }
+            }
+
+            override fun onPoiItemSearched(p0: PoiItem?, p1: Int) {
+            }
+
+        })
+        poiSearch.searchPOIAsyn()
+    }
+
+    private fun searchKeywordV2(searchParams: Map<*, *>, result: Result) {
         val keyword = searchParams["keyword"] as String
         val city = searchParams["city"] as String
         val pageSize = searchParams["pageSize"] as Int

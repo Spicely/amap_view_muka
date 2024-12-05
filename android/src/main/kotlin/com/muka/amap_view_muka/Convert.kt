@@ -25,13 +25,16 @@ import com.amap.api.navi.model.AMapRestrictionInfo
 import com.amap.api.navi.model.AMapTrafficIncidentInfo
 import com.amap.api.navi.model.NaviLatLng
 import com.amap.api.services.core.LatLonPoint
+import com.amap.api.services.core.PoiItem
 import com.amap.api.services.core.PoiItemV2
 import com.amap.api.services.help.Tip
 import com.amap.api.services.poisearch.Business
 import com.amap.api.services.poisearch.IndoorDataV2
 import com.amap.api.services.poisearch.Photo
 import com.amap.api.services.poisearch.PoiNavi
+import com.amap.api.services.poisearch.PoiResult
 import com.amap.api.services.poisearch.PoiResultV2
+import com.amap.api.services.poisearch.PoiSearch
 import com.amap.api.services.poisearch.PoiSearchV2
 import com.amap.api.services.poisearch.SubPoiItemV2
 import com.amap.api.services.route.DistanceResult
@@ -57,7 +60,7 @@ class Convert {
 
         fun toDistance(params: DistanceResult): Float {
             var distance = 0f;
-            params.distanceResults.forEach { i -> distance+= i.distance }
+            params.distanceResults.forEach { i -> distance += i.distance }
             return distance
         }
 
@@ -291,15 +294,24 @@ class Convert {
             return data
         }
 
-        fun toJson(params: LatLonPoint): HashMap<String, Any> {
+        fun toJson(params: LatLonPoint?): Any? {
+            if (params == null) return null
             val v = HashMap<String, Any>()
             v["latitude"] = params.latitude
             v["longitude"] = params.longitude
             return v;
         }
 
-        fun toJson(params: PoiSearchV2.SearchBound): HashMap<String, Any> {
+        fun toJson(params: com.amap.api.navi.model.search.LatLonPoint): HashMap<String, Any> {
             val v = HashMap<String, Any>()
+            v["latitude"] = params.latitude
+            v["longitude"] = params.longitude
+            return v;
+        }
+
+
+        fun toJson(params: PoiSearchV2.SearchBound): Any {
+            val v = HashMap<String, Any?>()
             if (params.center != null) {
                 v["center"] = toJson(params.center)
             }
@@ -316,6 +328,24 @@ class Convert {
             return v;
         }
 
+        fun toJson(params: PoiSearch.SearchBound): Any {
+            val v = HashMap<String, Any?>()
+            if (params.center != null) {
+                v["center"] = toJson(params.center)
+            }
+            if (params.lowerLeft != null) {
+                v["lowerLeft"] = toJson(params.lowerLeft)
+            }
+            v["polyGonList"] = toArrLatLon(params.polyGonList)
+            if (params.upperRight != null) {
+                v["upperRight"] = toJson(params.upperRight)
+            }
+            v["range"] = params.range
+            v["shape"] = params.shape
+            v["isDistanceSort"] = params.isDistanceSort
+            return v;
+        }
+
         fun toJson(params: Business): HashMap<String, Any> {
             val v = HashMap<String, Any>()
             v["businessArea"] = params.businessArea
@@ -327,11 +357,12 @@ class Convert {
             v["parkingType"] = params.parkingType
             v["opentimeToday"] = params.opentimeToday
             v["opentimeWeek"] = params.opentimeWeek
+            v["mRating"] = params.getmRating()
             return v;
         }
 
-        fun toJson(params: PoiNavi): HashMap<String, Any> {
-            val v = HashMap<String, Any>()
+        fun toJson(params: PoiNavi): Any {
+            val v = HashMap<String, Any?>()
             if (params.exit != null) {
                 v["exit"] = toJson(params.exit)
             }
@@ -343,8 +374,8 @@ class Convert {
             return v;
         }
 
-        fun toJson(params: PoiItemV2): HashMap<String, Any> {
-            val v = HashMap<String, Any>()
+        fun toJson(params: PoiItemV2): Any {
+            val v = HashMap<String, Any?>()
             v["poiId"] = params.poiId
             v["title"] = params.title
             v["typeDes"] = params.typeDes
@@ -361,13 +392,64 @@ class Convert {
             v["business"] = toJson(params.business)
             v["poiNavi"] = toJson(params.poiNavi)
             v["photos"] = toArrPhoto(params.photos)
-            v["subPois"] = toArrSubPoiItem(params.subPois)
+            v["subPois"] = toArrSubPoiItemV2(params.subPois)
             params.describeContents()
             return v;
         }
 
-        fun toJson(result: SubPoiItemV2): HashMap<String, Any> {
+        fun toJson(params: PoiItem): Any {
+            val v = HashMap<String, Any?>()
+            v["adCode"] = params.adCode
+            v["adName"] = params.adName
+            v["businessArea"] = params.businessArea
+            v["cityCode"] = params.cityCode
+            v["cityName"] = params.cityName
+            v["direction"] = params.direction
+            v["distance"] = params.distance
+            v["email"] = params.email
+            v["enter"] = toJson(params.enter)
+            v["exit"] = toJson(params.exit)
+            v["indoorData"] = toJson(params.indoorData)
+            v["latLonPoint"] = toJson(params.latLonPoint)
+            v["parkingType"] = params.parkingType
+            v["photos"] = toArrPhoto(params.photos)
+            v["poiExtension"] = toJson(params.poiExtension)
+            v["poiId"] = params.poiId
+            v["postcode"] = params.postcode
+            v["provinceCode"] = params.provinceCode
+            v["provinceName"] = params.provinceName
+            v["snippet"] = params.snippet
+            v["subPois"] = toArrSubPoiItem(params.subPois)
+            v["tel"] = params.tel
+            v["title"] = params.title
+            v["typeCode"] = params.typeCode
+            v["typeDes"] = params.typeDes
+            v["website"] = params.website
+            v["isIndoorMap"] = params.isIndoorMap
+            return v;
+        }
+
+        fun toJson(result: com.amap.api.services.poisearch.PoiItemExtension): HashMap<String, Any> {
             val data = HashMap<String, Any>()
+            data["opentime"] = result.opentime
+            data["mRating"] = result.getmRating()
+            return data
+        }
+
+        fun toJson(result: com.amap.api.services.poisearch.SubPoiItem): Any {
+            val data = HashMap<String, Any?>()
+            data["distance"] = result.distance
+            data["latLonPoint"] = toJson(result.latLonPoint)
+            data["poiId"] = result.poiId
+            data["snippet"] = result.snippet
+            data["subName"] = result.subName
+            data["subTypeDes"] = result.subTypeDes
+            data["title"] = result.title
+            return data
+        }
+
+        fun toJson(result: SubPoiItemV2): Any {
+            val data = HashMap<String, Any?>()
             data["poiId"] = result.poiId
             data["title"] = result.title
             data["typeCode"] = result.typeCode
@@ -382,12 +464,25 @@ class Convert {
             if (result.bound != null) {
                 data["bound"] = toJson(result.bound)
             }
+            data["count"] = result.count
+            if (result.pois == null) {
+                data["pois"] = ArrayList<HashMap<String, Any>>()
+            } else {
+                data["pois"] = toArrPoiItemV2(result.pois)
+            }
+            return data
+        }
+
+        fun toJson(result: PoiResult): Map<String, Any> {
+            val data = HashMap<String, Any>()
+            if (result.bound != null) {
+                data["bound"] = toJson(result.bound)
+            }
             if (result.pois == null) {
                 data["pois"] = ArrayList<HashMap<String, Any>>()
             } else {
                 data["pois"] = toArrPoiItem(result.pois)
             }
-            data["count"] = result.count
             return data
         }
 
@@ -424,8 +519,16 @@ class Convert {
             return data
         }
 
-        private fun toArrSubPoiItem(result: MutableList<SubPoiItemV2>): MutableList<HashMap<String, Any>> {
-            val arr: MutableList<HashMap<String, Any>> = ArrayList()
+        private fun toArrSubPoiItemV2(result: MutableList<SubPoiItemV2>): MutableList<Any> {
+            val arr: MutableList<Any> = ArrayList()
+            result.forEachIndexed { _, it ->
+                arr.add(toJson(it))
+            }
+            return arr;
+        }
+
+        private fun toArrSubPoiItem(result: MutableList<com.amap.api.services.poisearch.SubPoiItem>): Any {
+            val arr: MutableList<Any> = ArrayList()
             result.forEachIndexed { _, it ->
                 arr.add(toJson(it))
             }
@@ -440,36 +543,42 @@ class Convert {
             return arr;
         }
 
-        private fun toArrLatLon(result: MutableList<LatLonPoint>?): MutableList<HashMap<String, Any>> {
-            val arr: MutableList<HashMap<String, Any>> = ArrayList()
+        private fun toArrLatLon(result: MutableList<LatLonPoint>?): MutableList<Any> {
+            val arr: MutableList<Any> = ArrayList()
             if (result == null) return arr;
             result.forEach { it ->
-                arr.add(toJson(it))
+                toJson(it)?.let { it1 -> arr.add(it1) }
             }
             return arr;
         }
 
-        private fun toArrPoiItem(result: MutableList<PoiItemV2>): MutableList<HashMap<String, Any>> {
-            val arr: MutableList<HashMap<String, Any>> = ArrayList()
+        private fun toArrPoiItemV2(result: MutableList<PoiItemV2>): MutableList<Any> {
+            val arr: MutableList<Any> = ArrayList()
             result.forEachIndexed { _, it ->
                 arr.add(toJson(it))
             }
             return arr;
         }
 
-        fun toArrTip(result: MutableList<Tip>): MutableList<HashMap<String, Any>> {
-            val arr: MutableList<HashMap<String, Any>> = ArrayList()
+        private fun toArrPoiItem(result: MutableList<PoiItem>): MutableList<Any> {
+            val arr: MutableList<Any> = ArrayList()
+            result.forEachIndexed { _, it ->
+                arr.add(toJson(it))
+            }
+            return arr;
+        }
+
+        fun toArrTip(result: MutableList<Tip>): MutableList<Any> {
+            val arr: MutableList<Any> = ArrayList()
             result.forEachIndexed { _, it ->
                 run {
-                    val data = HashMap<String, Any>()
+                    val data = HashMap<String, Any?>()
                     data["id"] = it.poiID
                     data["name"] = it.name
                     data["adCode"] = it.adcode
                     data["address"] = it.address
                     data["typeCode"] = it.typeCode
-                    if (it.point != null) {
-                        data["point"] = toJson(it.point)
-                    }
+                    data["point"] = toJson(it.point)
                     data["district"] = it.district
                     arr.add(data)
                 }
@@ -781,8 +890,16 @@ class Convert {
             val map = HashMap<String, Any>()
             map["floor"] = data.floor
             map["floorName"] = data.floorName
-            map["id"] = data.poiId
+            map["poiId"] = data.poiId
             map["isIndoorMap"] = data.isIndoorMap
+            return map
+        }
+
+        fun toJson(data: com.amap.api.services.poisearch.IndoorData): HashMap<String, Any> {
+            val map = HashMap<String, Any>()
+            map["floor"] = data.floor
+            map["floorName"] = data.floorName
+            map["poiId"] = data.poiId
             return map
         }
 

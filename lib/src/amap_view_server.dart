@@ -94,6 +94,45 @@ class AMapViewServer {
     return PoiResult.fromJson(json.decode(res!));
   }
 
+  /// 关键字搜索poi
+  ///
+  /// [keyword] 关键字
+  ///
+  /// [types] 类型，多个类型用“|”分割 可选值:文本分类、分类代码
+  ///
+  /// [city] 城市名称
+  ///
+  /// [pageSize] 每页记录数, 范围1-25, [default = 20]
+  ///
+  /// [page] 当前页数, 范围1-100, [default = 1]
+  ///
+  /// [cityLimit] 强制城市限制功能 [default = true]，例如：在上海搜索天安门，如果cityLimit为false，将不返回北京的天安门相关的POI
+  static Future<PoiResultV2> searchKeywordV2(
+    String keyword, {
+    String city = '',
+    String types = '',
+    int pageSize = 20,
+    int page = 1,
+    bool cityLimit = true,
+    LatLonPoint? latLng,
+    bool isDistanceSort = true,
+  }) async {
+    assert(page >= 1 && page <= 100, 'page must be between 1 and 100');
+    assert(pageSize >= 1 && pageSize <= 25, 'pageSize must be between 1 and 25');
+    String? res = await _channel.invokeMethod<String>('searchKeywordV2', {
+      'keyword': keyword,
+      'city': city,
+      'types': types,
+      'pageSize': pageSize,
+      'page': page,
+      'cityLimit': cityLimit,
+      'location': latLng?.toJson(),
+      'isDistanceSort': isDistanceSort,
+    });
+
+    return PoiResultV2.fromJson(json.decode(res!));
+  }
+
   /// 周边搜索poi
   ///
   /// [center] 中心点
