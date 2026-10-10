@@ -54,7 +54,7 @@ class AMapNaviView(
 
     private var mAMapNavi: AMapNavi
 
-    private var map: AMap = mapView.map
+    private lateinit var map: AMap
 
     private val methodChannel: MethodChannel
 
@@ -73,6 +73,12 @@ class AMapNaviView(
 
     init {
         mapView.onCreate(null)
+        val m = mapView.map
+        if (m == null) {
+            Log.e("AMapNaviView", "AMapNaviView.map is null after onCreate(null)!")
+        } else {
+            map = m
+        }
 
         // marker控制器
         methodChannel = MethodChannel(
@@ -100,7 +106,11 @@ class AMapNaviView(
     override fun dispose() {
         mAMapNavi.removeAMapNaviListener(this)
         AMapNavi.destroy()
-
+        try {
+            mapView.onDestroy()
+        } catch (e: Exception) {
+            Log.e("AMapNaviView", "mapView onDestroy error: ${e.message}")
+        }
     }
 //
 //    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {

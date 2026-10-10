@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import com.amap.api.maps.AMap
 import com.amap.api.maps.AMapOptions
 import com.amap.api.maps.CameraUpdateFactory
+import com.amap.api.maps.TextureMapView
 import com.amap.api.maps.model.*
 import com.amap.api.maps.offlinemap.OfflineMapActivity
 import com.amap.api.navi.AMapNavi
@@ -74,14 +75,15 @@ class AMapView(
     AMap.OnMapScreenShotListener,
     AMapNaviListener,
     AMap.OnMarkerDragListener {
-    private val mapView: AMapNaviView = AMapNaviView(context)
+    private val mapView: TextureMapView = TextureMapView(context)
 
-    private var map: AMap = mapView.map
+    private lateinit var map: AMap
 
-    private val methodChannel: MethodChannel
+    private val methodChannel: MethodChannel =
+        MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
 
-    private var markerController: MarkerController
-    private var polylineController: PolylineController
+    private lateinit var markerController: MarkerController
+    private lateinit var polylineController: PolylineController
 
     private var resultSkip: MethodChannel.Result? = null
 
@@ -89,13 +91,14 @@ class AMapView(
 
     init {
         mapView.onCreate(null)
-//        map.setOnMapLoadedListener(this)
-//
-////        registrarActivityHashCode = registrar.activity().hashCode()
+        val m = mapView.map
+        if (m == null) {
+            Log.e("AMapView", "TextureMapView.map is null after onCreate(null)!")
+            throw IllegalStateException("TextureMapView.map is null after onCreate. Please check AMap SDK initialization.")
+        }
+        map = m
 
         // marker控制器
-        methodChannel =
-            MethodChannel(flutterPluginBinding.binaryMessenger, "${AMAP_MUKA_MARKER}_$id")
         methodChannel.setMethodCallHandler(this)
 
         markerController = MarkerController(methodChannel, map)
@@ -131,6 +134,11 @@ class AMapView(
 
     override fun dispose() {
         polylineController.clearPolylines()
+        try {
+            mapView.onDestroy()
+        } catch (e: Exception) {
+            Log.e("AMapView", "mapView onDestroy error: ${e.message}")
+        }
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
