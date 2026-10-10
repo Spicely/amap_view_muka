@@ -27,3 +27,7 @@ part 'src/amap_image.dart';
 part 'src/amap_point.dart';
 part 'src/camera_position.dart';
 part 'src/amap_marker/amap_marker_info_window.dart';
+
+/*** Polyline */
+part 'src/amap_polyline/amap_polyline.dart';
+

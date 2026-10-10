@@ -20,6 +20,7 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
     private var mapView: MAMapView
     private var channel: FlutterMethodChannel
     private var markerController: MarkerController
+    private var polylineController: PolylineController
     private var flutterRegister: FlutterPluginRegistrar
     
     init(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?, binaryMessenger register: FlutterPluginRegistrar) {
@@ -39,6 +40,7 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
         channel = FlutterMethodChannel(name: "plugins.muka.com/amap_view_muka_marker_\(viewId)", binaryMessenger: register.messenger())
         
         markerController = MarkerController(withChannel: channel, withMap: mapView)
+        polylineController = PolylineController(withChannel: channel, withMap: mapView)
         
         super.init()
         
@@ -50,6 +52,9 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
         if let args = args as? [String: Any] {
             Convert.interpretMapOptions(options: args, delegate: self)
             updateInitialMarkers(options: args["markers"])
+            if let polylines = args["polylines"] as? [Any] {
+                polylineController.addPolylines(polylinesToAdd: polylines)
+            }
         }
     }
     
@@ -70,9 +75,40 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
             }
             result(true)
         case "marker#delete":
-//            if let args = methodCall.arguments as? [String: Any] {
-//                markerController.updateMarker(options: args)
-//            }
+            result(true)
+        case "polyline#add":
+            if let args = methodCall.arguments as? [String: Any] {
+                polylineController.addPolyline(options: args)
+            }
+            result(true)
+        case "polyline#update":
+            if let args = methodCall.arguments as? [String: Any] {
+                polylineController.updatePolyline(options: args)
+            }
+            result(true)
+        case "polyline#delete":
+            if let args = methodCall.arguments as? [String: Any] {
+                polylineController.deletePolyline(options: args)
+            }
+            result(true)
+        case "polyline#clear":
+            polylineController.clearPolylines()
+            result(true)
+        case "map#setCameraBounds":
+            if let args = methodCall.arguments as? [String: Any],
+               let sw = args["southwest"] as? [String: Any],
+               let ne = args["northeast"] as? [String: Any],
+               let swLat = sw["latitude"] as? Double,
+               let swLng = sw["longitude"] as? Double,
+               let neLat = ne["latitude"] as? Double,
+               let neLng = ne["longitude"] as? Double {
+                let p1 = MAMapPointForCoordinate(CLLocationCoordinate2DMake(swLat, swLng))
+                let p2 = MAMapPointForCoordinate(CLLocationCoordinate2DMake(neLat, neLng))
+                let rect = MAMapRectMake(min(p1.x, p2.x), min(p1.y, p2.y), abs(p1.x - p2.x), abs(p1.y - p2.y))
+                let padding = CGFloat((args["padding"] as? Double) ?? 60.0)
+                let animated = (args["animated"] as? Bool) ?? true
+                mapView.setVisibleMapRect(rect, edgePadding: UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding), animated: animated)
+            }
             result(true)
         case "enabledMyLocation":
             if let args = methodCall.arguments as? [String: Any] {
@@ -213,6 +249,14 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
     
     // MAMapViewDelegate
     
+    // 绘制 overlay (Polyline)
+    func mapView(_ mapView: MAMapView!, rendererFor overlay: MAOverlay!) -> MAOverlayRenderer! {
+        if let renderer = polylineController.rendererFor(overlay: overlay) {
+            return renderer
+        }
+        return nil
+    }
+
     // 绘制marker
     func mapView(_ mapView: MAMapView!, viewFor annotation: MAAnnotation!) -> MAAnnotationView! {
         if annotation is MAPointAnnotation {

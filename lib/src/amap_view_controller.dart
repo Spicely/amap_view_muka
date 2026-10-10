@@ -93,6 +93,7 @@ class AMapAnchor {
 
 class AMapViewController {
   final Map<String, AMapMarker> _markerMap = {};
+  final Map<String, AMapPolyline> _polylineMap = {};
 
   late MethodChannel _markerChannel;
 
@@ -222,6 +223,53 @@ class AMapViewController {
     return Future.value(false);
   }
 
+  /// 添加单个折线
+  ///
+  /// 已存在的id会被忽略
+  Future<bool?> addPolyline(AMapPolyline polyline) async {
+    if (_polylineMap[polyline.id] == null) {
+      _polylineMap[polyline.id] = polyline;
+      return _markerChannel.invokeMethod('polyline#add', polyline.toJson());
+    }
+    return Future.value(false);
+  }
+
+  /// 更新单个折线
+  Future<bool?> updatePolyline(AMapPolyline polyline) async {
+    _polylineMap[polyline.id] = polyline;
+    return _markerChannel.invokeMethod('polyline#update', polyline.toJson());
+  }
+
+  /// 删除单个折线
+  Future<void> removePolyline(String id) async {
+    if (_polylineMap.containsKey(id)) {
+      _polylineMap.remove(id);
+      return _markerChannel.invokeMethod('polyline#delete', {'id': id});
+    }
+    return Future.value(false);
+  }
+
+  /// 清空所有折线
+  Future<void> clearPolylines() async {
+    _polylineMap.clear();
+    return _markerChannel.invokeMethod('polyline#clear');
+  }
+
+  /// 适配经纬度矩形范围（轨迹全览 / fitBounds）
+  Future<void> setCameraBounds(
+    LatLng southwest,
+    LatLng northeast, {
+    double padding = 60,
+    bool animated = true,
+  }) {
+    return _markerChannel.invokeMethod('map#setCameraBounds', {
+      'southwest': southwest.toJson(),
+      'northeast': northeast.toJson(),
+      'padding': padding,
+      'animated': animated,
+    });
+  }
+
   Future<void> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'marker#onTap':
@@ -265,6 +313,12 @@ class AMapViewController {
         break;
       case 'map#onMapIdle':
         _mapState.widget.onMapIdle?.call(CameraPosition.fromJson(call.arguments));
+        break;
+      case 'polyline#onTap':
+        AMapPolyline? polyline = _polylineMap[call.arguments['polylineId']];
+        if (polyline != null) {
+          polyline.onTap?.call();
+        }
         break;
       default:
         throw MissingPluginException();

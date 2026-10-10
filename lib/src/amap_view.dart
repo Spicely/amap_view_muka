@@ -92,6 +92,9 @@ class AMapView extends StatefulWidget {
   /// markers
   final List<AMapMarker>? markers;
 
+  /// polylines 折线
+  final List<AMapPolyline>? polylines;
+
   /// 蓝点样式
   final MyLocationStyle? myLocationStyle;
 
@@ -164,6 +167,7 @@ class AMapView extends StatefulWidget {
     this.onMapIdle,
     this.onMapMove,
     this.markers,
+    this.polylines,
   }) : super(key: key);
 
   @override
@@ -172,6 +176,52 @@ class AMapView extends StatefulWidget {
 
 class _AMapViewState extends State<AMapView> {
   late AMapViewController _controller;
+  bool _initialized = false;
+
+  @override
+  void didUpdateWidget(AMapView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!_initialized) return;
+
+    _syncMarkers(oldWidget.markers ?? [], widget.markers ?? []);
+    _syncPolylines(oldWidget.polylines ?? [], widget.polylines ?? []);
+  }
+
+  void _syncMarkers(List<AMapMarker> oldMarkers, List<AMapMarker> newMarkers) {
+    final oldMap = {for (final m in oldMarkers) m.id: m};
+    final newMap = {for (final m in newMarkers) m.id: m};
+
+    for (final oldId in oldMap.keys) {
+      if (!newMap.containsKey(oldId)) {
+        _controller.removeMarker(oldId);
+      }
+    }
+    for (final entry in newMap.entries) {
+      if (!oldMap.containsKey(entry.key)) {
+        _controller.addMarker(entry.value);
+      } else {
+        _controller.updateMarker(entry.value);
+      }
+    }
+  }
+
+  void _syncPolylines(List<AMapPolyline> oldPolylines, List<AMapPolyline> newPolylines) {
+    final oldMap = {for (final p in oldPolylines) p.id: p};
+    final newMap = {for (final p in newPolylines) p.id: p};
+
+    for (final oldId in oldMap.keys) {
+      if (!newMap.containsKey(oldId)) {
+        _controller.removePolyline(oldId);
+      }
+    }
+    for (final entry in newMap.entries) {
+      if (!oldMap.containsKey(entry.key)) {
+        _controller.addPolyline(entry.value);
+      } else {
+        _controller.updatePolyline(entry.value);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,6 +230,7 @@ class _AMapViewState extends State<AMapView> {
     ].toSet();
     Map<String, dynamic> _creationParams = {
       'markers': widget.markers?.map((e) => e.toJson()).toList(),
+      'polylines': widget.polylines?.map((e) => e.toJson()).toList(),
       'type': widget.type?.index,
       'language': widget.language?.index,
       'zoomLevel': widget.zoom,
@@ -205,8 +256,6 @@ class _AMapViewState extends State<AMapView> {
         creationParams: _creationParams,
         creationParamsCodec: const StandardMessageCodec(),
         layoutDirection: TextDirection.ltr,
-        // layoutDirection: widget.layoutDirection,
-        // hitTestBehavior: widget.hitTestBehavior,
       );
     } else {
       return UiKitView(
@@ -215,20 +264,25 @@ class _AMapViewState extends State<AMapView> {
         onPlatformViewCreated: onPlatformViewCreated,
         creationParams: _creationParams,
         creationParamsCodec: const StandardMessageCodec(),
-        // layoutDirection: widget.layoutDirection,
-        // hitTestBehavior: widget.hitTestBehavior,
       );
     }
   }
 
   void onPlatformViewCreated(int id) async {
     _controller = await AMapViewController.init(id, this);
+    _initialized = true;
 
     /// 将参数marker加入缓存
     widget.markers?.forEach((marker) {
       _controller._markerMap[marker.id] = marker;
     });
 
+    /// 将参数polyline加入缓存
+    widget.polylines?.forEach((polyline) {
+      _controller._polylineMap[polyline.id] = polyline;
+    });
+
     widget.onCreated?.call(_controller);
   }
 }
+

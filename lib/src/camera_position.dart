@@ -15,13 +15,24 @@ class CameraPosition {
   /// 动画时间 不填写没有动画
   final int? duration;
 
-  const CameraPosition(
-    this.latLng,
-    this.zoom,
-    this.tilt,
-    this.bearing, {
+  LatLng get target => latLng;
+
+  const CameraPosition({
+    LatLng? target,
+    LatLng? latLng,
+    this.zoom = 10.0,
+    this.tilt = 0.0,
+    this.bearing = 0.0,
     this.duration,
-  });
+  }) : latLng = target ?? latLng ?? const LatLng(0, 0);
+
+  const CameraPosition.position(
+    this.latLng, [
+    this.zoom = 10.0,
+    this.tilt = 0.0,
+    this.bearing = 0.0,
+    this.duration,
+  ]);
 
   Map<String, dynamic> toJson() => {
         'latLng': latLng.toJson(),
@@ -32,16 +43,27 @@ class CameraPosition {
       };
   CameraPosition copyWith({
     LatLng? latLng,
+    LatLng? target,
     double? zoom,
     double? tilt,
     double? bearing,
     int? duration,
   }) {
-    return CameraPosition(latLng ?? this.latLng, zoom ?? this.zoom, tilt ?? this.tilt, bearing ?? this.bearing,
-        duration: duration ?? this.duration);
+    return CameraPosition(
+      latLng: latLng ?? target ?? this.latLng,
+      zoom: zoom ?? this.zoom,
+      tilt: tilt ?? this.tilt,
+      bearing: bearing ?? this.bearing,
+      duration: duration ?? this.duration,
+    );
   }
 
-  factory CameraPosition.fromJson(Map<dynamic, dynamic> json) =>
-      CameraPosition(LatLng.fromJson(Map<String, dynamic>.from(json['latLng'])), json['zoom'], json['tilt'], json['bearing'],
-          duration: json['duration']);
+  factory CameraPosition.fromJson(Map<dynamic, dynamic> json) => CameraPosition(
+        latLng: LatLng.fromJson(Map<String, dynamic>.from(json['latLng'])),
+        zoom: (json['zoom'] as num).toDouble(),
+        tilt: (json['tilt'] as num).toDouble(),
+        bearing: (json['bearing'] as num).toDouble(),
+        duration: json['duration'],
+      );
 }
+

@@ -81,6 +81,7 @@ class AMapView(
     private val methodChannel: MethodChannel
 
     private var markerController: MarkerController
+    private var polylineController: PolylineController
 
     private var resultSkip: MethodChannel.Result? = null
 
@@ -98,11 +99,16 @@ class AMapView(
         methodChannel.setMethodCallHandler(this)
 
         markerController = MarkerController(methodChannel, map)
+        polylineController = PolylineController(methodChannel, map)
 
         Convert.initParams(params, map, context)
 
         (params["markers"] as List<*>?)?.forEach {
             markerController.addMarker(it as Map<String, Any>, context)
+        }
+
+        (params["polylines"] as List<*>?)?.forEach {
+            polylineController.addPolyline(it as Map<String, Any>)
         }
 
         // 地图点击事件监听
@@ -113,26 +119,60 @@ class AMapView(
         map.setOnMarkerClickListener(this)
         /// marker拖拽事件
         map.setOnMarkerDragListener(this)
+        /// polyline点击事件
+        map.addOnPolylineClickListener(polylineController)
         /// 定位蓝点
         map.setOnMyLocationChangeListener(this)
-
-
-//
-//        // polyline控制器
-//        polylineController = PolylineController(methodChannel, mapView.map)
     }
 
     override fun getView(): View {
         return mapView
     }
 
-
     override fun dispose() {
+        polylineController.clearPolylines()
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         val opts = call.arguments as Map<String, Any>
         when (call.method) {
+            "polyline#add" -> {
+                polylineController.addPolyline(call.arguments as Map<String, Any>)
+                result.success(true)
+            }
+            "polyline#update" -> {
+                polylineController.updatePolyline(call.arguments as Map<String, Any>)
+                result.success(true)
+            }
+            "polyline#delete" -> {
+                polylineController.deletePolyline(call.arguments as Map<String, Any>)
+                result.success(true)
+            }
+            "polyline#clear" -> {
+                polylineController.clearPolylines()
+                result.success(true)
+            }
+            "map#setCameraBounds" -> {
+                try {
+                    val southwestMap = opts["southwest"] as Map<String, Any>
+                    val northeastMap = opts["northeast"] as Map<String, Any>
+                    val padding = ((opts["padding"] as? Number)?.toInt()) ?: 60
+                    val animated = (opts["animated"] as? Boolean) ?: true
+                    val bounds = LatLngBounds(
+                        LatLng((southwestMap["latitude"] as Number).toDouble(), (southwestMap["longitude"] as Number).toDouble()),
+                        LatLng((northeastMap["latitude"] as Number).toDouble(), (northeastMap["longitude"] as Number).toDouble())
+                    )
+                    val update = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+                    if (animated) {
+                        map.animateCamera(update)
+                    } else {
+                        map.moveCamera(update)
+                    }
+                    result.success(true)
+                } catch (e: Exception) {
+                    result.error("SET_BOUNDS_ERROR", e.message, null)
+                }
+            }
             "marker#add" -> {
                 markerController.addMarker(call.arguments as Map<String, Any>, context)
                 result.success(true)
