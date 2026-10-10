@@ -48,10 +48,12 @@ class MarkerController: NSObject {
         if let point = markerIdToMarker[id] {
             let position = options["position"] as! [String: Double]
             point.coordinate = CLLocationCoordinate2D(latitude: position["latitude"]!, longitude: position["longitude"]!)
-            if markerIdToOptions[id] != nil {
-                markerIdToOptions[id] = options
+            markerIdToOptions[id] = options
+            if let annotationView = mapView.view(for: point) {
+                if let rotateAngle = options["rotateAngle"] as? Double {
+                    annotationView.transform = CGAffineTransform(rotationAngle: CGFloat(rotateAngle * Double.pi / 180.0))
+                }
             }
-            mapView.addAnnotation(point)
         }
     }
     

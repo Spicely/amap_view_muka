@@ -75,6 +75,9 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
             }
             result(true)
         case "marker#delete":
+            if let args = methodCall.arguments as? [String: Any], let id = args["id"] as? String {
+                markerController.removeMarkers(markerIdsToRemove: [id])
+            }
             result(true)
         case "polyline#add":
             if let args = methodCall.arguments as? [String: Any] {
@@ -304,7 +307,8 @@ class AmapViewController: NSObject, FlutterPlatformView, MAMapViewDelegate, Amap
                     annotationView = MAPinAnnotationView(annotation: annotation, reuseIdentifier: pointReuseIndetifier)
                     annotationView!.canShowCallout = true
                     annotationView!.animatesDrop = false
-                    annotationView!.isDraggable = true
+                if let rotateAngle = opts["rotateAngle"] as? Double {
+                    annotationView?.transform = CGAffineTransform(rotationAngle: CGFloat(rotateAngle * Double.pi / 180.0))
                 }
             }
             return annotationView!

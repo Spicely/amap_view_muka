@@ -53,6 +53,9 @@ class AMapDefaultMarker implements AMapMarker {
   /// 显示infoWindow
   final bool showInfoWindow;
 
+  /// 点标记的旋转角度 (0 ~ 360°，以正北为 0，顺时针方向)
+  final double? rotateAngle;
+
   AMapDefaultMarker({
     required this.id,
     required this.position,
@@ -63,6 +66,7 @@ class AMapDefaultMarker implements AMapMarker {
     this.visible = true,
     this.draggable = false,
     this.alpha = 1.0,
+    this.rotateAngle,
     this.onTap,
     this.onDragStart,
     this.onDragMove,
@@ -82,6 +86,7 @@ class AMapDefaultMarker implements AMapMarker {
         'visible': this.visible,
         'draggable': this.draggable,
         'alpha': this.alpha,
+        'rotateAngle': this.rotateAngle,
         'icon': this.icon?.toJson(),
         'infoWindow': this.infoWindow?.toJson(),
       };

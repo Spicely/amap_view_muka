@@ -31,10 +31,12 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
 
     fun deleteMarker(opts: Map<String, Any>, result: MethodChannel.Result) {
         val id: String = (opts["id"] as String?)!!
-        val markerId = markerIdToDartMarkerId[id]
-        if (markerId != null) {
-            markerIdToDartMarkerId.remove(markerId)
+        val marker = markerIdToMarker[id]
+        if (marker != null) {
+            marker.remove()
+            markerIdToDartMarkerId.remove(marker.id)
             markerIdToMarker.remove(id)
+            markerIdToOptions.remove(marker.id)
         }
         result.success(true)
     }
@@ -52,6 +54,11 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
         val alpha: Float = (opts["alpha"] as Double?)!!.toFloat()
         val options = MarkerOptions()
         options.position(latLng).visible(visible).draggable(draggable).alpha(alpha).zIndex(1.0f)
+        val rotateAngle = opts["rotateAngle"] as? Double
+        if (rotateAngle != null) {
+            options.rotateAngle(rotateAngle.toFloat())
+            options.anchor(0.5f, 0.5f)
+        }
         val icon: Map<String, Any>? = (opts["icon"] as Map<String, Any>?)
 
         if (title != null) {
@@ -61,6 +68,10 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
             options.snippet(snippet)
         }
         val marker = map.addMarker(options)
+        if (rotateAngle != null) {
+            marker.rotateAngle = rotateAngle.toFloat()
+            marker.setAnchor(0.5f, 0.5f)
+        }
         markerIdToOptions[marker.id] = opts
         if (icon != null) {
             when (icon["type"]) {
@@ -123,6 +134,11 @@ class MarkerController(private val methodChannel: MethodChannel, private val map
         marker.isVisible = visible
         marker.isDraggable = draggable
         marker.alpha = alpha
+        val rotateAngle = opts["rotateAngle"] as? Double
+        if (rotateAngle != null) {
+            marker.rotateAngle = rotateAngle.toFloat()
+            marker.setAnchor(0.5f, 0.5f)
+        }
 
         val icon: Map<String, Any>? = (opts["icon"] as Map<String, Any>?)
         if (title != null) {
